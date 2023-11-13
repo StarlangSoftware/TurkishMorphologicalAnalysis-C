@@ -13,4 +13,5 @@ int main(){
     if (corpus_number_of_words(corpus) != 170211){
         printf("Word count wrong! %d\n", corpus_number_of_words(corpus));
     }
+    free_disambiguation_corpus(corpus);
 }
