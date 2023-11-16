@@ -6,6 +6,7 @@
 #define MORPHOLOGICALANALYSIS_FSMPARSE_H
 
 #include <Dictionary/Word.h>
+#include <Dictionary/TxtWord.h>
 #include "FsmState.h"
 #include "InflectionalGroup.h"
 
