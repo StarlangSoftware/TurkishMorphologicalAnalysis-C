@@ -69,15 +69,7 @@ void prepare_suffix_tree(Fsm_morphological_analyzer_ptr fsm_morphological_analyz
 }
 
 void add_surface_forms(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *file_name) {
-    fsm_morphological_analyzer->parsed_surface_forms = create_string_hash_map();
-    Array_list_ptr lines = read_lines(file_name);
-    for (int i = 0; i < lines->size; i++) {
-        char *line = array_list_get(lines, i);
-        Array_list_ptr items = str_split(line, ' ');
-        hash_map_insert(fsm_morphological_analyzer->parsed_surface_forms, array_list_get(items, 0), array_list_get(items, 1));
-        free_array_list(items, NULL);
-    }
-    free_array_list(lines, NULL);
+    fsm_morphological_analyzer->parsed_surface_forms = read_hash_map(file_name);
 }
 
 /**
