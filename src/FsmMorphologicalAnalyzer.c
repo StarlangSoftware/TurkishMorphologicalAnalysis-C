@@ -25,8 +25,7 @@ create_fsm_morphological_analyzer(char *fileName, Txt_dictionary_ptr dictionary,
     result->dictionary_trie = prepare_trie(dictionary);
     prepare_suffix_tree(result);
     result->dictionary = dictionary;
-    result->parsed_surface_forms = create_hash_set((unsigned int (*)(const void *, int)) hash_function_string,
-                                                   (int (*)(const void *, const void *)) compare_string);
+    result->parsed_surface_forms = NULL;
     result->cache = create_lru_cache(cacheSize, (unsigned int (*)(const void *, int)) hash_function_string,
                                      (int (*)(const void *, const void *)) compare_string);
     result->most_used_patterns = create_string_hash_map();
@@ -50,7 +49,9 @@ void free_fsm_morphological_analyzer(Fsm_morphological_analyzer_ptr fsm_morpholo
     free_finite_state_machine(fsm_morphological_analyzer->finite_state_machine);
     free_trie(fsm_morphological_analyzer->dictionary_trie);
     free_trie(fsm_morphological_analyzer->suffix_trie);
-    free_hash_set(fsm_morphological_analyzer->parsed_surface_forms, free);
+    if (fsm_morphological_analyzer->parsed_surface_forms != NULL){
+        free_hash_map2(fsm_morphological_analyzer->parsed_surface_forms, free, free);
+    }
     free_lru_cache(fsm_morphological_analyzer->cache, (void (*)(void *)) free_fsm_parse_list);
     free_hash_map(fsm_morphological_analyzer->most_used_patterns, (void (*)(void *)) free_regular_expression);
     free(fsm_morphological_analyzer);
@@ -68,10 +69,13 @@ void prepare_suffix_tree(Fsm_morphological_analyzer_ptr fsm_morphological_analyz
 }
 
 void add_surface_forms(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *file_name) {
+    fsm_morphological_analyzer->parsed_surface_forms = create_string_hash_map();
     Array_list_ptr lines = read_lines(file_name);
     for (int i = 0; i < lines->size; i++) {
-        char *surface_form = array_list_get(lines, i);
-        hash_set_insert(fsm_morphological_analyzer->parsed_surface_forms, surface_form);
+        char *line = array_list_get(lines, i);
+        Array_list_ptr items = str_split(line, ' ');
+        hash_map_insert(fsm_morphological_analyzer->parsed_surface_forms, array_list_get(items, 0), array_list_get(items, 1));
+        free_array_list(items, NULL);
     }
     free_array_list(lines, NULL);
 }
@@ -1489,15 +1493,21 @@ bool morphological_analysis_exists(Fsm_morphological_analyzer_ptr fsm_morphologi
 Fsm_parse_list_ptr
 morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm) {
     Fsm_parse_list_ptr fsmParseList;
-    if (fsm_morphological_analyzer->parsed_surface_forms->hash_map->count > 0 &&
-        hash_set_contains(fsm_morphological_analyzer->parsed_surface_forms, to_lowercase(surfaceForm)) &&
+    char* lowerCased = to_lowercase(surfaceForm);
+    if (fsm_morphological_analyzer->parsed_surface_forms != NULL &&
+        fsm_morphological_analyzer->parsed_surface_forms->count > 0 &&
+        hash_map_contains(fsm_morphological_analyzer->parsed_surface_forms, lowerCased) &&
         !is_integer(fsm_morphological_analyzer, surfaceForm) && !is_double(fsm_morphological_analyzer, surfaceForm) &&
         !is_percent_fsm(fsm_morphological_analyzer, surfaceForm) &&
         !is_time_fsm(fsm_morphological_analyzer, surfaceForm) &&
         !is_range_fsm(fsm_morphological_analyzer, surfaceForm) &&
         !is_date_fsm(fsm_morphological_analyzer, surfaceForm)) {
-        return create_fsm_parse_list(create_array_list());
+        Array_list_ptr parses = create_array_list();
+        array_list_add(parses, create_fsm_parse(create_txt_word(hash_map_get(fsm_morphological_analyzer->parsed_surface_forms, lowerCased))));
+        free(lowerCased);
+        return create_fsm_parse_list(parses);
     }
+    free(lowerCased);
     if (fsm_morphological_analyzer->cache->cache_size > 0 &&
         lru_cache_contains(fsm_morphological_analyzer->cache, surfaceForm)) {
         return clone_fsm_parse_list(lru_cache_get(fsm_morphological_analyzer->cache, surfaceForm));

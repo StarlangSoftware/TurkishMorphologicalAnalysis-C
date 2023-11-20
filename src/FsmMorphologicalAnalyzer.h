@@ -25,7 +25,7 @@ struct fsm_morphological_analyzer {
     Txt_dictionary_ptr dictionary;
     Lru_cache_ptr cache;
     Hash_map_ptr most_used_patterns;
-    Hash_set_ptr parsed_surface_forms;
+    Hash_map_ptr parsed_surface_forms;
 };
 
 typedef struct fsm_morphological_analyzer Fsm_morphological_analyzer;
