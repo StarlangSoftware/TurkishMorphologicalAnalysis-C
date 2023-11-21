@@ -50,7 +50,7 @@ void free_fsm_parse(Fsm_parse_ptr fsm_parse) {
 
 void update_fsm_parse_with_state_and_name(Fsm_parse_ptr fsm_parse, char *name, Fsm_State_ptr start_state) {
     fsm_parse->root = create_txt_word(name);
-    fsm_parse->form = str_copy(fsm_parse->form, fsm_parse->root->word->name);
+    fsm_parse->form = str_copy(fsm_parse->form, fsm_parse->root->name);
     fsm_parse->pos = start_state->pos;
     fsm_parse->initial_pos = start_state->pos;
     array_list_add(fsm_parse->suffix_list, start_state);
@@ -123,7 +123,7 @@ Fsm_parse_ptr create_fsm_parse5(char *punctuation, Fsm_State_ptr start_state) {
 Fsm_parse_ptr create_fsm_parse6(Txt_word_ptr root, Fsm_State_ptr start_state) {
     Fsm_parse_ptr result = create_fsm_parse2();
     result->root = root;
-    result->form = str_copy(result->form, root->word->name);
+    result->form = str_copy(result->form, root->name);
     result->pos = start_state->pos;
     result->initial_pos = start_state->pos;
     array_list_add(result->suffix_list, start_state);
@@ -187,7 +187,7 @@ void set_agreement(Fsm_parse_ptr fsm_parse, char *transition_name) {
 char *get_last_lemma_with_tag(Fsm_parse_ptr fsm_parse, char *_pos) {
     char *lemma;
     if (fsm_parse->initial_pos != NULL && strcmp(fsm_parse->initial_pos, _pos) == 0) {
-        lemma = fsm_parse->root->word->name;
+        lemma = fsm_parse->root->name;
     } else {
         lemma = "";
     }
@@ -211,7 +211,7 @@ char *get_last_lemma_with_tag(Fsm_parse_ptr fsm_parse, char *_pos) {
  * @return String output lemma.
  */
 char *get_last_lemma(Fsm_parse_ptr fsm_parse) {
-    char *lemma = fsm_parse->root->word->name;
+    char *lemma = fsm_parse->root->name;
     for (int i = 1; i < fsm_parse->form_list->size; i++) {
         if (array_list_get(fsm_parse->transition_list, i - 1) != NULL &&
             str_contains(array_list_get(fsm_parse->transition_list, i - 1), "^DB+")) {
@@ -659,7 +659,7 @@ char *get_suffix_list(Fsm_parse_ptr fsm_parse) {
  */
 char *get_with_list(Fsm_parse_ptr fsm_parse) {
     char tmp[MAX_LINE_LENGTH];
-    sprintf(tmp, "%s", fsm_parse->root->word->name);
+    sprintf(tmp, "%s", fsm_parse->root->name);
     for (int i = 0; i < fsm_parse->with_list->size; i++) {
         sprintf(tmp, "%s+%s", tmp, (char*) array_list_get(fsm_parse->with_list, i));
     }
@@ -675,7 +675,7 @@ char *get_with_list(Fsm_parse_ptr fsm_parse) {
  */
 char *replace_root_word(Fsm_parse_ptr fsm_parse, Txt_word_ptr new_root) {
     char* result = NULL;
-    result = str_copy(result, new_root->word->name);
+    result = str_copy(result, new_root->name);
     for (int i = 0; i < fsm_parse->with_list->size; i++) {
         Transition_ptr transition = create_transition3(array_list_get(fsm_parse->with_list, i));
         char* tmp = make_transition(transition, new_root, result);
@@ -704,12 +704,13 @@ int compare_fsm_parse(const Fsm_parse *fsm_parse1, const Fsm_parse *fsm_parse2) 
     return result;
 }
 
-Word_ptr get_word_with_pos2(const Fsm_parse *fsm_parse) {
+char* get_word_with_pos2(const Fsm_parse *fsm_parse) {
     char tmp[MAX_LINE_LENGTH];
     char *tag = get_tag(get_tag_with_index(first_inflectional_group2(fsm_parse), 0));
-    sprintf(tmp, "%s+%s", fsm_parse->root->word->name, tag);
+    sprintf(tmp, "%s+%s", fsm_parse->root->name, tag);
     free(tag);
-    return create_word(tmp);
+    char* result = str_copy(result, tmp);
+    return result;
 }
 
 Inflectional_group_ptr first_inflectional_group2(const Fsm_parse *fsm_parse) {

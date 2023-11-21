@@ -17,10 +17,10 @@ Metamorphic_parse_ptr create_metamorphic_parse(const char *parse) {
     Metamorphic_parse_ptr result = malloc(sizeof(Metamorphic_parse));
     result->meta_morpheme_list = create_array_list();
     if (strcmp(parse, "+") == 0) {
-        result->root = create_word("+");
+        result->root = str_copy(result->root, "+");
     } else {
         Array_list_ptr words = str_split(parse, '+');
-        result->root = create_word(array_list_get(words, 0));
+        result->root = str_copy(result->root, array_list_get(words, 0));
         for (int i = 1; i < words->size; i++){
             array_list_add(result->meta_morpheme_list, array_list_get(words, i));
         }
@@ -57,7 +57,7 @@ Array_list_ptr get_meta_morpheme_tag1(char *tag) {
 
 void free_metamorphic_parse(Metamorphic_parse_ptr metamorphic_parse) {
     free_array_list(metamorphic_parse->meta_morpheme_list, free);
-    free_word(metamorphic_parse->root);
+    free(metamorphic_parse->root);
     free(metamorphic_parse);
 }
 
@@ -90,7 +90,7 @@ void remove_meta_morpheme_from_index(Metamorphic_parse_ptr metamorphic_parse, in
  */
 char *get_meta_morpheme(const Metamorphic_parse* metamorphic_parse, int index) {
     if (index == 0) {
-        return metamorphic_parse->root->name;
+        return metamorphic_parse->root;
     } else {
         return array_list_get(metamorphic_parse->meta_morpheme_list, index - 1);
     }
@@ -103,7 +103,7 @@ char *get_meta_morpheme(const Metamorphic_parse* metamorphic_parse, int index) {
  */
 char *metamorphic_parse_to_string(const Metamorphic_parse* metamorphic_parse) {
     char tmp[MAX_LINE_LENGTH];
-    sprintf(tmp, "%s", metamorphic_parse->root->name);
+    sprintf(tmp, "%s", metamorphic_parse->root);
     for (int i = 0; i < metamorphic_parse->meta_morpheme_list->size; i++){
         sprintf(tmp, "%s+%s", tmp, (char*) array_list_get(metamorphic_parse->meta_morpheme_list, i));
     }

@@ -81,7 +81,7 @@ char* fsm_parse_to_string(Fsm_parse_ptr fsm_parse);
 
 int compare_fsm_parse(const Fsm_parse* fsm_parse1, const Fsm_parse* fsm_parse2);
 
-Word_ptr get_word_with_pos2(const Fsm_parse * fsm_parse);
+char* get_word_with_pos2(const Fsm_parse * fsm_parse);
 
 Inflectional_group_ptr first_inflectional_group2(const Fsm_parse * fsm_parse);
 

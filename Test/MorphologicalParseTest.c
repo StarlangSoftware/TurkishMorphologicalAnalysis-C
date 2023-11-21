@@ -102,7 +102,7 @@ void test_get_pos(){
 
 void test_get_word_with_pos_single(char* parse_string, char* pos){
     Morphological_parse_ptr parse1 = create_morphological_parse(parse_string);
-    if (strcmp(get_word_with_pos(parse1)->name, pos) != 0){
+    if (strcmp(get_word_with_pos(parse1), pos) != 0){
         printf("Error pos %s\n", parse_string);
     }
     free_morphological_parse(parse1);

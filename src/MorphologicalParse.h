@@ -11,7 +11,7 @@
 
 struct morphological_parse{
     Array_list_ptr inflectional_groups;
-    Word_ptr root;
+    char* root;
 };
 
 typedef struct morphological_parse Morphological_parse;
@@ -42,7 +42,7 @@ Inflectional_group_ptr first_inflectional_group(const Morphological_parse* morph
 
 Inflectional_group_ptr last_inflectional_group(const Morphological_parse* morphological_parse);
 
-Word_ptr get_word_with_pos(const Morphological_parse* morphological_parse);
+char* get_word_with_pos(const Morphological_parse* morphological_parse);
 
 char* get_pos(const Morphological_parse* morphological_parse);
 

@@ -65,56 +65,56 @@ void test_tags(Fsm_morphological_analyzer_ptr fsm){
             transition_state = create_fsm_state("Possessive", false, false);
             start_state = create_fsm_state("NominalRoot", true, false);
             transition = create_transition(transition_state, "yH", "ACC");
-            surface_form = make_transition2(transition, word, word->word->name, start_state);
+            surface_form = make_transition2(transition, word, word->name, start_state);
             count++;
         } else {
             if (is_verb(word) && vowel_a_changes_to_i_during_y_suffixation(word)){
                 transition_state = create_fsm_state("VerbalStem", false, false);
                 start_state = create_fsm_state("VerbalRoot", true, false);
                 transition = create_transition(transition_state, "Hyor", "PROG1");
-                surface_form = make_transition2(transition, word, word->word->name, start_state);
+                surface_form = make_transition2(transition, word, word->name, start_state);
                 count++;
             } else {
                 if (is_nominal(word) && last_i_drops_during_suffixation(word)){
                     transition_state = create_fsm_state("Possessive", false, false);
                     start_state = create_fsm_state("NominalRoot", true, false);
                     transition = create_transition(transition_state, "yH", "ACC");
-                    surface_form = make_transition2(transition, word, word->word->name, start_state);
+                    surface_form = make_transition2(transition, word, word->name, start_state);
                     count++;
                 } else {
                     if (is_verb(word) && verb_soften_during_suffixation(word)){
                         transition_state = create_fsm_state("VerbalStem", false, false);
                         start_state = create_fsm_state("VerbalRoot", true, false);
                         transition = create_transition(transition_state, "Hyor", "PROG1");
-                        surface_form = make_transition2(transition, word, word->word->name, start_state);
+                        surface_form = make_transition2(transition, word, word->name, start_state);
                         count++;
                     } else {
                         if (is_nominal(word) && duplicates_during_suffixation(word)){
                             transition_state = create_fsm_state("Possessive", false, false);
                             start_state = create_fsm_state("NominalRoot", true, false);
                             transition = create_transition(transition_state, "yH", "ACC");
-                            surface_form = make_transition2(transition, word, word->word->name, start_state);
+                            surface_form = make_transition2(transition, word, word->name, start_state);
                             count++;
                         } else {
                             if (is_nominal(word) && ending_k_changes_into_g(word)){
                                 transition_state = create_fsm_state("Possessive", false, false);
                                 start_state = create_fsm_state("NominalRoot", true, false);
                                 transition = create_transition(transition_state, "yH", "ACC");
-                                surface_form = make_transition2(transition, word, word->word->name, start_state);
+                                surface_form = make_transition2(transition, word, word->name, start_state);
                                 count++;
                             } else {
                                 if (is_verb(word) && last_i_drops_during_passive_suffixation(word)){
                                     transition_state = create_fsm_state("VerbalStem", false, false);
                                     start_state = create_fsm_state("VerbalRoot", true, false);
                                     transition = create_transition(transition_state, "Hl", "^DB+VERB+PASS");
-                                    surface_form = make_transition2(transition, word, word->word->name, start_state);
+                                    surface_form = make_transition2(transition, word, word->name, start_state);
                                     count++;
                                 } else {
                                     if (is_nominal(word) && not_obeys_vowel_harmony_during_agglutination(word)){
                                         transition_state = create_fsm_state("Possessive", false, false);
                                         start_state = create_fsm_state("NominalRoot", true, false);
                                         transition = create_transition(transition_state, "yH", "ACC");
-                                        surface_form = make_transition2(transition, word, word->word->name, start_state);
+                                        surface_form = make_transition2(transition, word, word->name, start_state);
                                         count++;
                                     }
                                 }
@@ -127,7 +127,7 @@ void test_tags(Fsm_morphological_analyzer_ptr fsm){
         if (surface_form != NULL){
             Fsm_parse_list_ptr parse_list = morphological_analysis(fsm, surface_form);
             if (parse_list->fsm_parses->size == 0){
-                printf("Error in word %s\n", word->word->name);
+                printf("Error in word %s\n", word->name);
             }
         }
     }

@@ -49,10 +49,10 @@ void free_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list) {
  */
 char *root_words(Fsm_parse_list_ptr fsm_parse_list) {
     char tmp[MAX_LINE_LENGTH];
-    char* currentRoot = (get_fsm_parse(fsm_parse_list, 0))->root->word->name;
+    char* currentRoot = (get_fsm_parse(fsm_parse_list, 0))->root->name;
     sprintf(tmp, "%s", currentRoot);
     for (int i = 1; i < fsm_parse_list->fsm_parses->size; i++) {
-        char* name = (get_fsm_parse(fsm_parse_list, i))->root->word->name;
+        char* name = (get_fsm_parse(fsm_parse_list, i))->root->name;
         if (strcmp(name, currentRoot) != 0) {
             currentRoot = name;
             sprintf(tmp, "%s$%s", tmp, currentRoot);
@@ -73,8 +73,8 @@ char *root_words(Fsm_parse_list_ptr fsm_parse_list) {
 void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, Txt_word_ptr current_with_pos) {
     int i = 0;
     while (i < fsm_parse_list->fsm_parses->size) {
-        char* name = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i))->name;
-        if (strcmp(name, current_with_pos->word->name) != 0) {
+        char* name = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i));
+        if (strcmp(name, current_with_pos->name) != 0) {
             array_list_remove(fsm_parse_list->fsm_parses, i, (void (*)(void *)) free_fsm_parse);
         } else {
             i++;
@@ -97,7 +97,7 @@ Fsm_parse_ptr get_parse_with_longest_root_word(Fsm_parse_list_ptr fsm_parse_list
     }
     for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++){
         Fsm_parse_ptr fsmParse = get_fsm_parse(fsm_parse_list, i);
-        int length = word_size(fsmParse->root->word->name);
+        int length = word_size(fsmParse->root->name);
         if (length > maxLength && !is_longest_root_exception(fsm_parse_list, fsmParse)){
             maxLength = length;
             bestParse = fsmParse;
@@ -114,7 +114,7 @@ Fsm_parse_ptr get_parse_with_longest_root_word(Fsm_parse_list_ptr fsm_parse_list
  */
 bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr fsm_parse) {
     char* surfaceForm = fsm_parse->form;
-    char* root = fsm_parse->root->word->name;
+    char* root = fsm_parse->root->name;
     for (int i = 0; i < 231; i++) {
         char* longestRootException = longestRootExceptions[i];
         Array_list_ptr exceptionItems = str_split(longestRootException, ' ');
@@ -129,7 +129,7 @@ bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr 
             for (int j = 0; j < fsm_parse_list->fsm_parses->size; j++) {
                 Fsm_parse_ptr currentParse = get_fsm_parse(fsm_parse_list, j);
                 char* rootPos2 = get_tag(get_tag_with_index(first_inflectional_group2(currentParse), 0));
-                if (strcmp(currentParse->root->word->name, possibleRoot) == 0 && strcmp(rootPos2, possibleRootPos) == 0) {
+                if (strcmp(currentParse->root->name, possibleRoot) == 0 && strcmp(rootPos2, possibleRootPos) == 0) {
                     free(rootPos2);
                     return true;
                 }
@@ -153,7 +153,7 @@ void reduce_to_parses_with_same_root(Fsm_parse_list_ptr fsm_parse_list, char *cu
     int i = 0;
     while (i < fsm_parse_list->fsm_parses->size) {
         Fsm_parse_ptr fsm_parse = get_fsm_parse(fsm_parse_list, i);
-        if (strcmp(fsm_parse->root->word->name, currentRoot) != 0) {
+        if (strcmp(fsm_parse->root->name, currentRoot) != 0) {
             array_list_remove(fsm_parse_list->fsm_parses, i, (void (*)(void *)) free_fsm_parse);
         } else {
             i++;
@@ -181,9 +181,9 @@ Array_list_ptr construct_parse_list_for_different_root_with_pos(Fsm_parse_list_p
             array_list_add(initial, get_fsm_parse(fsm_parse_list, i));
             array_list_add(result, create_fsm_parse_list(initial));
         } else {
-            Word_ptr word1 = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i));
-            Word_ptr word2 = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i - 1));
-            if (strcmp(word1->name, word2->name) == 0) {
+            char* word1 = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i));
+            char* word2 = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i - 1));
+            if (strcmp(word1, word2) == 0) {
                 array_list_add(((Fsm_parse_list_ptr)array_list_get(result, result->size - 1))->fsm_parses,
                                get_fsm_parse(fsm_parse_list, i));
             } else {
@@ -191,8 +191,8 @@ Array_list_ptr construct_parse_list_for_different_root_with_pos(Fsm_parse_list_p
                 array_list_add(initial, get_fsm_parse(fsm_parse_list, i));
                 array_list_add(result, create_fsm_parse_list(initial));
             }
-            free_word(word1);
-            free_word(word2);
+            free(word1);
+            free(word2);
         }
         i++;
     }

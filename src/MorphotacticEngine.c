@@ -19,9 +19,9 @@ void resolve_D(Txt_word_ptr root, String_ptr formation, const char *formation_to
             added = "t";
         } else {
             if (string_equals2(lastPhoneme, "0")){
-                if (ends_with(root->word->name, "40") ||
-                    ends_with(root->word->name, "60") ||
-                    ends_with(root->word->name, "70"))
+                if (ends_with(root->name, "40") ||
+                    ends_with(root->name, "60") ||
+                    ends_with(root->name, "70"))
                     //40->40'tı, 60->60'tı, 70->70'ti
                     added = "t";
                 else
@@ -57,11 +57,11 @@ void resolve_A(Txt_word_ptr root, String_ptr formation, bool rootWord, const cha
             added = "a";
         } else {
             if (string_equals2(lastVowel, "0")){
-                if (ends_with(root->word->name, "10") ||
-                    ends_with(root->word->name, "30") ||
-                    ends_with(root->word->name, "40") ||
-                    ends_with(root->word->name, "60") ||
-                    ends_with(root->word->name, "90"))
+                if (ends_with(root->name, "10") ||
+                    ends_with(root->name, "30") ||
+                    ends_with(root->name, "40") ||
+                    ends_with(root->name, "60") ||
+                    ends_with(root->name, "90"))
                     //10'a, 30'a, 40'a, 60'a, 90'a
                     added = "a";
                 else
@@ -92,13 +92,13 @@ void resolve_A(Txt_word_ptr root, String_ptr formation, bool rootWord, const cha
         }
     }
     if (is_numeral(root) || is_fraction(root) || is_real(root)) {
-        if (ends_with(root->word->name, "6") ||
-            ends_with(root->word->name, "9") ||
-            ends_with(root->word->name, "10") ||
-            ends_with(root->word->name, "30") ||
-            ends_with(root->word->name, "40") ||
-            ends_with(root->word->name, "60") ||
-            ends_with(root->word->name, "90")) {
+        if (ends_with(root->name, "6") ||
+            ends_with(root->name, "9") ||
+            ends_with(root->name, "10") ||
+            ends_with(root->name, "30") ||
+            ends_with(root->name, "40") ||
+            ends_with(root->name, "60") ||
+            ends_with(root->name, "90")) {
             added = "a";
         } else {
             added = "e";
@@ -200,24 +200,24 @@ void resolve_H(Txt_word_ptr root, String_ptr formation, bool beginning_of_suffix
         return;
     }
     if (is_numeral(root) || is_fraction(root) || is_real(root)) {
-        if (ends_with(root->word->name, "6") ||
-            ends_with(root->word->name, "40") ||
-            ends_with(root->word->name, "60") ||
-            ends_with(root->word->name, "90")) {
+        if (ends_with(root->name, "6") ||
+            ends_with(root->name, "40") ||
+            ends_with(root->name, "60") ||
+            ends_with(root->name, "90")) {
             //6'yı, 40'ı, 60'ı
             string_append(formation, "ı");
             return;
         } else {
-            if (ends_with(root->word->name, "3") ||
-                ends_with(root->word->name, "4") ||
-                ends_with(root->word->name, "00")) {
+            if (ends_with(root->name, "3") ||
+                ends_with(root->name, "4") ||
+                ends_with(root->name, "00")) {
                 //3'ü, 4'ü, 100'ü
                 string_append(formation, "ü");
                 return;
             } else {
-                if (ends_with(root->word->name, "9") ||
-                    ends_with(root->word->name, "10") ||
-                    ends_with(root->word->name, "30")) {
+                if (ends_with(root->name, "9") ||
+                    ends_with(root->name, "10") ||
+                    ends_with(root->name, "30")) {
                     //9'u, 10'u, 30'u
                     string_append(formation, "u");
                     return;

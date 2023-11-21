@@ -51,7 +51,7 @@ void test_root_words(Fsm_morphological_analyzer_ptr fsm){
 
 void test_get_parse_with_longest_root_word_single(Fsm_morphological_analyzer_ptr fsm, char* word, char* roots){
     Fsm_parse_list_ptr parse_list = morphological_analysis(fsm, word);
-    if (strcmp(get_parse_with_longest_root_word(parse_list)->root->word->name, roots) != 0){
+    if (strcmp(get_parse_with_longest_root_word(parse_list)->root->name, roots) != 0){
         printf("Error test longest root word in word %s\n", word);
     }
     free_fsm_parse_list(parse_list);

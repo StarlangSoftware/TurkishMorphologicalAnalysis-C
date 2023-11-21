@@ -9,7 +9,6 @@
 #include "MorphologicalParse.h"
 #include "InflectionalGroup.h"
 #include "Language/TurkishLanguage.h"
-#include "Dictionary/TxtWord.h"
 
 /**
  * Another constructor of MorphologicalParse class which takes a String parse as an input. First it creates
@@ -43,7 +42,7 @@ Morphological_parse_ptr create_morphological_parse(const char *parse) {
     result->inflectional_groups = create_array_list();
     Array_list_ptr iGs = str_split2(parse, "^DB+");
     if (strcmp(((char *) array_list_get(iGs, 0)), "++Punc") == 0) {
-        result->root = create_word("+");
+        result->root = str_copy(result->root, "+");
         array_list_add(result->inflectional_groups, create_inflectional_group("Punc"));
     } else {
         update_root_and_inflectional_groups(result, iGs);
@@ -83,13 +82,13 @@ void update_root_and_inflectional_groups(Morphological_parse_ptr morphological_p
                                          const Array_list *inflectional_groups) {
     if (str_contains(array_list_get(inflectional_groups, 0), "+")){
         String_ptr s1 = substring(array_list_get(inflectional_groups, 0), 0, str_find_c(array_list_get(inflectional_groups, 0), "+"));
-        morphological_parse->root = create_word(s1->s);
+        morphological_parse->root = str_copy(morphological_parse->root, s1->s);
         free_string_ptr(s1);
         String_ptr s2 = substring2(array_list_get(inflectional_groups, 0), str_find_c(array_list_get(inflectional_groups, 0), "+"));
         array_list_add(morphological_parse->inflectional_groups, create_inflectional_group(s2->s));
         free_string_ptr(s2);
     } else {
-        morphological_parse->root = create_word(array_list_get(inflectional_groups, 0));
+        morphological_parse->root = str_copy(morphological_parse->root, array_list_get(inflectional_groups, 0));
     }
     for (int i = 1; i < inflectional_groups->size; i++) {
         array_list_add(morphological_parse->inflectional_groups,
@@ -131,7 +130,7 @@ char *get_inflectional_group_string(const Morphological_parse *morphological_par
     char tmp[MAX_LINE_LENGTH];
     if (index == 0) {
         char *ig = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, 0));
-        sprintf(tmp, "%s+%s", morphological_parse->root->name, ig);
+        sprintf(tmp, "%s+%s", morphological_parse->root, ig);
         free(ig);
         char *result = NULL;
         result = str_copy(result, tmp);
@@ -171,7 +170,7 @@ Inflectional_group_ptr get_last_inflectional_group(const Morphological_parse *mo
 char *get_tag_for_index(const Morphological_parse *morphological_parse, int index) {
     int size = 1;
     if (index == 0)
-        return morphological_parse->root->name;
+        return morphological_parse->root;
     for (int i = 0; i < morphological_parse->inflectional_groups->size; i++) {
         Inflectional_group_ptr group = array_list_get(morphological_parse->inflectional_groups, i);
         if (index < size + group->IG->size) {
@@ -220,12 +219,13 @@ Inflectional_group_ptr last_inflectional_group(const Morphological_parse *morpho
  *
  * @return root with the MorphologicalTag of the first inflectional as a new word.
  */
-Word_ptr get_word_with_pos(const Morphological_parse *morphological_parse) {
+char* get_word_with_pos(const Morphological_parse *morphological_parse) {
     char tmp[MAX_LINE_LENGTH];
     char *tag = get_tag(get_tag_with_index(first_inflectional_group(morphological_parse), 0));
-    sprintf(tmp, "%s+%s", morphological_parse->root->name, tag);
+    sprintf(tmp, "%s+%s", morphological_parse->root, tag);
     free(tag);
-    return create_word(tmp);
+    char* result = str_copy(result, tmp);
+    return result;
 }
 
 /**
@@ -288,7 +288,7 @@ bool last_ig_contains_possessive(const Morphological_parse *morphological_parse)
  * @return true if the character at first index o f root is an uppercase letter, false otherwise.
  */
 bool is_capital_word(const Morphological_parse *morphological_parse) {
-    String_ptr st = char_at(morphological_parse->root->name, 0);
+    String_ptr st = char_at(morphological_parse->root, 0);
     bool result = is_uppercase(st->s);
     free_string_ptr(st);
     return result;
@@ -481,7 +481,7 @@ bool is_parse_plural(const Morphological_parse *morphological_parse) {
  * @return true if the root equals to the et, ol, or yap, and false otherwise.
  */
 bool is_auxiliary(const Morphological_parse *morphological_parse) {
-    return string_in_list(morphological_parse->root->name, (char*[]){"et", "ol", "yap"}, 3);
+    return string_in_list(morphological_parse->root, (char*[]){"et", "ol", "yap"}, 3);
 }
 
 /**
@@ -510,7 +510,7 @@ char *get_tree_pos(const Morphological_parse *morphological_parse) {
     if (is_parse_proper_noun(morphological_parse)){
         return "NP";
     } else {
-        if (strcmp(morphological_parse->root->name, "değil") == 0){
+        if (strcmp(morphological_parse->root, "değil") == 0){
             return "NEG";
         } else {
             if (is_parse_verb(morphological_parse)){
@@ -551,19 +551,19 @@ char *get_tree_pos(const Morphological_parse *morphological_parse) {
                                                         return "NP";
                                                     } else {
                                                         if (is_parse_punctuation(morphological_parse)){
-                                                            if (string_in_list(morphological_parse->root->name, (char*[]){"!", "?"}, 2)){
+                                                            if (string_in_list(morphological_parse->root, (char*[]){"!", "?"}, 2)){
                                                                 return ".";
                                                             } else {
-                                                                if (string_in_list(morphological_parse->root->name, (char*[]){";", "-", "--"}, 3)) {
+                                                                if (string_in_list(morphological_parse->root, (char*[]){";", "-", "--"}, 3)) {
                                                                     return ":";
                                                                 } else {
-                                                                    if (string_in_list(morphological_parse->root->name, (char*[]) {"(", "-LRB-", "-lrb-"}, 3)) {
+                                                                    if (string_in_list(morphological_parse->root, (char*[]) {"(", "-LRB-", "-lrb-"}, 3)) {
                                                                         return "-LRB-";
                                                                     } else {
-                                                                        if (string_in_list(morphological_parse->root->name, (char*[]) {")", "-RRB-", "-rrb-"}, 3)) {
+                                                                        if (string_in_list(morphological_parse->root, (char*[]) {")", "-RRB-", "-rrb-"}, 3)) {
                                                                             return "-rrb-";
                                                                         } else {
-                                                                            return morphological_parse->root->name;
+                                                                            return morphological_parse->root;
                                                                         }
                                                                     }
                                                                 }
@@ -586,7 +586,7 @@ char *get_tree_pos(const Morphological_parse *morphological_parse) {
 }
 
 char *get_pron_type(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root->name;
+    char* lemma = morphological_parse->root;
     if (parse_contains_tag(morphological_parse, PERSONALPRONOUN)){
         return "Prs";
     }
@@ -603,7 +603,7 @@ char *get_pron_type(const Morphological_parse *morphological_parse) {
 }
 
 char *get_num_type(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root->name;
+    char* lemma = morphological_parse->root;
     if (parse_contains_tag(morphological_parse, CARDINAL) || parse_contains_tag(morphological_parse, NUMBER) || strcmp(lemma, "kaç") == 0){
         return "Card";
     }
@@ -617,7 +617,7 @@ char *get_num_type(const Morphological_parse *morphological_parse) {
 }
 
 char *get_reflex(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root->name;
+    char* lemma = morphological_parse->root;
     if (strcmp(lemma, "kendi") == 0){
         return "Yes";
     }
@@ -662,7 +662,7 @@ char *get_case(const Morphological_parse *morphological_parse) {
 }
 
 char *get_definite(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root->name;
+    char* lemma = morphological_parse->root;
     if (parse_contains_tag(morphological_parse, DETERMINER)){
         if (string_in_list(lemma, (char*[]) {"bir", "bazı", "birkaç"}, 3)){
             return "Ind";
@@ -675,7 +675,7 @@ char *get_definite(const Morphological_parse *morphological_parse) {
 }
 
 char *get_degree(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root->name;
+    char* lemma = morphological_parse->root;
     if (strcmp(lemma, "daha") == 0){
         return "Cmp";
     }
@@ -865,7 +865,7 @@ Array_list_ptr get_universal_dependency_features(const Morphological_parse* morp
 }
 
 char *get_universal_dependency_pos(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root->name;
+    char* lemma = morphological_parse->root;
     if (strcmp(lemma, "değil") == 0){
         return "AUX";
     }
@@ -919,7 +919,7 @@ char *get_universal_dependency_pos(const Morphological_parse *morphological_pars
 
 char *morphological_parse_to_string(const Morphological_parse *morphological_parse) {
     char tmp[MAX_LINE_LENGTH];
-    sprintf(tmp, "%s+%s", morphological_parse->root->name, (char*)array_list_get(morphological_parse->inflectional_groups, 0));
+    sprintf(tmp, "%s+%s", morphological_parse->root, (char*)array_list_get(morphological_parse->inflectional_groups, 0));
     for (int i = 1; i < morphological_parse->inflectional_groups->size; i++){
         sprintf(tmp, "%s^DB+%s", tmp, (char*) array_list_get(morphological_parse->inflectional_groups, i));
     }

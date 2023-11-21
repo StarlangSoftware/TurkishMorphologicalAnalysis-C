@@ -478,7 +478,7 @@ static Morphological_tag morphotactic_tags[109] = {
 
 struct metamorphic_parse{
     Array_list_ptr meta_morpheme_list;
-    Word_ptr root;
+    char* root;
 };
 
 typedef struct metamorphic_parse Metamorphic_parse;
