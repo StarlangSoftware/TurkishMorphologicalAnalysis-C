@@ -91,4 +91,6 @@ bool contains_possessive(const Inflectional_group* inflectional_group);
 
 char* inflectional_group_to_string(const Inflectional_group* inflectional_group);
 
+Inflectional_group_ptr clone_inflectional_group(const Inflectional_group* inflectional_group);
+
 #endif //MORPHOLOGICALANALYSIS_INFLECTIONALGROUP_H

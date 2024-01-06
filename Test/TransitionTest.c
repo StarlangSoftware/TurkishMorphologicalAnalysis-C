@@ -2,17 +2,21 @@
 // Created by Olcay Taner YILDIZ on 5.11.2023.
 //
 
+#include <Memory/Memory.h>
 #include "../src/FsmMorphologicalAnalyzer.h"
 
 void test_transition(Fsm_morphological_analyzer_ptr fsm, char* list[], int size){
     for (int i = 0; i < size; i++){
-        if (morphological_analysis(fsm, list[i])->fsm_parses->size == 0){
+        Fsm_parse_list_ptr parse_list = morphological_analysis(fsm, list[i]);
+        if (parse_list->fsm_parses->size == 0){
             printf("Error in word %s\n", list[i]);
         }
+        free_fsm_parse_list(parse_list);
     }
 }
 
 int main(){
+    start_large_memory_check();
     Fsm_morphological_analyzer_ptr fsm = create_fsm_morphological_analyzer3();
     test_transition(fsm, (char*[]){"3'tü", "1'di", "2'ydi", "4'tü", "5'ti", "6'ydı", "7'ydi", "8'di", "9'du", "30'du", "40'tı", "60'tı", "70'ti", "50'ydi"}, 14);
     test_transition(fsm, (char*[]){"alkole", "anormale", "sakala", "kabala", "faika", "halika", "kediye", "eve"}, 8);
@@ -31,4 +35,5 @@ int main(){
     test_transition(fsm, (char*[]){"adabı", "amibi", "armudu", "ağacı", "akacı", "arkeoloğu", "filoloğu", "ahengi", "küngü", "kitaplığı", "küllüğü", "adedi", "adeti", "ağıdı", "ağıtı", "anotu", "anodu", "Kuzguncuk'u", "Leylak'ı"}, 19);
     test_transition(fsm, (char*[]){"cezbediyor", "ediyor", "bahsediyor"}, 3);
     free_fsm_morphological_analyzer(fsm);
+    end_memory_check();
 }

@@ -3,8 +3,8 @@
 //
 
 #include <stdio.h>
+#include <Memory/Memory.h>
 #include "../src/FiniteStateMachine.h"
-#include "../src/Transition.h"
 
 int main(){
     Finite_state_machine_ptr fsm = create_finite_state_machine("turkish_finite_state_machine.xml");
@@ -19,7 +19,11 @@ int main(){
             end_state_count++;
         }
         Array_list_ptr transitions = get_transitions(fsm, state);
-        transition_count += transitions->size;
+        if (transitions->size == 0){
+            free_array_list(transitions, NULL);
+        } else {
+            transition_count += transitions->size;
+        }
     }
     if (end_state_count != 37){
         printf("End fsm_state count %d does not match\n", end_state_count);

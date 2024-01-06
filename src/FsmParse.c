@@ -7,9 +7,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <FileUtils.h>
+#include <Memory/Memory.h>
+#include <Language/TurkishLanguage.h>
 #include "FsmParse.h"
 #include "InflectionalGroup.h"
 #include "Transition.h"
+#include "MorphologicalParse.h"
 
 /**
  * A constructor of FsmParse class which takes a Word as an input and assigns it to root variable.
@@ -23,7 +26,7 @@ Fsm_parse_ptr create_fsm_parse(Txt_word_ptr root) {
 }
 
 Fsm_parse_ptr create_fsm_parse2() {
-    Fsm_parse_ptr result = malloc(sizeof(Fsm_parse));
+    Fsm_parse_ptr result = malloc_(sizeof(Fsm_parse), "create_fsm_parse2");
     result->form_list = create_array_list();
     result->inflectional_groups = create_array_list();
     result->suffix_list = create_array_list();
@@ -39,13 +42,13 @@ Fsm_parse_ptr create_fsm_parse2() {
 }
 
 void free_fsm_parse(Fsm_parse_ptr fsm_parse) {
-    free(fsm_parse->form);
+    free_(fsm_parse->form);
     free_array_list(fsm_parse->form_list, NULL);
-    free_array_list(fsm_parse->inflectional_groups, NULL);
+    free_array_list(fsm_parse->inflectional_groups, (void (*)(void *)) free_inflectional_group);
     free_array_list(fsm_parse->suffix_list, NULL);
     free_array_list(fsm_parse->transition_list, NULL);
     free_array_list(fsm_parse->with_list, NULL);
-    free(fsm_parse);
+    free_(fsm_parse);
 }
 
 void update_fsm_parse_with_state_and_name(Fsm_parse_ptr fsm_parse, char *name, Fsm_State_ptr start_state) {
@@ -154,7 +157,8 @@ void construct_inflectional_groups(Fsm_parse_ptr fsm_parse) {
                            create_inflectional_group(array_list_get(iGs, i)));
         }
     }
-    free_array_list(iGs, free);
+    free_(parse);
+    free_array_list(iGs, free_);
 }
 
 /**
@@ -625,8 +629,7 @@ char *transition_list(const Fsm_parse* fsm_parse) {
             }
         }
     }
-    char* tmp = malloc((strlen(result->s) + 1) * sizeof(char));
-    strcpy(tmp, result->s);
+    char* tmp = str_copy(tmp, result->s);
     free_string_ptr(result);
     return tmp;
 }
@@ -679,7 +682,7 @@ char *replace_root_word(Fsm_parse_ptr fsm_parse, Txt_word_ptr new_root) {
     for (int i = 0; i < fsm_parse->with_list->size; i++) {
         Transition_ptr transition = create_transition3(array_list_get(fsm_parse->with_list, i));
         char* tmp = make_transition(transition, new_root, result);
-        free(result);
+        free_(result);
         result = tmp;
         free_transition(transition);
     }
@@ -699,8 +702,8 @@ int compare_fsm_parse(const Fsm_parse *fsm_parse1, const Fsm_parse *fsm_parse2) 
     char* transition1 = transition_list(fsm_parse1);
     char* transition2 = transition_list(fsm_parse2);
     int result = compare_string(transition1, transition2);
-    free(transition1);
-    free(transition2);
+    free_(transition1);
+    free_(transition2);
     return result;
 }
 
@@ -708,9 +711,8 @@ char* get_word_with_pos2(const Fsm_parse *fsm_parse) {
     char tmp[MAX_LINE_LENGTH];
     char *tag = get_tag(get_tag_with_index(first_inflectional_group2(fsm_parse), 0));
     sprintf(tmp, "%s+%s", fsm_parse->root->name, tag);
-    free(tag);
-    char* result = str_copy(result, tmp);
-    return result;
+    free_(tag);
+    return clone_string(tmp);
 }
 
 Inflectional_group_ptr first_inflectional_group2(const Fsm_parse *fsm_parse) {
@@ -735,6 +737,76 @@ Fsm_parse_ptr clone_fsm_parse(const Fsm_parse *fsm_parse) {
     p->form_list = clone_array_list(fsm_parse->form_list);
     p->transition_list = clone_array_list(fsm_parse->transition_list);
     p->with_list = clone_array_list(fsm_parse->with_list);
-    p->inflectional_groups = clone_array_list(fsm_parse->inflectional_groups);
+    p->inflectional_groups = create_array_list();
+    for (int i = 0; i < fsm_parse->inflectional_groups->size; i++){
+        array_list_add(p->inflectional_groups, clone_inflectional_group(array_list_get(fsm_parse->inflectional_groups, i)));
+    }
     return p;
+}
+
+/**
+ * The containsTag method takes a MorphologicalTag as an input and loops through the inflectionalGroups ArrayList,
+ * returns true if the input matches with on of the tags in the IG, false otherwise.
+ *
+ * @param tag checked tag
+ * @return true if the input matches with on of the tags in the IG, false otherwise.
+ */
+bool fsm_parse_contains_tag(const Fsm_parse *fsm_parse, Morphological_tag tag) {
+    for (int i = 0; i < fsm_parse->inflectional_groups->size; i++) {
+        Inflectional_group_ptr inflectional_group = array_list_get(fsm_parse->inflectional_groups, i);
+        if (contains_tag(inflectional_group, tag)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * The isNoun method returns true if the past of speech is NOUN, false otherwise.
+ *
+ * @return true if the past of speech is NOUN, false otherwise.
+ */
+bool is_fsm_parse_noun(const Fsm_parse *fsm_parse) {
+    char *pos = get_fsm_parse_pos(fsm_parse);
+    bool result = strcmp(pos, "NOUN") == 0;
+    free_(pos);
+    return result;
+}
+
+/**
+ * The isPlural method returns true if InflectionalGroup's MorphologicalTags are from the agreement plural
+ * or possessive plural, i.e A1PL, A2PL, A3PL, P1PL, P2PL or P3PL, and false otherwise.
+ *
+ * @return true if InflectionalGroup's MorphologicalTags are from the agreement plural or possessive plural.
+ */
+bool is_fsm_parse_plural(const Fsm_parse *fsm_parse) {
+    for (int i = 0; i < fsm_parse->inflectional_groups->size; i++){
+        Inflectional_group_ptr inflectional_group = array_list_get(fsm_parse->inflectional_groups, i);
+        if (contains_plural(inflectional_group)){
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * The getPos method returns the MorphologicalTag of the last inflectional group.
+ *
+ * @return the MorphologicalTag of the last inflectional group.
+ */
+char *get_fsm_parse_pos(const Fsm_parse *fsm_parse) {
+    Inflectional_group_ptr last_ig = array_list_get(fsm_parse->inflectional_groups, fsm_parse->inflectional_groups->size - 1);
+    return get_tag(get_tag_with_index(last_ig, 0));
+}
+
+/**
+ * The isCapitalWord method returns true if the character at first index o f root is an uppercase letter, false otherwise.
+ *
+ * @return true if the character at first index o f root is an uppercase letter, false otherwise.
+ */
+bool is_fsm_parse_capital_word(const Fsm_parse *fsm_parse) {
+    String_ptr st = char_at(fsm_parse->root->name, 0);
+    bool result = is_uppercase(st->s);
+    free_string_ptr(st);
+    return result;
 }

@@ -87,4 +87,14 @@ Inflectional_group_ptr first_inflectional_group2(const Fsm_parse * fsm_parse);
 
 Fsm_parse_ptr clone_fsm_parse(const Fsm_parse * fsm_parse);
 
+bool fsm_parse_contains_tag(const Fsm_parse* fsm_parse, Morphological_tag tag);
+
+bool is_fsm_parse_noun(const Fsm_parse* fsm_parse);
+
+bool is_fsm_parse_plural(const Fsm_parse *fsm_parse);
+
+char* get_fsm_parse_pos(const Fsm_parse *fsm_parse);
+
+bool is_fsm_parse_capital_word(const Fsm_parse *fsm_parse);
+
 #endif //MORPHOLOGICALANALYSIS_FSMPARSE_H

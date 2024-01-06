@@ -6,6 +6,7 @@
 #include <Dictionary/Word.h>
 #include <string.h>
 #include <Language/TurkishLanguage.h>
+#include <Memory/Memory.h>
 #include "Transition.h"
 #include "MorphotacticEngine.h"
 
@@ -17,8 +18,10 @@
  * @param with     String input.
  * @param withName String input.
  */
-Transition_ptr create_transition(Fsm_State_ptr to_state, char *with, char *with_name) {
-    Transition_ptr result = malloc(sizeof(Transition));
+Transition_ptr create_transition(Fsm_State_ptr to_state,
+                                 char *with,
+                                 char *with_name) {
+    Transition_ptr result = malloc_(sizeof(Transition), "create_transition");
     result->to_state = to_state;
     result->with = str_copy(result->with, with);
     result->with_name = str_copy(result->with_name, with_name);
@@ -35,8 +38,11 @@ Transition_ptr create_transition(Fsm_State_ptr to_state, char *with, char *with_
  * @param withName String input.
  * @param toPos    String input.
  */
-Transition_ptr create_transition2(Fsm_State_ptr to_state, char *with, char *with_name, char *to_pos) {
-    Transition_ptr result = malloc(sizeof(Transition));
+Transition_ptr create_transition2(Fsm_State_ptr to_state,
+                                  char *with,
+                                  char *with_name,
+                                  char *to_pos) {
+    Transition_ptr result = malloc_(sizeof(Transition), "create_transition2");
     result->to_state = to_state;
     result->with = str_copy(result->with, with);
     result->with_name = str_copy(result->with_name, with_name);
@@ -51,7 +57,7 @@ Transition_ptr create_transition2(Fsm_State_ptr to_state, char *with, char *with
  * @param with String input.
  */
 Transition_ptr create_transition3(char *with) {
-    Transition_ptr result = malloc(sizeof(Transition));
+    Transition_ptr result = malloc_(sizeof(Transition), "create_transition3");
     result->to_state = NULL;
     result->with = str_copy(result->with, with);
     result->with_name = NULL;
@@ -60,10 +66,10 @@ Transition_ptr create_transition3(char *with) {
 }
 
 void free_transition(Transition_ptr transition) {
-    free(transition->with);
-    free(transition->with_name);
-    free(transition->to_pos);
-    free(transition);
+    free_(transition->with);
+    free_(transition->with_name);
+    free_(transition->to_pos);
+    free_(transition);
 }
 
 /**
@@ -87,6 +93,7 @@ bool transition_possible1(Transition_ptr transition, char *current_surface_form,
     if (word_size(current_surface_form) == 0 || word_size(current_surface_form) >= word_size(real_surface_form)) {
         return true;
     }
+    bool result = true;
     String_ptr search = substring(real_surface_form, word_size(current_surface_form), word_size(real_surface_form));
     char search_string[strlen(search->s) + 1];
     strcpy(search_string, search->s);
@@ -96,30 +103,34 @@ bool transition_possible1(Transition_ptr transition, char *current_surface_form,
         String_ptr st = array_list_get(withChars, i);
         char ch[strlen(st->s) + 1];
         strcpy(ch, st->s);
-        free_string_ptr(st);
         if (strcmp(ch, "C") == 0) {
-            return str_contains(search_string, "c") || str_contains(search_string, "ç");
+            result = str_contains(search_string, "c") || str_contains(search_string, "ç");
+            break;
         } else {
             if (strcmp(ch, "D") == 0) {
-                return str_contains(search_string, "d") || str_contains(search_string, "t");
+                result = str_contains(search_string, "d") || str_contains(search_string, "t");
+                break;
             } else {
                 if (string_in_list(ch, (char*[]) {"c", "e", "r", "p", "l", "b", "g", "o", "m", "v", "i", "ü", "z"}, 13)) {
-                    return str_contains(search_string, ch);
+                    result = str_contains(search_string, ch);
+                    break;
                 } else {
                     if (strcmp(ch, "A") == 0) {
-                        return str_contains(search_string, "a") || str_contains(search_string, "e");
+                        result = str_contains(search_string, "a") || str_contains(search_string, "e");
+                        break;
                     } else {
                         if (strcmp(ch, "k") == 0) {
-                            return str_contains(search_string, "k") || str_contains(search_string, "g") ||
+                            result = str_contains(search_string, "k") || str_contains(search_string, "g") ||
                                    str_contains(search_string, "ğ");
+                            break;
                         }
                     }
                 }
             }
         }
     }
-    free_array_list(withChars, NULL);
-    return true;
+    free_array_list(withChars, (void (*)(void *)) free_string_ptr);
+    return result;
 }
 
 /**
@@ -216,7 +227,7 @@ bool start_with_vowel_or_consonant_drops(Transition_ptr transition) {
     char *tmp = with_first_char(transition);
     char ch[3];
     strcpy(ch, tmp);
-    free(tmp);
+    free_(tmp);
     if (is_consonant_drop(ch) &&
         !string_in_list(transition->with, (char *[]) {"ylA", "ysA", "ymHs", "yDH", "yken"}, 5)) {
         return true;
@@ -277,7 +288,9 @@ char *make_transition(Transition_ptr transition, Txt_word_ptr root, char *stem) 
 }
 
 char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem, Fsm_State_ptr startState) {
-    bool rootWord = strcmp(root->name, stem) == 0 || strcmp(str_concat(root->name, "'"), stem) == 0;
+    char* tmp3= str_concat(root->name, "'");
+    bool rootWord = strcmp(root->name, stem) == 0 || strcmp(tmp3, stem) == 0;
+    free_(tmp3);
     String_ptr formation = create_string2(stem);
     String_ptr formationToCheck;
     char* result;
@@ -297,7 +310,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
     free_string_ptr(tmp);
     char* tmp2 = with_first_char(transition);
     strcpy(with_f, tmp2);
-    free(tmp2);
+    free_(tmp2);
     if (strcmp(transition->with, "0") == 0) {
         result = str_copy(result, stem);
         return result;
@@ -317,7 +330,9 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
     }
     //---vowelEChangesToIDuringYSuffixation---
     //de->d(i)yor, ye->y(i)yor
-    if (rootWord && strcmp(with_f, "y") == 0 && vowel_e_changes_to_i_during_y_suffixation(root) && (strcmp(char_at(transition->with, 1)->s, "H") != 0 || strcmp(root->name, "ye") == 0)) {
+    String_ptr with_first = char_at(transition->with, 1);
+    String_ptr with_zero = char_at(transition->with, 0);
+    if (rootWord && strcmp(with_f, "y") == 0 && vowel_e_changes_to_i_during_y_suffixation(root) && (strcmp(with_first->s, "H") != 0 || strcmp(root->name, "ye") == 0)) {
         formation = create_string3(except_last, "i");
         formationToCheck = formation;
     } else {
@@ -335,7 +350,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                 formation = create_string3(stem, "y");
                 formationToCheck = formation;
             } else {
-                if (rootWord && duplicates_during_suffixation(root) && !starts_with(startState->name, "VerbalRoot") && is_consonant_drop(char_at(transition->with, 0)->s)) {
+                if (rootWord && duplicates_during_suffixation(root) && !starts_with(startState->name, "VerbalRoot") && is_consonant_drop(with_zero->s)) {
                     //---duplicatesDuringSuffixation---
                     if (soften_during_suffixation(transition, root)) {
                         //--extra softenDuringSuffixation
@@ -427,6 +442,8 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
             }
         }
     }
+    free_string_ptr(with_zero);
+    free_string_ptr(with_first);
     Array_list_ptr withChars = all_characters(transition->with);
     String_ptr st0 = array_list_get(withChars, 0);
     if (is_consonant_drop(with_f) && !is_vowel(last) && (is_numeral(root) || is_real(root) ||
@@ -487,7 +504,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
         }
         formationToCheck = formation;
     }
-    free_array_list(withChars, NULL);
+    free_array_list(withChars, (void (*)(void *)) free_string_ptr);
     result = str_copy(result, formation->s);
     free_string_ptr(formation);
     return result;

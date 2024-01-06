@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <StringUtils.h>
 #include <HashMap/HashMap.h>
+#include <Memory/Memory.h>
 #include "FsmState.h"
 
 /**
@@ -16,7 +17,7 @@
  * @param end_state   boolean input.
  */
 Fsm_State_ptr create_fsm_state(char *name, bool start_state, bool end_state) {
-    Fsm_State_ptr result = malloc(sizeof(Fsm_State));
+    Fsm_State_ptr result = malloc_(sizeof(Fsm_State), "create_fsm_state");
     result->name = str_copy(result->name, name);
     result->start_state = start_state;
     result->end_state = end_state;
@@ -34,7 +35,7 @@ Fsm_State_ptr create_fsm_state(char *name, bool start_state, bool end_state) {
  * @param pos        String input.
  */
 Fsm_State_ptr create_fsm_state2(char *name, bool start_state, bool end_state, char *pos) {
-    Fsm_State_ptr result = malloc(sizeof(Fsm_State));
+    Fsm_State_ptr result = malloc_(sizeof(Fsm_State), "create_fsm_state2");
     result->name = str_copy(result->name, name);
     result->start_state = start_state;
     result->end_state = end_state;
@@ -43,9 +44,9 @@ Fsm_State_ptr create_fsm_state2(char *name, bool start_state, bool end_state, ch
 }
 
 void free_fsm_state(Fsm_State_ptr state) {
-    free(state->pos);
-    free(state->name);
-    free(state);
+    free_(state->pos);
+    free_(state->name);
+    free_(state);
 }
 
 unsigned int hash_function_fsm_state(const Fsm_State *state, int N) {
@@ -57,7 +58,7 @@ int compare_fsm_state(const Fsm_State *first, const Fsm_State *second) {
 }
 
 Fsm_State_ptr create_fsm_state3() {
-    Fsm_State_ptr result = malloc(sizeof(Fsm_State));
+    Fsm_State_ptr result = malloc_(sizeof(Fsm_State), "create_fsm_state3");
     result->name = NULL;
     result->pos = NULL;
     result->start_state = false;

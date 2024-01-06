@@ -5,6 +5,7 @@
 #include <FileUtils.h>
 #include <string.h>
 #include <stdlib.h>
+#include <Memory/Memory.h>
 #include "DisambiguationCorpus.h"
 #include "DisambiguatedWord.h"
 
@@ -43,19 +44,20 @@ Corpus_ptr create_disambiguation_corpus(const char *file_name) {
                 }
             }
         }
+        free_array_list(tokens, free_);
     }
-    free_array_list(lines, NULL);
+    free_array_list(lines, free_);
     return result;
 }
 
 void free_disambiguation_sentence(Sentence_ptr sentence) {
     free_array_list(sentence->words, (void (*)(void *)) free_disambiguated_word);
-    free(sentence);
+    free_(sentence);
 }
 
 void free_disambiguation_corpus(Corpus_ptr corpus) {
     free_array_list(corpus->sentences, (void (*)(void *)) free_disambiguation_sentence);
     free_array_list(corpus->paragraphs, NULL);
     free_counter_hash_map(corpus->word_list);
-    free(corpus);
+    free_(corpus);
 }

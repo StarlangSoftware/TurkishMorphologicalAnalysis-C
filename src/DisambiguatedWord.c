@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+#include <Memory/Memory.h>
 #include "DisambiguatedWord.h"
 
 /**
@@ -14,14 +15,14 @@
  * @param parse MorphologicalParse of the DisambiguatedWord.
  */
 Disambiguated_word_ptr create_disambiguated_word(const char *name, Morphological_parse_ptr parse) {
-    Disambiguated_word_ptr result = malloc(sizeof(Disambiguated_word));
+    Disambiguated_word_ptr result = malloc_(sizeof(Disambiguated_word), "create_disambiguated_word");
     result->name = str_copy(result->name, name);
     result->parse = parse;
     return result;
 }
 
 void free_disambiguated_word(Disambiguated_word_ptr disambiguated_word) {
-    free(disambiguated_word->name);
+    free_(disambiguated_word->name);
     free_morphological_parse(disambiguated_word->parse);
-    free(disambiguated_word);
+    free_(disambiguated_word);
 }

@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+#include <Memory/Memory.h>
 #include "../src/FsmMorphologicalAnalyzer.h"
 #include "../src/Transition.h"
 
@@ -35,7 +36,7 @@ void test_replace_word_single(Fsm_morphological_analyzer_ptr fsm, char* sentence
     }
     free_string_ptr(st);
     free_sentence(s1);
-    free(s2);
+    free_(s2);
 }
 
 void test_replace_word(Fsm_morphological_analyzer_ptr fsm){

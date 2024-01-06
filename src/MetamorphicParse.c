@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <FileUtils.h>
+#include <Memory/Memory.h>
 #include "MetamorphicParse.h"
 
 /**
@@ -14,13 +15,13 @@
  * @param parse String to parse.
  */
 Metamorphic_parse_ptr create_metamorphic_parse(const char *parse) {
-    Metamorphic_parse_ptr result = malloc(sizeof(Metamorphic_parse));
+    Metamorphic_parse_ptr result = malloc_(sizeof(Metamorphic_parse), "create_metamorphic_parse");
     result->meta_morpheme_list = create_array_list();
     if (strcmp(parse, "+") == 0) {
         result->root = str_copy(result->root, "+");
     } else {
         Array_list_ptr words = str_split(parse, '+');
-        result->root = str_copy(result->root, array_list_get(words, 0));
+        result->root = array_list_get(words, 0);
         for (int i = 1; i < words->size; i++){
             array_list_add(result->meta_morpheme_list, array_list_get(words, i));
         }
@@ -47,7 +48,7 @@ Array_list_ptr get_meta_morpheme_tag1(char *tag) {
     free_string_ptr(st);
     for (int j = 0; j < 109; j++) {
         if (strcmp(_tag, meta_morphemes[j]) == 0) {
-            Morphological_tag* tag_ptr = malloc(sizeof(Morphological_tag));
+            Morphological_tag* tag_ptr = malloc_(sizeof(Morphological_tag), "get_meta_morpheme_tag1");
             *tag_ptr = morphotactic_tags[j];
             array_list_add(result, tag_ptr);
         }
@@ -56,9 +57,9 @@ Array_list_ptr get_meta_morpheme_tag1(char *tag) {
 }
 
 void free_metamorphic_parse(Metamorphic_parse_ptr metamorphic_parse) {
-    free_array_list(metamorphic_parse->meta_morpheme_list, free);
-    free(metamorphic_parse->root);
-    free(metamorphic_parse);
+    free_array_list(metamorphic_parse->meta_morpheme_list, free_);
+    free_(metamorphic_parse->root);
+    free_(metamorphic_parse);
 }
 
 /**
@@ -78,7 +79,7 @@ void add_meta_morpheme_list(Metamorphic_parse_ptr metamorphic_parse, const char 
  */
 void remove_meta_morpheme_from_index(Metamorphic_parse_ptr metamorphic_parse, int index) {
     while (index - 1 < metamorphic_parse->meta_morpheme_list->size){
-        array_list_remove(metamorphic_parse->meta_morpheme_list, index - 1, free);
+        array_list_remove(metamorphic_parse->meta_morpheme_list, index - 1, free_);
     }
 }
 

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <XmlDocument.h>
 #include <string.h>
+#include <Memory/Memory.h>
 #include "FiniteStateMachine.h"
 #include "FsmState.h"
 #include "Transition.h"
@@ -12,7 +13,7 @@
 void free_finite_state_machine(Finite_state_machine_ptr finite_state_machine) {
     free_array_list(finite_state_machine->states, (void (*)(void *)) free_fsm_state);
     free_hash_map(finite_state_machine->transitions, (void (*)(void *)) free_array_list_with_transitions);
-    free(finite_state_machine);
+    free_(finite_state_machine);
 }
 
 void free_array_list_with_transitions(Array_list_ptr transition_list){
@@ -20,7 +21,7 @@ void free_array_list_with_transitions(Array_list_ptr transition_list){
 }
 
 Finite_state_machine_ptr create_finite_state_machine2() {
-    Finite_state_machine_ptr result = malloc(sizeof(Finite_state_machine));
+    Finite_state_machine_ptr result = malloc_(sizeof(Finite_state_machine), "create_finite_state_machine2");
     result->states = create_array_list();
     result->transitions = create_hash_map((unsigned int (*)(const void *, int)) hash_function_fsm_state,
                                           (int (*)(const void *, const void *)) compare_fsm_state);
@@ -164,11 +165,12 @@ void add_fsm_transition(Finite_state_machine_ptr finite_state_machine,
     Transition_ptr new_transition = create_transition(to_state, with, with_name);
     if (hash_map_contains(finite_state_machine->transitions, from_state)){
         transition_list = hash_map_get(finite_state_machine->transitions, from_state);
+        array_list_add(transition_list, new_transition);
     } else {
         transition_list = create_array_list();
+        array_list_add(transition_list, new_transition);
+        hash_map_insert(finite_state_machine->transitions, from_state, transition_list);
     }
-    array_list_add(transition_list, new_transition);
-    hash_map_insert(finite_state_machine->transitions, from_state, transition_list);
 }
 
 /**
@@ -190,11 +192,12 @@ void add_fsm_transition2(Finite_state_machine_ptr finite_state_machine,
     Transition_ptr new_transition = create_transition2(to_state, with, with_name, to_pos);
     if (hash_map_contains(finite_state_machine->transitions, from_state)){
         transition_list = hash_map_get(finite_state_machine->transitions, from_state);
+        array_list_add(transition_list, new_transition);
     } else {
         transition_list = create_array_list();
+        array_list_add(transition_list, new_transition);
+        hash_map_insert(finite_state_machine->transitions, from_state, transition_list);
     }
-    array_list_add(transition_list, new_transition);
-    hash_map_insert(finite_state_machine->transitions, from_state, transition_list);
 }
 
 Array_list_ptr get_transitions(Finite_state_machine_ptr finite_state_machine, Fsm_State_ptr state) {

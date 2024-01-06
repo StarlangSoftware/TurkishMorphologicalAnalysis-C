@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <FileUtils.h>
 #include "InflectionalGroup.h"
+#include "Memory/Memory.h"
 
 /**
  * A constructor of InflectionalGroup class which initializes the IG vector by parsing given input
@@ -17,22 +18,31 @@
  * @param IG String input.
  */
 Inflectional_group_ptr create_inflectional_group(const char *IG) {
-    Inflectional_group_ptr result = malloc(sizeof(Inflectional_group));
+    Inflectional_group_ptr result = malloc_(sizeof(Inflectional_group), "create_inflectional_group_1");
     result->IG = create_array_list();
     Array_list_ptr morphological_tags = str_split(IG, '+');
     for (int i = 0; i < morphological_tags->size; i++){
         char* s = array_list_get(morphological_tags, i);
-        Morphological_tag* tag = malloc(sizeof(Morphological_tag));
+        Morphological_tag* tag = malloc_(sizeof(Morphological_tag), "create_inflectional_group_2");
         *tag = get_morphological_tag(s);
         array_list_add(result->IG, tag);
     }
-    free_array_list(morphological_tags, free);
+    free_array_list(morphological_tags, free_);
     return result;
 }
 
 void free_inflectional_group(Inflectional_group_ptr inflectional_group) {
-    free_array_list(inflectional_group->IG, NULL);
-    free(inflectional_group);
+    free_array_list(inflectional_group->IG, free_);
+    free_(inflectional_group);
+}
+
+Inflectional_group_ptr clone_inflectional_group(const Inflectional_group *inflectional_group) {
+    Inflectional_group_ptr result = malloc_(sizeof(Inflectional_group), "clone_inflectional_group");
+    result->IG = create_array_list();
+    for (int i = 0; i < inflectional_group->IG->size; i++){
+        array_list_add(result->IG, clone_string(array_list_get(inflectional_group->IG, i)));
+    }
+    return result;
 }
 
 /**
@@ -48,13 +58,13 @@ Morphological_tag get_morphological_tag(const char *tag) {
    for (int i = 0; i < 131; i++){
        char* uppercase = uppercase_en(tags[i]);
        if (strcmp(_tag, uppercase) == 0){
-           free(uppercase);
+           free_(uppercase);
            result = morpho_tags[i];
            break;
        }
-       free(uppercase);
+       free_(uppercase);
    }
-   free(_tag);
+   free_(_tag);
    return result;
 }
 
@@ -156,9 +166,13 @@ bool contains_possessive(const Inflectional_group *inflectional_group) {
  */
 char *inflectional_group_to_string(const Inflectional_group *inflectional_group) {
     char tmp[MAX_LINE_LENGTH];
-    sprintf(tmp, "%s", get_tag(*(Morphological_tag*) array_list_get(inflectional_group->IG, 0)));
+    char* tag = get_tag(*(Morphological_tag*) array_list_get(inflectional_group->IG, 0));
+    sprintf(tmp, "%s", tag);
+    free_(tag);
     for (int i = 1; i < inflectional_group->IG->size; i++){
-        sprintf(tmp, "%s+%s", tmp, get_tag(*(Morphological_tag*) array_list_get(inflectional_group->IG, i)));
+        tag = get_tag(*(Morphological_tag*) array_list_get(inflectional_group->IG, i));
+        sprintf(tmp, "%s+%s", tmp, tag);
+        free_(tag);
     }
     char *result = NULL;
     result = str_copy(result, tmp);

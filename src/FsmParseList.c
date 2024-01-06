@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <FileUtils.h>
+#include <Memory/Memory.h>
 #include "FsmParseList.h"
 #include "FsmParse.h"
 #include "MorphologicalParse.h"
@@ -17,7 +18,7 @@
  * @param fsmParses FsmParse type vector input.
  */
 Fsm_parse_list_ptr create_fsm_parse_list(Array_list_ptr fsmParses) {
-    Fsm_parse_list_ptr result = malloc(sizeof(Fsm_parse_list));
+    Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list), "create_fsm_parse_list");
     if (fsmParses->size > 0){
         array_list_merge_sort(fsmParses, (int (*)(const void *, const void *)) compare_fsm_parse);
         for (int i = 0; i < fsmParses->size - 1; i++) {
@@ -27,8 +28,8 @@ Fsm_parse_list_ptr create_fsm_parse_list(Array_list_ptr fsmParses) {
                 array_list_remove(fsmParses, i + 1, (void (*)(void *)) free_fsm_parse);
                 i--;
             }
-            free(transition1);
-            free(transition2);
+            free_(transition1);
+            free_(transition2);
         }
     }
     result->fsm_parses = fsmParses;
@@ -37,7 +38,7 @@ Fsm_parse_list_ptr create_fsm_parse_list(Array_list_ptr fsmParses) {
 
 void free_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list) {
     free_array_list(fsm_parse_list->fsm_parses, (void (*)(void *)) free_fsm_parse);
-    free(fsm_parse_list);
+    free_(fsm_parse_list);
 }
 
 /**
@@ -125,19 +126,21 @@ bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr 
         char* possibleRoot = replace_all(surfaceForm, surfaceFormEnding, "");
         char* rootPos1 = get_tag(get_tag_with_index(first_inflectional_group2(fsm_parse), 0));
         if (ends_with(surfaceForm, surfaceFormEnding) && ends_with(root, longestRootEnding) && strcmp(rootPos1, longestRootPos) == 0) {
-            free(rootPos1);
+            free_(rootPos1);
             for (int j = 0; j < fsm_parse_list->fsm_parses->size; j++) {
                 Fsm_parse_ptr currentParse = get_fsm_parse(fsm_parse_list, j);
                 char* rootPos2 = get_tag(get_tag_with_index(first_inflectional_group2(currentParse), 0));
                 if (strcmp(currentParse->root->name, possibleRoot) == 0 && strcmp(rootPos2, possibleRootPos) == 0) {
-                    free(rootPos2);
+                    free_(rootPos2);
+                    free_array_list(exceptionItems, free_);
                     return true;
                 }
-                free(rootPos2);
+                free_(rootPos2);
             }
         } else {
-            free(rootPos1);
+            free_(rootPos1);
         }
+        free_array_list(exceptionItems, free_);
     }
     return false;
 }
@@ -191,8 +194,8 @@ Array_list_ptr construct_parse_list_for_different_root_with_pos(Fsm_parse_list_p
                 array_list_add(initial, get_fsm_parse(fsm_parse_list, i));
                 array_list_add(result, create_fsm_parse_list(initial));
             }
-            free(word1);
-            free(word2);
+            free_(word1);
+            free_(word2);
         }
         i++;
     }
@@ -269,7 +272,7 @@ char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
         if (removePrefix) {
             for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++) {
                 String_ptr st1 = substring2(analyses[i], str_find_c(analyses[i], "+") + 1);
-                free(analyses[i]);
+                free_(analyses[i]);
                 analyses[i] = str_copy(analyses[i], st1->s);
                 free_string_ptr(st1);
             }
@@ -299,7 +302,7 @@ char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
         if (removeSuffix) {
             for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++) {
                 String_ptr st1 = substring(analyses[i], 0, str_find_last_c(analyses[i], "+"));
-                free(analyses[i]);
+                free_(analyses[i]);
                 analyses[i] = str_copy(analyses[i], st1->s);
                 free_string_ptr(st1);
             }
@@ -324,7 +327,7 @@ char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
 }
 
 Fsm_parse_list_ptr create_fsm_parse_list2() {
-    Fsm_parse_list_ptr result = malloc(sizeof(Fsm_parse_list));
+    Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list), "create_fsm_parse_list2");
     result->fsm_parses = create_array_list();
     return result;
 }
@@ -334,7 +337,7 @@ Fsm_parse_ptr get_fsm_parse(Fsm_parse_list_ptr fsm_parse_list, int index) {
 }
 
 Fsm_parse_list_ptr clone_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list) {
-    Fsm_parse_list_ptr result = malloc(sizeof(Fsm_parse_list));
+    Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list), "clone_fsm_parse_list");
     result->fsm_parses = create_array_list();
     for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++){
         Fsm_parse_ptr fsm_parse = array_list_get(fsm_parse_list->fsm_parses, i);

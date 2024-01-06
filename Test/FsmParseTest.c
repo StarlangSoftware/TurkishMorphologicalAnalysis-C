@@ -3,7 +3,7 @@
 //
 
 #include <string.h>
-#include <stdlib.h>
+#include <Memory/Memory.h>
 #include "../src/FsmMorphologicalAnalyzer.h"
 
 void test_get_last_lemma_with_tag_single(Fsm_morphological_analyzer_ptr fsm, int index, char* word, char* tag, char* lemma){
@@ -13,7 +13,7 @@ void test_get_last_lemma_with_tag_single(Fsm_morphological_analyzer_ptr fsm, int
     if (strcmp(s, lemma) != 0){
         printf("Error in word lemma with tag %s\n", word);
     }
-    free(s);
+    free_(s);
     free_fsm_parse_list(parse_list);
 }
 
@@ -32,7 +32,7 @@ void test_get_last_lemma_single(Fsm_morphological_analyzer_ptr fsm, int index, c
     if (strcmp(s, lemma) != 0){
         printf("Error in word lemma %s %s\n", word, s);
     }
-    free(s);
+    free_(s);
     free_fsm_parse_list(parse_list);
 }
 
@@ -51,7 +51,7 @@ void test_get_transition_list_single(Fsm_morphological_analyzer_ptr fsm, int ind
     if (strcmp(s, list) != 0){
         printf("Error in transition list %s %s\n", word, s);
     }
-    free(s);
+    free_(s);
     free_fsm_parse_list(parse_list);
 }
 
@@ -74,7 +74,7 @@ void test_with_list_single(Fsm_morphological_analyzer_ptr fsm, int index, char* 
     if (strcmp(s, list) != 0){
         printf("Error in with list %s %s\n", word, s);
     }
-    free(s);
+    free_(s);
     free_fsm_parse_list(parse_list);
 }
 
@@ -96,7 +96,7 @@ void test_suffix_list_single(Fsm_morphological_analyzer_ptr fsm, int index, char
     if (strcmp(s, list) != 0){
         printf("Error in suffix list %s %s\n", word, s);
     }
-    free(s);
+    free_(s);
     free_fsm_parse_list(parse_list);
 }
 

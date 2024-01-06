@@ -4,13 +4,16 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <Memory/Memory.h>
 #include "../src/MorphologicalParse.h"
 
 void test_get_transition_list_single(char* parse_string, char* list){
     Morphological_parse_ptr parse1 = create_morphological_parse(parse_string);
-    if (strcmp(get_transition_list(parse1), list) != 0){
+    char* transition_list = get_transition_list(parse1);
+    if (strcmp(transition_list, list) != 0){
         printf("Error transition list %s\n", parse_string);
     }
+    free_(transition_list);
     free_morphological_parse(parse1);
 }
 
@@ -27,8 +30,12 @@ void test_get_transition_list(){
 
 void test_get_tag_single(char* parse_string, int index, char* tag){
     Morphological_parse_ptr parse1 = create_morphological_parse(parse_string);
-    if (strcmp(get_tag_for_index(parse1, index), tag) != 0){
+    char* tag_for_index = get_tag_for_index(parse1, index);
+    if (strcmp(tag_for_index, tag) != 0){
         printf("Error get tag %s\n", parse_string);
+    }
+    if (index != 0){
+        free_(tag_for_index);
     }
     free_morphological_parse(parse1);
 }
@@ -64,9 +71,11 @@ void test_get_tag_size(){
 
 void test_get_root_pos_single(char* parse_string, char* pos){
     Morphological_parse_ptr parse1 = create_morphological_parse(parse_string);
-    if (strcmp(get_root_pos(parse1), pos) != 0){
+    char* root_pos = get_root_pos(parse1);
+    if (strcmp(root_pos, pos) != 0){
         printf("Error root pos %s\n", parse_string);
     }
+    free_(root_pos);
     free_morphological_parse(parse1);
 }
 
@@ -83,9 +92,11 @@ void test_get_root_pos(){
 
 void test_get_pos_single(char* parse_string, char* pos){
     Morphological_parse_ptr parse1 = create_morphological_parse(parse_string);
-    if (strcmp(get_pos(parse1), pos) != 0){
+    char* _pos = get_pos(parse1);
+    if (strcmp(_pos, pos) != 0){
         printf("Error pos %s\n", parse_string);
     }
+    free_(_pos);
     free_morphological_parse(parse1);
 }
 
@@ -102,9 +113,11 @@ void test_get_pos(){
 
 void test_get_word_with_pos_single(char* parse_string, char* pos){
     Morphological_parse_ptr parse1 = create_morphological_parse(parse_string);
-    if (strcmp(get_word_with_pos(parse1), pos) != 0){
+    char* word_with_pos = get_word_with_pos(parse1);
+    if (strcmp(word_with_pos, pos) != 0){
         printf("Error pos %s\n", parse_string);
     }
+    free_(word_with_pos);
     free_morphological_parse(parse1);
 }
 

@@ -4,6 +4,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <Memory/Memory.h>
 #include "../src/FsmMorphologicalAnalyzer.h"
 
 void test_size_single(Fsm_morphological_analyzer_ptr fsm, char* word, int size){
@@ -31,9 +32,9 @@ void test_root_words_single(Fsm_morphological_analyzer_ptr fsm, char* word, char
     Fsm_parse_list_ptr parse_list = morphological_analysis(fsm, word);
     char* root = root_words(parse_list);
     if (strcmp(root, roots) != 0){
-        printf("Error test root words in word %s\n", word);
+        printf("Error test root words in word %s %s\n", word, root);
     }
-    free(root);
+    free_(root);
     free_fsm_parse_list(parse_list);
 }
 
@@ -129,7 +130,7 @@ void test_parses_without_prefix_and_suffix_single(Fsm_morphological_analyzer_ptr
     if (strcmp(parse_without, parse) != 0){
         printf("Error test without prefix and suffix in word %s %s\n", word, parse_without);
     }
-    free(parse_without);
+    free_(parse_without);
     free_fsm_parse_list(parse_list);
 }
 
