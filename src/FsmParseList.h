@@ -72,7 +72,7 @@ void free_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list);
 
 char* root_words(Fsm_parse_list_ptr fsm_parse_list);
 
-void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, Txt_word_ptr current_with_pos);
+void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, char* current_with_pos);
 
 Fsm_parse_ptr get_parse_with_longest_root_word(Fsm_parse_list_ptr fsm_parse_list);
 

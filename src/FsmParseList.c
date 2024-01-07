@@ -71,11 +71,11 @@ char *root_words(Fsm_parse_list_ptr fsm_parse_list) {
  *
  * @param currentWithPos Word input.
  */
-void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, Txt_word_ptr current_with_pos) {
+void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, char* current_with_pos) {
     int i = 0;
     while (i < fsm_parse_list->fsm_parses->size) {
         char* name = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i));
-        if (strcmp(name, current_with_pos->name) != 0) {
+        if (strcmp(name, current_with_pos) != 0) {
             array_list_remove(fsm_parse_list->fsm_parses, i, (void (*)(void *)) free_fsm_parse);
         } else {
             i++;

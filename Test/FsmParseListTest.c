@@ -72,7 +72,7 @@ void test_get_parse_with_longest_root_word(Fsm_morphological_analyzer_ptr fsm){
 
 void test_reduce_to_parses_with_same_root_and_pos_single(Fsm_morphological_analyzer_ptr fsm, char* word, char* root_and_pos, int size){
     Fsm_parse_list_ptr parse_list = morphological_analysis(fsm, word);
-    reduce_to_parses_with_same_root_and_pos(parse_list, create_txt_word(root_and_pos));
+    reduce_to_parses_with_same_root_and_pos(parse_list, root_and_pos);
     if (parse_list->fsm_parses->size != size){
         printf("Error test reduce parses root and pos in word %s\n", word);
     }
