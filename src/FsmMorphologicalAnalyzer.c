@@ -651,29 +651,34 @@ void initialize_parse_list_from_root(Fsm_morphological_analyzer_ptr fsm_morpholo
         remove_flag(new_root, "IS_UU");
         remove_flag(new_root, "IS_UUU");
         initialize_parse_list(fsm_morphological_analyzer, parse_list, new_root, is_proper);
+        free_txt_word(new_root);
     }
     if (root_soften_and_not_soften_during_suffixation(root)) {
         Txt_word_ptr new_root = clone_txt_word(root);
         remove_flag(new_root, "IS_SD");
         remove_flag(new_root, "IS_SDD");
         initialize_parse_list(fsm_morphological_analyzer, parse_list, new_root, is_proper);
+        free_txt_word(new_root);
     }
     if (last_i_drops_and_not_drop_during_suffixation(root)) {
         Txt_word_ptr new_root = clone_txt_word(root);
         remove_flag(new_root, "IS_UD");
         remove_flag(new_root, "IS_UDD");
         initialize_parse_list(fsm_morphological_analyzer, parse_list, new_root, is_proper);
+        free_txt_word(new_root);
     }
     if (duplicates_and_not_duplicates_during_suffixation(root)) {
         Txt_word_ptr new_root = clone_txt_word(root);
         remove_flag(new_root, "IS_ST");
         remove_flag(new_root, "IS_STT");
         initialize_parse_list(fsm_morphological_analyzer, parse_list, new_root, is_proper);
+        free_txt_word(new_root);
     }
     if (ending_k_changes_into_g(root) && contains_flag(root, "IS_OA")) {
         Txt_word_ptr new_root = clone_txt_word(root);
         remove_flag(new_root, "IS_OA");
         initialize_parse_list(fsm_morphological_analyzer, parse_list, new_root, is_proper);
+        free_txt_word(new_root);
     }
 }
 
@@ -701,7 +706,7 @@ Array_list_ptr initialize_parse_list_from_surface_form(Fsm_morphological_analyze
         root = array_list_get(list, i);
         initialize_parse_list_from_root(fsm_morphological_analyzer, initial_fsm_parse, root, is_proper);
     }
-    free_hash_set(words, NULL);
+    free_hash_set(words, (void (*)(void *)) free_txt_word);
     free_array_list(list, NULL);
     return initial_fsm_parse;
 }
@@ -779,15 +784,16 @@ void add_new_parses_from_current_parse2(Fsm_morphological_analyzer_ptr fsm_morph
                                                                                         current_state)))) {
             char *tmp = make_transition2(currentTransition, root, current_surface_form,
                                          get_start_state(current_fsm_parse));
+
             if ((word_size(tmp) < word_size(surface_form) && is_possible_substring(tmp, surface_form, root)) ||
                 (word_size(tmp) == word_size(surface_form) &&
                  (last_i_drops_during_suffixation(root) || strcmp(tmp, surface_form) == 0))) {
                 Fsm_parse_ptr new_fsm_parse = clone_fsm_parse(current_fsm_parse);
-                add_suffix(new_fsm_parse, currentTransition->to_state, tmp, currentTransition->with_name,
-                           currentTransition->with, currentTransition->to_pos);
+                add_suffix(new_fsm_parse, currentTransition->to_state, tmp, currentTransition->with_name, currentTransition->with, currentTransition->to_pos);
                 set_agreement(new_fsm_parse, currentTransition->with_name);
                 enqueue(fsm_parse_queue, new_fsm_parse);
             }
+
             free_(tmp);
         }
     }
@@ -908,8 +914,7 @@ parse_word2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_lis
                 free_(current_suffix_list);
             }
         }
-        add_new_parses_from_current_parse2(fsm_morphological_analyzer, current_fsm_parse, parse_queue, surface_form,
-                                           root);
+        add_new_parses_from_current_parse2(fsm_morphological_analyzer, current_fsm_parse, parse_queue, surface_form, root);
         if (!is_a_correct_parse){
             free_fsm_parse(current_fsm_parse);
         }
@@ -1356,7 +1361,7 @@ Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morpho
     int max_length = 0;
     char *longest_word = NULL;
     Array_list_ptr list = hash_set_key_list(words);
-    free_hash_set(words, NULL);
+    free_hash_set(words, (void (*)(void *)) free_txt_word);
     for (int i = 0; i < list->size; i++) {
         Txt_word_ptr word = array_list_get(list, i);
         if (word_size(word->name) > max_length) {
@@ -1537,8 +1542,7 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
         add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, lowerCased,
                          create_txt_word2(lowerCased, "IS_OA"));
     }
-    Array_list_ptr defaultFsmParse = analysis(fsm_morphological_analyzer, lowerCased,
-                                              is_proper_noun_fsm(surfaceForm));
+    Array_list_ptr defaultFsmParse = analysis(fsm_morphological_analyzer, lowerCased, is_proper_noun_fsm(surfaceForm));
     if (defaultFsmParse->size > 0) {
         fsmParseList = create_fsm_parse_list(defaultFsmParse);
         if (fsm_morphological_analyzer->cache->cache_size > 0) {
@@ -1594,8 +1598,7 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
                                     if (is_integer(fsm_morphological_analyzer, possibleRoot)) {
                                         add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, possibleRoot,
                                                          create_txt_word2(possibleRoot, "IS_SAYI"));
-                                        fsmParse = analysis(fsm_morphological_analyzer, lowerCased,
-                                                            is_proper_noun_fsm(surfaceForm));
+                                        fsmParse = analysis(fsm_morphological_analyzer, lowerCased, is_proper_noun_fsm(surfaceForm));
                                     } else {
                                         if (is_double(fsm_morphological_analyzer, possibleRoot)) {
                                             add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, possibleRoot,

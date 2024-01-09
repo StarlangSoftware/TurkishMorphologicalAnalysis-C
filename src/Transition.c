@@ -2,7 +2,6 @@
 // Created by Olcay Taner YILDIZ on 19.10.2023.
 //
 
-#include <stdlib.h>
 #include <Dictionary/Word.h>
 #include <string.h>
 #include <Language/TurkishLanguage.h>
@@ -288,11 +287,11 @@ char *make_transition(Transition_ptr transition, Txt_word_ptr root, char *stem) 
 }
 
 char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem, Fsm_State_ptr startState) {
-    char* tmp3= str_concat(root->name, "'");
+    char* tmp3 = str_concat(root->name, "'");
     bool rootWord = strcmp(root->name, stem) == 0 || strcmp(tmp3, stem) == 0;
     free_(tmp3);
     String_ptr formation = create_string2(stem);
-    String_ptr formationToCheck;
+    String_ptr formation_to_check;
     char* result;
     char except_last[MAX_WORD_LENGTH], except_last_two[MAX_WORD_LENGTH], last[3], last_p[3], with_f[3];
     int i = 0;
@@ -312,18 +311,22 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
     strcpy(with_f, tmp2);
     free_(tmp2);
     if (strcmp(transition->with, "0") == 0) {
+        free_string_ptr(formation);
         result = str_copy(result, stem);
         return result;
     }
     if (string_in_list(stem, (char*[]){"bu", "şu", "o"}, 3) && rootWord && strcmp(transition->with, "ylA") == 0) {
+        free_string_ptr(formation);
         return str_concat(stem, "nunla");
     }
     if (strcmp(transition->with, "yA") == 0) {
         if (strcmp(stem, "ben") == 0) {
+            free_string_ptr(formation);
             result = str_copy(result, "bana");
             return result;
         }
         if (strcmp(stem, "sen") == 0) {
+            free_string_ptr(formation);
             result = str_copy(result, "sana");
             return result;
         }
@@ -333,22 +336,25 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
     String_ptr with_first = char_at(transition->with, 1);
     String_ptr with_zero = char_at(transition->with, 0);
     if (rootWord && strcmp(with_f, "y") == 0 && vowel_e_changes_to_i_during_y_suffixation(root) && (strcmp(with_first->s, "H") != 0 || strcmp(root->name, "ye") == 0)) {
+        free_string_ptr(formation);
         formation = create_string3(except_last, "i");
-        formationToCheck = formation;
+        formation_to_check = formation;
     } else {
         //---lastIdropsDuringPassiveSuffixation---
         // yoğur->yoğrul, ayır->ayrıl, buyur->buyrul, çağır->çağrıl, çevir->çevril, devir->devril,
         // kavur->kavrul, kayır->kayrıl, kıvır->kıvrıl, savur->savrul, sıyır->sıyrıl, yoğur->yoğrul
         if (rootWord && (strcmp(transition->with, "Hl") == 0 || strcmp(transition->with, "Hn") == 0) &&
                 last_i_drops_during_passive_suffixation(root)) {
+            free_string_ptr(formation);
             formation = create_string3(except_last_two, last);
-            formationToCheck = create_string2(stem);
+            formation_to_check = create_string2(stem);
         } else {
             //---showsSuRegularities---
             //karasu->karasuyu, özsu->özsuyu, ağırsu->ağırsuyu, akarsu->akarsuyu, bengisu->bengisuyu
             if (rootWord && shows_su_regularities(root) && start_with_vowel_or_consonant_drops(transition) && !starts_with(transition->with, "y")) {
+                free_string_ptr(formation);
                 formation = create_string3(stem, "y");
-                formationToCheck = formation;
+                formation_to_check = formation;
             } else {
                 if (rootWord && duplicates_during_suffixation(root) && !starts_with(startState->name, "VerbalRoot") && is_consonant_drop(with_zero->s)) {
                     //---duplicatesDuringSuffixation---
@@ -356,19 +362,22 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                         //--extra softenDuringSuffixation
                         if (strcmp(last_p, "p") == 0){
                             //tıp->tıbbı
+                            free_string_ptr(formation);
                             formation = create_string3(except_last, "bb");
                         } else {
                             if (strcmp(last_p, "t") == 0){
                                 //cet->ceddi, met->meddi, ret->reddi, serhat->serhaddi, zıt->zıddı, şet->şeddi
+                                free_string_ptr(formation);
                                 formation = create_string3(except_last, "dd");
                             }
                         }
                     } else {
                         //cer->cerri, emrihak->emrihakkı, fek->fekki, fen->fenni, had->haddi, hat->hattı,
                         // haz->hazzı, his->hissi
+                        free_string_ptr(formation);
                         formation = create_string3(stem, last);
                     }
-                    formationToCheck = formation;
+                    formation_to_check = formation;
                 } else {
                     if (rootWord && last_i_drops_during_suffixation(root) && !starts_with(startState->name, "VerbalRoot") && !starts_with(startState->name, "ProperRoot") && start_with_vowel_or_consonant_drops(transition)) {
                         //---lastIdropsDuringSuffixation---
@@ -376,14 +385,17 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                             //---softenDuringSuffixation---
                             if (strcmp(last_p, "p") == 0){
                                 //hizip->hizbi, kayıp->kaybı, kayıt->kaydı, kutup->kutbu
+                                free_string_ptr(formation);
                                 formation = create_string3(except_last_two, "b");
                             } else {
                                 if (strcmp(last_p, "t") == 0){
                                     //akit->akdi, ahit->ahdi, lahit->lahdi, nakit->nakdi, vecit->vecdi
+                                    free_string_ptr(formation);
                                     formation = create_string3(except_last_two, "d");
                                 } else {
                                     if (strcmp(last_p, "ç") == 0){
                                         //eviç->evci, nesiç->nesci
+                                        free_string_ptr(formation);
                                         formation = create_string3(except_last_two, "c");
                                     }
                                 }
@@ -391,14 +403,16 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                         } else {
                             //sarıağız->sarıağzı, zehir->zehri, zikir->zikri, nutuk->nutku, omuz->omzu, ömür->ömrü
                             //lütuf->lütfu, metin->metni, kavim->kavmi, kasıt->kastı
+                            free_string_ptr(formation);
                             formation = create_string3(except_last_two, last);
                         }
-                        formationToCheck = create_string2(stem);
+                        formation_to_check = create_string2(stem);
                     } else {
                         //---nounSoftenDuringSuffixation or verbSoftenDuringSuffixation
                         if (strcmp(last_p, "p") == 0){
                             //adap->adabı, amip->amibi, azap->azabı, gazap->gazabı
                             if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root)) {
+                                free_string_ptr(formation);
                                 formation = create_string3(except_last, "b");
                             }
                         } else {
@@ -406,28 +420,33 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                                 //abat->abadı, adet->adedi, akort->akordu, armut->armudu
                                 //affet->affedi, yoket->yokedi, sabret->sabredi, rakset->raksedi
                                 if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root)) {
+                                    free_string_ptr(formation);
                                     formation = create_string3(except_last, "d");
                                 }
                             } else {
                                 if (strcmp(last_p, "ç") == 0){
                                     //ağaç->ağacı, almaç->almacı, akaç->akacı, avuç->avucu
                                     if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root)) {
+                                        free_string_ptr(formation);
                                         formation = create_string3(except_last, "c");
                                     }
                                 } else {
                                     if (strcmp(last_p, "g") == 0){
                                         //arkeolog->arkeoloğu, filolog->filoloğu, minerolog->mineroloğu
                                         if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root)) {
+                                            free_string_ptr(formation);
                                             formation = create_string3(except_last, "ğ");
                                         }
                                     } else {
                                         if (strcmp(last_p, "k") == 0){
                                             //ahenk->ahengi, künk->küngü, renk->rengi, pelesenk->pelesengi
                                             if (start_with_vowel_or_consonant_drops(transition) && rootWord && ending_k_changes_into_g(root) && (!is_proper_noun(root) || strcmp(startState->name, "ProperRoot") != 0)) {
+                                                free_string_ptr(formation);
                                                 formation = create_string3(except_last, "g");
                                             } else {
                                                 //ablak->ablağı, küllük->küllüğü, kitaplık->kitaplığı, evcilik->evciliği
                                                 if (start_with_vowel_or_consonant_drops(transition) && (!rootWord || (soften_during_suffixation(transition, root) && (!is_proper_noun(root) || strcmp(startState->name, "ProperRoot") != 0)))) {
+                                                    free_string_ptr(formation);
                                                     formation = create_string3(except_last, "ğ");
                                                 }
                                             }
@@ -436,7 +455,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                                 }
                             }
                         }
-                        formationToCheck = formation;
+                        formation_to_check = formation;
                     }
                 }
             }
@@ -470,20 +489,20 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
     for (; i < word_size(transition->with); i++) {
         String_ptr sti = array_list_get(withChars, i);
         if (string_equals2(sti, "D")){
-            resolve_D(root, formation, formationToCheck->s);
+            resolve_D(root, formation, formation_to_check->s);
         } else {
             if (string_equals2(sti, "A")){
-                resolve_A(root, formation, rootWord, formationToCheck->s);
+                resolve_A(root, formation, rootWord, formation_to_check->s);
             } else {
                 if (string_equals2(sti, "H")){
                     if (!string_equals2(st0, "'")) {
-                        resolve_H(root, formation, i == 0, starts_with(transition->with, "Hyor"), rootWord, formationToCheck->s);
+                        resolve_H(root, formation, i == 0, starts_with(transition->with, "Hyor"), rootWord, formation_to_check->s);
                     } else {
-                        resolve_H(root, formation, i == 1, false, rootWord, formationToCheck->s);
+                        resolve_H(root, formation, i == 1, false, rootWord, formation_to_check->s);
                     }
                 } else {
                     if (string_equals2(sti, "C")){
-                        resolve_C(formation, formationToCheck->s);
+                        resolve_C(formation, formation_to_check->s);
                     } else {
                         if (string_equals2(sti, "S")){
                             resolve_S(formation);
@@ -502,7 +521,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                 }
             }
         }
-        formationToCheck = formation;
+        formation_to_check = formation;
     }
     free_array_list(withChars, (void (*)(void *)) free_string_ptr);
     result = str_copy(result, formation->s);

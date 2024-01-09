@@ -2,7 +2,6 @@
 // Created by Olcay Taner YILDIZ on 23.10.2023.
 //
 
-#include <stdlib.h>
 #include <Dictionary/TxtWord.h>
 #include <stdio.h>
 #include <string.h>
@@ -21,7 +20,7 @@
  */
 Fsm_parse_ptr create_fsm_parse(Txt_word_ptr root) {
     Fsm_parse_ptr result = create_fsm_parse2();
-    result->root = root;
+    result->root = clone_txt_word(root);
     return result;
 }
 
@@ -43,6 +42,7 @@ Fsm_parse_ptr create_fsm_parse2() {
 
 void free_fsm_parse(Fsm_parse_ptr fsm_parse) {
     free_(fsm_parse->form);
+    free_txt_word(fsm_parse->root);
     free_array_list(fsm_parse->form_list, NULL);
     free_array_list(fsm_parse->inflectional_groups, (void (*)(void *)) free_inflectional_group);
     free_array_list(fsm_parse->suffix_list, NULL);
@@ -125,7 +125,7 @@ Fsm_parse_ptr create_fsm_parse5(char *punctuation, Fsm_State_ptr start_state) {
  */
 Fsm_parse_ptr create_fsm_parse6(Txt_word_ptr root, Fsm_State_ptr start_state) {
     Fsm_parse_ptr result = create_fsm_parse2();
-    result->root = root;
+    result->root = clone_txt_word(root);
     result->form = str_copy(result->form, root->name);
     result->pos = start_state->pos;
     result->initial_pos = start_state->pos;
@@ -251,6 +251,7 @@ void add_suffix(Fsm_parse_ptr fsm_parse,
         }
     }
     array_list_add(fsm_parse->suffix_list, suffix);
+    free_(fsm_parse->form);
     fsm_parse->form = str_copy(fsm_parse->form, _form);
     array_list_add(fsm_parse->form_list, fsm_parse->form);
     array_list_add(fsm_parse->transition_list, transition);
@@ -727,7 +728,8 @@ Inflectional_group_ptr first_inflectional_group2(const Fsm_parse *fsm_parse) {
  * @return FsmParse object.
  */
 Fsm_parse_ptr clone_fsm_parse(const Fsm_parse *fsm_parse) {
-    Fsm_parse_ptr p = create_fsm_parse(fsm_parse->root);
+    Fsm_parse_ptr p = malloc_(sizeof(Fsm_parse), "clone_fsm_parse");
+    p->root = clone_txt_word(fsm_parse->root);
     p->form = str_copy(p->form, fsm_parse->form);
     p->pos = fsm_parse->pos;
     p->initial_pos = fsm_parse->initial_pos;
