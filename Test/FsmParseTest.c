@@ -13,7 +13,6 @@ void test_get_last_lemma_with_tag_single(Fsm_morphological_analyzer_ptr fsm, int
     if (strcmp(s, lemma) != 0){
         printf("Error in word lemma with tag %s\n", word);
     }
-    free_(s);
     free_fsm_parse_list(parse_list);
 }
 
@@ -32,7 +31,6 @@ void test_get_last_lemma_single(Fsm_morphological_analyzer_ptr fsm, int index, c
     if (strcmp(s, lemma) != 0){
         printf("Error in word lemma %s %s\n", word, s);
     }
-    free_(s);
     free_fsm_parse_list(parse_list);
 }
 

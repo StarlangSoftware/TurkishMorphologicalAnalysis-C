@@ -43,7 +43,7 @@ Fsm_parse_ptr create_fsm_parse2() {
 void free_fsm_parse(Fsm_parse_ptr fsm_parse) {
     free_(fsm_parse->form);
     free_txt_word(fsm_parse->root);
-    free_array_list(fsm_parse->form_list, NULL);
+    free_array_list(fsm_parse->form_list, free_);
     free_array_list(fsm_parse->inflectional_groups, (void (*)(void *)) free_inflectional_group);
     free_array_list(fsm_parse->suffix_list, NULL);
     free_array_list(fsm_parse->transition_list, NULL);
@@ -57,7 +57,7 @@ void update_fsm_parse_with_state_and_name(Fsm_parse_ptr fsm_parse, char *name, F
     fsm_parse->pos = start_state->pos;
     fsm_parse->initial_pos = start_state->pos;
     array_list_add(fsm_parse->suffix_list, start_state);
-    array_list_add(fsm_parse->form_list, fsm_parse->form);
+    array_list_add(fsm_parse->form_list, clone_string(fsm_parse->form));
 }
 
 /**
@@ -130,7 +130,7 @@ Fsm_parse_ptr create_fsm_parse6(Txt_word_ptr root, Fsm_State_ptr start_state) {
     result->pos = start_state->pos;
     result->initial_pos = start_state->pos;
     array_list_add(result->suffix_list, start_state);
-    array_list_add(result->form_list, result->form);
+    array_list_add(result->form_list, clone_string(result->form));
     return result;
 }
 
@@ -253,7 +253,7 @@ void add_suffix(Fsm_parse_ptr fsm_parse,
     array_list_add(fsm_parse->suffix_list, suffix);
     free_(fsm_parse->form);
     fsm_parse->form = str_copy(fsm_parse->form, _form);
-    array_list_add(fsm_parse->form_list, fsm_parse->form);
+    array_list_add(fsm_parse->form_list, clone_string(fsm_parse->form));
     array_list_add(fsm_parse->transition_list, transition);
     if (strcmp(with, "0") != 0) {
         array_list_add(fsm_parse->with_list, with);
@@ -277,8 +277,8 @@ Fsm_State_ptr get_start_state(Fsm_parse_ptr fsm_parse) {
  */
 void set_form(Fsm_parse_ptr fsm_parse, char *name) {
     fsm_parse->form = str_copy(fsm_parse->form, name);
-    array_list_remove(fsm_parse->form_list, 0, NULL);
-    array_list_add(fsm_parse->form_list, name);
+    array_list_remove(fsm_parse->form_list, 0, free_);
+    array_list_add(fsm_parse->form_list, clone_string(name));
 }
 
 /**
@@ -736,7 +736,10 @@ Fsm_parse_ptr clone_fsm_parse(const Fsm_parse *fsm_parse) {
     p->verb_agreement = fsm_parse->verb_agreement;
     p->possessive_agreement = fsm_parse->possessive_agreement;
     p->suffix_list = clone_array_list(fsm_parse->suffix_list);
-    p->form_list = clone_array_list(fsm_parse->form_list);
+    p->form_list = create_array_list();
+    for (int i = 0; i < fsm_parse->form_list->size; i++){
+        array_list_add(p->form_list, clone_string(array_list_get(fsm_parse->form_list, i)));
+    }
     p->transition_list = clone_array_list(fsm_parse->transition_list);
     p->with_list = clone_array_list(fsm_parse->with_list);
     p->inflectional_groups = create_array_list();

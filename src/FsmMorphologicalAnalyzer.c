@@ -784,7 +784,6 @@ void add_new_parses_from_current_parse2(Fsm_morphological_analyzer_ptr fsm_morph
                                                                                         current_state)))) {
             char *tmp = make_transition2(currentTransition, root, current_surface_form,
                                          get_start_state(current_fsm_parse));
-
             if ((word_size(tmp) < word_size(surface_form) && is_possible_substring(tmp, surface_form, root)) ||
                 (word_size(tmp) == word_size(surface_form) &&
                  (last_i_drops_during_suffixation(root) || strcmp(tmp, surface_form) == 0))) {
@@ -793,7 +792,6 @@ void add_new_parses_from_current_parse2(Fsm_morphological_analyzer_ptr fsm_morph
                 set_agreement(new_fsm_parse, currentTransition->with_name);
                 enqueue(fsm_parse_queue, new_fsm_parse);
             }
-
             free_(tmp);
         }
     }
@@ -1361,7 +1359,6 @@ Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morpho
     int max_length = 0;
     char *longest_word = NULL;
     Array_list_ptr list = hash_set_key_list(words);
-    free_hash_set(words, (void (*)(void *)) free_txt_word);
     for (int i = 0; i < list->size; i++) {
         Txt_word_ptr word = array_list_get(list, i);
         if (word_size(word->name) > max_length) {
@@ -1372,6 +1369,7 @@ Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morpho
             max_length = word_size(word->name);
         }
     }
+    free_hash_set(words, (void (*)(void *)) free_txt_word);
     free_array_list(list, NULL);
     Txt_word_ptr new_word;
     if (max_length != 0) {
