@@ -1346,6 +1346,7 @@ Array_list_ptr analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyze
         array_list_add(initial_fsm_parse, fsm_parse);
         return initial_fsm_parse;
     }
+    free_array_list(initial_fsm_parse, NULL);
     initial_fsm_parse = initialize_parse_list_from_surface_form(fsm_morphological_analyzer, surface_form, is_proper);
     Array_list_ptr result_fsm_parse = parse_word2(fsm_morphological_analyzer, initial_fsm_parse, surface_form);
     free_array_list(initial_fsm_parse, NULL);
