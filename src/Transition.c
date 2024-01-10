@@ -293,6 +293,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
     free_(tmp3);
     String_ptr formation = create_string2(stem);
     String_ptr formation_to_check;
+    bool formation_to_check_allocated = false;
     char* result;
     char except_last[MAX_WORD_LENGTH], except_last_two[MAX_WORD_LENGTH], last[3], last_p[3], with_f[3];
     int i = 0;
@@ -349,6 +350,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
             free_string_ptr(formation);
             formation = create_string3(except_last_two, last);
             formation_to_check = create_string2(stem);
+            formation_to_check_allocated = true;
         } else {
             //---showsSuRegularities---
             //karasu->karasuyu, özsu->özsuyu, ağırsu->ağırsuyu, akarsu->akarsuyu, bengisu->bengisuyu
@@ -408,6 +410,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                             formation = create_string3(except_last_two, last);
                         }
                         formation_to_check = create_string2(stem);
+                        formation_to_check_allocated = true;
                     } else {
                         //---nounSoftenDuringSuffixation or verbSoftenDuringSuffixation
                         if (strcmp(last_p, "p") == 0){
@@ -522,7 +525,14 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                 }
             }
         }
+        if (formation_to_check_allocated){
+            free_string_ptr(formation_to_check);
+            formation_to_check_allocated = false;
+        }
         formation_to_check = formation;
+    }
+    if (formation_to_check_allocated){
+        free_string_ptr(formation_to_check);
     }
     free_array_list(withChars, (void (*)(void *)) free_string_ptr);
     result = str_copy(result, formation->s);
