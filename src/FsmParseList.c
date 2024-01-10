@@ -80,6 +80,7 @@ void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, 
         } else {
             i++;
         }
+        free_(name);
     }
 }
 
@@ -132,6 +133,7 @@ bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr 
                 char* rootPos2 = get_tag(get_tag_with_index(first_inflectional_group2(currentParse), 0));
                 if (strcmp(currentParse->root->name, possibleRoot) == 0 && strcmp(rootPos2, possibleRootPos) == 0) {
                     free_(rootPos2);
+                    free_(possibleRoot);
                     free_array_list(exceptionItems, free_);
                     return true;
                 }
@@ -140,6 +142,7 @@ bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr 
         } else {
             free_(rootPos1);
         }
+        free_(possibleRoot);
         free_array_list(exceptionItems, free_);
     }
     return false;
@@ -181,17 +184,17 @@ Array_list_ptr construct_parse_list_for_different_root_with_pos(Fsm_parse_list_p
     while (i < fsm_parse_list->fsm_parses->size) {
         if (i == 0) {
             Array_list_ptr initial = create_array_list();
-            array_list_add(initial, get_fsm_parse(fsm_parse_list, i));
+            array_list_add(initial, clone_fsm_parse(get_fsm_parse(fsm_parse_list, i)));
             array_list_add(result, create_fsm_parse_list(initial));
         } else {
             char* word1 = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i));
             char* word2 = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i - 1));
             if (strcmp(word1, word2) == 0) {
                 array_list_add(((Fsm_parse_list_ptr)array_list_get(result, result->size - 1))->fsm_parses,
-                               get_fsm_parse(fsm_parse_list, i));
+                               clone_fsm_parse(get_fsm_parse(fsm_parse_list, i)));
             } else {
                 Array_list_ptr initial = create_array_list();
-                array_list_add(initial, get_fsm_parse(fsm_parse_list, i));
+                array_list_add(initial, clone_fsm_parse(get_fsm_parse(fsm_parse_list, i)));
                 array_list_add(result, create_fsm_parse_list(initial));
             }
             free_(word1);

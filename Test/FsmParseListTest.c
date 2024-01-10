@@ -3,7 +3,6 @@
 //
 
 #include <string.h>
-#include <stdlib.h>
 #include <Memory/Memory.h>
 #include "../src/FsmMorphologicalAnalyzer.h"
 
@@ -108,7 +107,7 @@ void test_construct_parse_list_for_different_root_with_pos_single(Fsm_morphologi
     if (list->size != size){
         printf("Error test different root pos in word %s\n", word);
     }
-    free_array_list(list, NULL);
+    free_array_list(list, (void (*)(void *)) free_fsm_parse_list);
     free_fsm_parse_list(parse_list);
 }
 

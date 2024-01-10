@@ -1387,6 +1387,7 @@ Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morpho
             add_flag(new_word, "CL_FIIL");
         }
         add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, longest_word, new_word);
+        free_(longest_word);
         return new_word;
     }
     return NULL;
