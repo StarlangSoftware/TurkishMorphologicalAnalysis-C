@@ -18,11 +18,10 @@ void test_transition(Fsm_morphological_analyzer_ptr fsm, char* list[], int size)
 int main(){
     start_large_memory_check();
     Fsm_morphological_analyzer_ptr fsm = create_fsm_morphological_analyzer3();
-    test_transition(fsm, (char*[]){"3'tü"}, 1);
     test_transition(fsm, (char*[]){"3'tü", "1'di", "2'ydi", "4'tü", "5'ti", "6'ydı", "7'ydi", "8'di", "9'du", "30'du", "40'tı", "60'tı", "70'ti", "50'ydi"}, 14);
-    test_transition(fsm, (char*[]){"alkole", "anormale", "sakala", "kabala", "faika", "halika", "kediye", "eve"}, 8);
     test_transition(fsm, (char*[]){"2'yi", "5'i", "9'u", "10'u", "30'u", "3'ü", "4'ü", "100'ü", "6'yı", "40'ı", "60'ı", "90'ı"}, 12);
     test_transition(fsm, (char*[]){"6'ya", "9'a", "10'a", "30'a", "40'a", "60'a", "90'a", "8'e", "5'e", "4'e", "1'e", "3'e", "7'ye"}, 13);
+    test_transition(fsm, (char*[]){"alkole", "anormale", "sakala", "kabala", "faika", "halika", "kediye", "eve"}, 8);
     test_transition(fsm, (char*[]){"büyülüyor", "bölümlüyor", "buğuluyor", "bulguluyor", "açıklıyor", "çalkalıyor"}, 6);
     test_transition(fsm, (char*[]){"gripçi", "güllaççı", "gülütçü", "gülükçü"}, 4);
     test_transition(fsm, (char*[]){"altışar", "yedişer", "üçer", "beşer", "dörder"}, 5);
