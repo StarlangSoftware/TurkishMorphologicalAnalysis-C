@@ -207,6 +207,7 @@ char *with_first_char(Transition_ptr transition) {
             return ch;
         } else {
             st = char_at(transition->with, 1);
+            free_(ch);
             ch = str_copy(ch, st->s);
             free_string_ptr(st);
             return ch;

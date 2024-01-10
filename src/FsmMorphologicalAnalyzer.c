@@ -1639,6 +1639,7 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
                 }
             }
         }
+        free_(possibleRoot);
     }
     free_(lowerCased);
     if (fsmParse == NULL){
