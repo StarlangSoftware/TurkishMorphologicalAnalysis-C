@@ -1130,12 +1130,14 @@ Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_a
     bool previous_word_multiple = str_contains(previous_word, " ");
     bool new_word_multiple = str_contains(new_word, " ");
     if (previous_word_multiple) {
+        free_array_list(previous_word_splitted, NULL);
         previous_word_splitted = str_split(previous_word, ' ');
         last_word = array_list_get(previous_word_splitted, previous_word_splitted->size - 1);
     } else {
         last_word = previous_word;
     }
     if (new_word_multiple) {
+        free_array_list(new_word_splitted, NULL);
         new_word_splitted = str_split(new_word, ' ');
         new_root_word = array_list_get(new_word_splitted, new_word_splitted->size - 1);
     } else {
@@ -1200,6 +1202,10 @@ Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_a
             }
         }
     }
+    for (int j = 0; j < original->words->size; j++){
+        free_fsm_parse_list(parse_list[j]);
+    }
+    free_(parse_list);
     if (previous_word_multiple) {
         for (; i < original->words->size; i++) {
             sentence_add_word(result, array_list_get(original->words, i));
@@ -1263,46 +1269,46 @@ Array_list_ptr analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyze
         return initial_fsm_parse;
     }
     if (is_number_fsm(fsm_morphological_analyzer, surface_form)) {
-        fsm_parse = create_fsm_parse5(surface_form, create_fsm_state(("CardinalRoot"), true, true));
+        fsm_parse = create_fsm_parse5(surface_form, get_state(fsm_morphological_analyzer->finite_state_machine, "CardinalRoot"));
         construct_inflectional_groups(fsm_parse);
         array_list_add(initial_fsm_parse, fsm_parse);
         return initial_fsm_parse;
     }
     if (pattern_matches(fsm_morphological_analyzer, "\\d+/\\d+", surface_form)) {
-        fsm_parse = create_fsm_parse5(surface_form, create_fsm_state(("FractionRoot"), true, true));
+        fsm_parse = create_fsm_parse5(surface_form, get_state(fsm_morphological_analyzer->finite_state_machine, "FractionRoot"));
         construct_inflectional_groups(fsm_parse);
         array_list_add(initial_fsm_parse, fsm_parse);
-        fsm_parse = create_fsm_parse5(surface_form, create_fsm_state(("DateRoot"), true, true));
+        fsm_parse = create_fsm_parse5(surface_form, get_state(fsm_morphological_analyzer->finite_state_machine, "DateRoot"));
         construct_inflectional_groups(fsm_parse);
         array_list_add(initial_fsm_parse, fsm_parse);
         return initial_fsm_parse;
     }
     if (is_date_fsm(fsm_morphological_analyzer, surface_form)) {
-        fsm_parse = create_fsm_parse5(surface_form, create_fsm_state(("DateRoot"), true, true));
+        fsm_parse = create_fsm_parse5(surface_form, get_state(fsm_morphological_analyzer->finite_state_machine, "DateRoot"));
         construct_inflectional_groups(fsm_parse);
         array_list_add(initial_fsm_parse, fsm_parse);
         return initial_fsm_parse;
     }
     if (pattern_matches(fsm_morphological_analyzer, "\\d+\\\\/\\d+", surface_form)) {
-        fsm_parse = create_fsm_parse5(surface_form, create_fsm_state(("FractionRoot"), true, true));
+        fsm_parse = create_fsm_parse5(surface_form, get_state(fsm_morphological_analyzer->finite_state_machine, "FractionRoot"));
         construct_inflectional_groups(fsm_parse);
         array_list_add(initial_fsm_parse, fsm_parse);
         return initial_fsm_parse;
     }
     if (strcmp(surface_form, "%") == 0 || is_percent_fsm(fsm_morphological_analyzer, surface_form)) {
-        fsm_parse = create_fsm_parse5(surface_form, create_fsm_state(("PercentRoot"), true, true));
+        fsm_parse = create_fsm_parse5(surface_form, get_state(fsm_morphological_analyzer->finite_state_machine, "PercentRoot"));
         construct_inflectional_groups(fsm_parse);
         array_list_add(initial_fsm_parse, fsm_parse);
         return initial_fsm_parse;
     }
     if (is_time_fsm(fsm_morphological_analyzer, surface_form)) {
-        fsm_parse = create_fsm_parse5(surface_form, create_fsm_state(("TimeRoot"), true, true));
+        fsm_parse = create_fsm_parse5(surface_form, get_state(fsm_morphological_analyzer->finite_state_machine, "TimeRoot"));
         construct_inflectional_groups(fsm_parse);
         array_list_add(initial_fsm_parse, fsm_parse);
         return initial_fsm_parse;
     }
     if (is_range_fsm(fsm_morphological_analyzer, surface_form)) {
-        fsm_parse = create_fsm_parse5(surface_form, create_fsm_state(("RangeRoot"), true, true));
+        fsm_parse = create_fsm_parse5(surface_form, get_state(fsm_morphological_analyzer->finite_state_machine, "RangeRoot"));
         construct_inflectional_groups(fsm_parse);
         array_list_add(initial_fsm_parse, fsm_parse);
         return initial_fsm_parse;
