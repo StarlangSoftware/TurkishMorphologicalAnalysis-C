@@ -926,9 +926,13 @@ char *get_universal_dependency_pos(const Morphological_parse *morphological_pars
 
 char *morphological_parse_to_string(const Morphological_parse *morphological_parse) {
     char tmp[MAX_LINE_LENGTH];
-    sprintf(tmp, "%s+%s", morphological_parse->root, (char*)array_list_get(morphological_parse->inflectional_groups, 0));
+    char* st = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, 0));
+    sprintf(tmp, "%s+%s", morphological_parse->root, st);
+    free_(st);
     for (int i = 1; i < morphological_parse->inflectional_groups->size; i++){
-        sprintf(tmp, "%s^DB+%s", tmp, (char*) array_list_get(morphological_parse->inflectional_groups, i));
+        st = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, i));
+        sprintf(tmp, "%s^DB+%s", tmp, st);
+        free_(st);
     }
     char *result = NULL;
     result = str_copy(result, tmp);
