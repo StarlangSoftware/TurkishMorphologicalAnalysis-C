@@ -162,7 +162,7 @@ void test_tags(Fsm_morphological_analyzer_ptr fsm){
                 printf("Error in word %s\n", word->name);
             }
             free_fsm_parse_list(parse_list);
-            //free_(surface_form);
+            free_(surface_form);
         }
     }
     printf("Checked %d cases\n", count);
