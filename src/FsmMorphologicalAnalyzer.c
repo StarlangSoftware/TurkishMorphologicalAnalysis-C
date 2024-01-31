@@ -1090,26 +1090,26 @@ bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, ch
 }
 
 bool is_percent_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
-    return pattern_matches(fsm_morphological_analyzer, "(%(\\d\\d|\\d))", surface_form) ||
-           pattern_matches(fsm_morphological_analyzer, "(%(\\d\\d|\\d)\\.\\d+)", surface_form);
+    return pattern_matches(fsm_morphological_analyzer, "%(\\d\\d|\\d)", surface_form) ||
+           pattern_matches(fsm_morphological_analyzer, "%(\\d\\d|\\d)\\.\\d+", surface_form);
 }
 
 bool is_time_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
-    return pattern_matches(fsm_morphological_analyzer, "((\\d\\d|\\d):(\\d\\d|\\d):(\\d\\d|\\d))", surface_form) ||
-           pattern_matches(fsm_morphological_analyzer, "((\\d\\d|\\d):(\\d\\d|\\d))", surface_form);
+    return pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d):(\\d\\d|\\d):(\\d\\d|\\d)", surface_form) ||
+           pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d):(\\d\\d|\\d)", surface_form);
 }
 
 bool is_range_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "\\d+\\-\\d+", surface_form) ||
-           pattern_matches(fsm_morphological_analyzer, "((\\d\\d|\\d):(\\d\\d|\\d)-(\\d\\d|\\d):(\\d\\d|\\d))",
+           pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d):(\\d\\d|\\d)-(\\d\\d|\\d):(\\d\\d|\\d)",
                            surface_form) ||
-           pattern_matches(fsm_morphological_analyzer, "((\\d\\d|\\d)\\.(\\d\\d|\\d)-(\\d\\d|\\d)\\.(\\d\\d|\\d))",
+           pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d)\\.(\\d\\d|\\d)-(\\d\\d|\\d)\\.(\\d\\d|\\d)",
                            surface_form);
 }
 
 bool is_date_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
-    return pattern_matches(fsm_morphological_analyzer, "((\\d\\d|\\d)/(\\d\\d|\\d)/\\d+)", surface_form) ||
-           pattern_matches(fsm_morphological_analyzer, "((\\d\\d|\\d)\\.(\\d\\d|\\d)\\.\\d+)", surface_form);
+    return pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d)/(\\d\\d|\\d)/\\d+", surface_form) ||
+           pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d)\\.(\\d\\d|\\d)\\.\\d+", surface_form);
 }
 
 /**
