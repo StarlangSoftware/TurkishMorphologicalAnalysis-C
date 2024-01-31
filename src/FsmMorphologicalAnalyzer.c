@@ -55,7 +55,7 @@ void free_fsm_morphological_analyzer(Fsm_morphological_analyzer_ptr fsm_morpholo
     if (fsm_morphological_analyzer->parsed_surface_forms != NULL){
         free_hash_map2(fsm_morphological_analyzer->parsed_surface_forms, free_, free_);
     }
-    free_lru_cache(fsm_morphological_analyzer->cache, (void (*)(void *)) free_fsm_parse_list);
+    free_lru_cache(fsm_morphological_analyzer->cache, NULL, (void (*)(void *)) free_fsm_parse_list);
     free_hash_map(fsm_morphological_analyzer->most_used_patterns, (void (*)(void *)) free_regular_expression);
     free_(fsm_morphological_analyzer);
 }
@@ -1551,8 +1551,8 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
     Array_list_ptr defaultFsmParse = analysis(fsm_morphological_analyzer, lowerCased, is_proper_noun_fsm(surfaceForm));
     if (defaultFsmParse->size > 0) {
         fsmParseList = create_fsm_parse_list(defaultFsmParse);
-        if (fsm_morphological_analyzer->cache->cache_size > 0) {
-            lru_cache_add(fsm_morphological_analyzer->cache, surfaceForm, clone_fsm_parse_list(fsmParseList));
+        if (fsm_morphological_analyzer->cache->cache_size > 0 && fsmParseList->fsm_parses->size > 0) {
+            lru_cache_add(fsm_morphological_analyzer->cache, clone_string(surfaceForm), clone_fsm_parse_list(fsmParseList));
         }
         free_(lowerCased);
         return fsmParseList;
@@ -1654,11 +1654,11 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
     }
     fsmParseList = create_fsm_parse_list(fsmParse);
     if (fsm_morphological_analyzer->cache->cache_size > 0 && fsmParseList->fsm_parses->size > 0) {
-        lru_cache_add(fsm_morphological_analyzer->cache, surfaceForm, clone_fsm_parse_list(fsmParseList));
+        lru_cache_add(fsm_morphological_analyzer->cache, clone_string(surfaceForm), clone_fsm_parse_list(fsmParseList));
     }
     return fsmParseList;
 }
 
 Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer3() {
-    return create_fsm_morphological_analyzer("turkish_finite_state_machine.xml", create_txt_dictionary(), 10000);
+    return create_fsm_morphological_analyzer("turkish_finite_state_machine.xml", create_txt_dictionary(), 100000);
 }

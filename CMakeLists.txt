@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.23)
 project(MorphologicalAnalysis)
 set(CMAKE_C_STANDARD 17)
-set(CMAKE_C_FLAGS "-O3")
 
 find_package(xml_parser_c REQUIRED)
 find_package(corpus_c REQUIRED)
