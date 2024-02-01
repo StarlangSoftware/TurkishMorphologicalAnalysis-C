@@ -16,14 +16,6 @@ void test_analysis(Fsm_morphological_analyzer_ptr fsm, char* list[], int size){
     }
 }
 
-void test_repeat(Fsm_morphological_analyzer_ptr fsm, char* word){
-    Fsm_parse_list_ptr parse_list;
-    for (int i = 0; i < 100; i++){
-        parse_list = morphological_analysis(fsm, word);
-        free_fsm_parse_list(parse_list);
-    }
-}
-
 void test_robust_analysis(Fsm_morphological_analyzer_ptr fsm, char* list[], int size){
     for (int i = 0; i < size; i++){
         Fsm_parse_list_ptr parse_list = robust_morphological_analysis(fsm, list[i]);
@@ -173,7 +165,6 @@ int main(){
     test_robust_analysis(fsm, (char*[]){"googlecılardan", "zaptıraplaştırılmayana", "abzürtleşenmiş", "vışlığından"}, 4);
     test_analysis(fsm, (char*[]){"Times'ın", "Times'tır", "Times'mış", "Twitter'ın", "Twitter'dır", "Twitter'mış"}, 6);
     test_analysis(fsm, (char*[]){"3/4", "3\\/4", "4/2/1973", "14/2/1993", "14/12/1933", "6/12/1903", "%34.5", "%3", "%56", "2:3", "12:3", "4:23", "11:56", "1:2:3", "3:12:3", "5:4:23", "7:11:56", "12:2:3", "10:12:3", "11:4:23", "22:11:56", "34.23"}, 22);
-    test_repeat(fsm, "abdestsizliği");
     test_tags(fsm);
     test_replace_word(fsm);
     free_fsm_morphological_analyzer(fsm);

@@ -55,7 +55,7 @@ void free_fsm_morphological_analyzer(Fsm_morphological_analyzer_ptr fsm_morpholo
     if (fsm_morphological_analyzer->parsed_surface_forms != NULL){
         free_hash_map2(fsm_morphological_analyzer->parsed_surface_forms, free_, free_);
     }
-    free_lru_cache(fsm_morphological_analyzer->cache, NULL, (void (*)(void *)) free_fsm_parse_list);
+    free_lru_cache(fsm_morphological_analyzer->cache, free_, (void (*)(void *)) free_fsm_parse_list);
     free_hash_map(fsm_morphological_analyzer->most_used_patterns, (void (*)(void *)) free_regular_expression);
     free_(fsm_morphological_analyzer);
 }
