@@ -47,6 +47,11 @@ Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer2(char *dictiona
                                                                     "turkish_morphological_lexicon.txt"), 10000);
 }
 
+/**
+ * Frees memory allocated for the Fsm based morphological analyzer. Frees finite state machine, dictionary, dictionary
+ * and suffix tries, if allocated parsed surface forms, lru cache, and most used patterns hash map.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer to be deallocated.
+ */
 void free_fsm_morphological_analyzer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer) {
     free_finite_state_machine(fsm_morphological_analyzer->finite_state_machine);
     free_txt_dictionary(fsm_morphological_analyzer->dictionary);
@@ -60,6 +65,11 @@ void free_fsm_morphological_analyzer(Fsm_morphological_analyzer_ptr fsm_morpholo
     free_(fsm_morphological_analyzer);
 }
 
+/**
+ * Constructs the suffix trie from the input file suffixes.txt. suffixes.txt contains the most frequent 6000
+ * suffixes that a verb or a noun can take. The suffix trie is a trie that stores these suffixes in reverse form,
+ * which can be then used to match a given word for its possible suffix content.
+ */
 void prepare_suffix_tree(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer) {
     fsm_morphological_analyzer->suffix_trie = create_trie();
     Array_list_ptr lines = read_lines("suffixes.txt");
@@ -72,6 +82,11 @@ void prepare_suffix_tree(Fsm_morphological_analyzer_ptr fsm_morphological_analyz
     free_array_list(lines, free_);
 }
 
+/**
+ * Reads the file for correct surface forms and their most frequent root forms, in other words, the surface forms
+ * which have at least one morphological analysis in  Turkish.
+ * @param fileName Input file containing analyzable surface forms and their root forms.
+ */
 void add_surface_forms(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *file_name) {
     fsm_morphological_analyzer->parsed_surface_forms = read_hash_map(file_name);
 }
@@ -982,6 +997,15 @@ Array_list_ptr morphological_analysis3(Fsm_morphological_analyzer_ptr fsm_morpho
     return result;
 }
 
+/**
+ * This method uses cache idea to speed up pattern matching in Fsm. most_used_patterns stores the compiled forms of
+ * the previously used patterns. When Fsm tries to match a string to a pattern, first we check if it exists in
+ * most_used_patterns. If it exists, we directly use the compiled pattern to match the string. Otherwise, new pattern
+ * is compiled and put in the most_used_patterns.
+ * @param expr Pattern to check
+ * @param value String to match the pattern
+ * @return True if the string matches the pattern, false otherwise.
+ */
 bool pattern_matches(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *expr, char *value) {
     Regular_expression_ptr r;
     if (!hash_map_contains(fsm_morphological_analyzer->most_used_patterns, expr)) {
@@ -994,77 +1018,83 @@ bool pattern_matches(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, 
 }
 
 /**
- * The isProperNoun method takes surfaceForm String as input and checks its each char whether they are in the range
+ * The isProperNoun method takes surface_form String as input and checks its each char whether they are in the range
  * of letters between A to Z or one of the Turkish letters such as İ, Ü, Ğ, Ş, Ç, and Ö.
  *
- * @param surfaceForm String to check for proper noun.
- * @return false if surfaceForm is null or length of 0, return true if it is a letter.
+ * @param surface_form String to check for proper noun.
+ * @return false if surface_form is null or length of 0, return true if it is a letter.
  */
-bool is_proper_noun_fsm(const char *surfaceForm) {
-    if (surfaceForm == NULL) {
+bool is_proper_noun_fsm(const char *surface_form) {
+    if (surface_form == NULL) {
         return false;
     }
-    String_ptr st = char_at(surfaceForm, 0);
+    String_ptr st = char_at(surface_form, 0);
     bool result = (compare_string(st->s, "A") >= 0 && compare_string(st->s, "Z") <= 0) ||
                   string_in_list(st->s, (char *[]) {"Ç", "Ö", "Ğ", "Ü", "Ş", "İ"}, 6);
     free_string_ptr(st);
     return result;
 }
 
-bool is_code_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm) {
-    if (surfaceForm == NULL) {
+/**
+ * The is_code_fsm method takes surface_form String as input and checks if it consists of both letters and numbers
+ *
+ * @param surface_form String to check for code-like word.
+ * @return True if it is a code-like word, return false otherwise.
+ */
+bool is_code_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+    if (surface_form == NULL) {
         return false;
     }
-    return pattern_matches(fsm_morphological_analyzer, ".*[0-9].*", surfaceForm) &&
-           pattern_matches(fsm_morphological_analyzer, ".*[a-zA-ZçöğüşıÇÖĞÜŞİ].*", surfaceForm);
+    return pattern_matches(fsm_morphological_analyzer, ".*[0-9].*", surface_form) &&
+           pattern_matches(fsm_morphological_analyzer, ".*[a-zA-ZçöğüşıÇÖĞÜŞİ].*", surface_form);
 }
 
 /**
- * The isInteger method compares input surfaceForm with regex \+?\d+ and returns the result.
+ * The isInteger method compares input surface_form with regex \+?\d+ and returns the result.
  * Supports positive integer checks only.
  *
- * @param surfaceForm String to check.
- * @return true if surfaceForm matches with the regex.
+ * @param surface_form String to check.
+ * @return true if surface_form matches with the regex.
  */
-bool is_integer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm) {
-    if (!pattern_matches(fsm_morphological_analyzer, "[\\-\\+]?\\d+", surfaceForm)) {
+bool is_integer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+    if (!pattern_matches(fsm_morphological_analyzer, "[\\-\\+]?\\d+", surface_form)) {
         return false;
     }
-    int len = word_size(surfaceForm);
+    int len = word_size(surface_form);
     if (len < 10) {
         return true;
     } else {
         if (len > 10) {
             return false;
         } else {
-            return compare_string(surfaceForm, "2147483647") <= 0;
+            return compare_string(surface_form, "2147483647") <= 0;
         }
     }
 }
 
 /**
- * The isDouble method compares input surfaceForm with regex \+?(\d+)?\.\d* and returns the result.
+ * The isDouble method compares input surface_form with regex \+?(\d+)?\.\d* and returns the result.
  *
- * @param surfaceForm String to check.
- * @return true if surfaceForm matches with the regex.
+ * @param surface_form String to check.
+ * @return true if surface_form matches with the regex.
  */
-bool is_double(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm) {
-    return pattern_matches(fsm_morphological_analyzer, "[\\+\\-]?\\d*\\.\\d*", surfaceForm);
+bool is_double(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+    return pattern_matches(fsm_morphological_analyzer, "[\\+\\-]?\\d*\\.\\d*", surface_form);
 }
 
 /**
- * The isNumber method compares input surfaceForm with the array of written numbers and returns the result.
+ * The isNumber method compares input surface_form with the array of written numbers and returns the result.
  *
- * @param surfaceForm String to check.
- * @return true if surfaceForm matches with the regex.
+ * @param surface_form String to check.
+ * @return true if surface_form matches with the regex.
  */
-bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm) {
+bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
     bool found;
     int count = 0;
     char *numbers[] = {"bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz",
                        "on", "yirmi", "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan",
                        "yüz", "bin", "milyon", "milyar", "trilyon", "katrilyon"};
-    char *word = str_copy(word, surfaceForm);
+    char *word = str_copy(word, surface_form);
     while (word != NULL) {
         found = false;
         for (int i = 0; i < 24; i++) {
@@ -1089,16 +1119,32 @@ bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, ch
     return word == NULL && count > 1;
 }
 
+/**
+ * Checks if a given surface form matches to a percent value. It should be something like %4, %45, %4.3 or %56.786
+ * @param surface_form Surface form to be checked.
+ * @return True if the surface form is in percent form
+ */
 bool is_percent_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "%(\\d\\d|\\d)", surface_form) ||
            pattern_matches(fsm_morphological_analyzer, "%(\\d\\d|\\d)\\.\\d+", surface_form);
 }
 
+/**
+ * Checks if a given surface form matches to a time form. It should be something like 3:34, 12:56 etc.
+ * @param surface_form Surface form to be checked.
+ * @return True if the surface form is in time form
+ */
 bool is_time_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d):(\\d\\d|\\d):(\\d\\d|\\d)", surface_form) ||
            pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d):(\\d\\d|\\d)", surface_form);
 }
 
+/**
+ * Checks if a given surface form matches to a range form. It should be something like 123-1400 or 12:34-15:78 or
+ * 3.45-4.67.
+ * @param surface_form Surface form to be checked.
+ * @return True if the surface form is in range form
+ */
 bool is_range_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "\\d+\\-\\d+", surface_form) ||
            pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d):(\\d\\d|\\d)-(\\d\\d|\\d):(\\d\\d|\\d)",
@@ -1107,6 +1153,11 @@ bool is_range_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, cha
                            surface_form);
 }
 
+/**
+ * Checks if a given surface form matches to a date form. It should be something like 3/10/2023 or 2.3.2012
+ * @param surface_form Surface form to be checked.
+ * @return True if the surface form is in date form
+ */
 bool is_date_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d)/(\\d\\d|\\d)/\\d+", surface_form) ||
            pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d)\\.(\\d\\d|\\d)\\.\\d+", surface_form);
@@ -1359,8 +1410,21 @@ Array_list_ptr analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyze
     return result_fsm_parse;
 }
 
-Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm) {
-    char* reverse = reverse_string(surfaceForm);
+/**
+ * Identifies a possible new root word for a given surface form. It also adds the new root form to the dictionary
+ * for further usage. The method first searches the suffix trie for the reverse string of the surface form. This
+ * way, it can identify if the word has a suffix that is in the most frequently used suffix list. Since a word can
+ * have multiple possible suffixes, the method identifies the longest suffix and returns the substring of the
+ * surface form tht does not contain the suffix. Let say the word is 'googlelaştırdık', it will identify 'tık' as
+ * a suffix and will return 'googlelaştır' as a possible root form. Another example will be 'homelesslerimizle', it
+ * will identify 'lerimizle' as suffix and will return 'homeless' as a possible root form. If the root word ends
+ * with 'ğ', it is replacesd with 'k'. 'morfolojikliğini' will return 'morfolojikliğ' then which will be replaced
+ * with 'morfolojiklik'.
+ * @param surface_form Surface form for which we will identify a possible new root form.
+ * @return Possible new root form.
+ */
+Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+    char* reverse = reverse_string(surface_form);
     Hash_set_ptr words = get_words_with_prefix(fsm_morphological_analyzer->suffix_trie, reverse);
     free_(reverse);
     int max_length = 0;
@@ -1369,7 +1433,7 @@ Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morpho
     for (int i = 0; i < list->size; i++) {
         Txt_word_ptr word = array_list_get(list, i);
         if (word_size(word->name) > max_length) {
-            String_ptr st = substring(surfaceForm, 0, word_size(surfaceForm) - word_size(word->name));
+            String_ptr st = substring(surface_form, 0, word_size(surface_form) - word_size(word->name));
             free_(longest_word);
             longest_word = str_copy(longest_word, st->s);
             free_string_ptr(st);
@@ -1659,6 +1723,10 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
     return fsmParseList;
 }
 
+/**
+ * First no-arg constructor of FsmMorphologicalAnalyzer class. It generates a new TxtDictionary type dictionary from
+ * turkish_dictionary.txt with fixed cache size 10000000 and by using turkish_finite_state_machine.xml file.
+ */
 Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer3() {
     return create_fsm_morphological_analyzer("turkish_finite_state_machine.xml", create_txt_dictionary(), 100000);
 }

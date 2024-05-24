@@ -2,7 +2,6 @@
 // Created by Olcay Taner YILDIZ on 16.10.2023.
 //
 
-#include <stdlib.h>
 #include <string.h>
 #include <FileUtils.h>
 #include <CounterHashMap.h>
@@ -585,6 +584,12 @@ char *get_tree_pos(const Morphological_parse *morphological_parse) {
     return "-XXX-";
 }
 
+/**
+ * Returns the pronoun type of the parse for universal dependency feature ProType.
+ * @return "Art" if the pronoun is also a determiner; "Prs" if the pronoun is personal pronoun; "Rcp" if the
+ * pronoun is 'birbiri'; "Ind" if the pronoun is an indeterminate pronoun; "Neg" if the pronoun is 'hiçbiri';
+ * "Int" if the pronoun is a question pronoun; "Dem" if the pronoun is a demonstrative pronoun.
+ */
 char *get_pron_type(const Morphological_parse *morphological_parse) {
     char* lemma = morphological_parse->root;
     if (parse_contains_tag(morphological_parse, PERSONALPRONOUN)){
@@ -602,6 +607,11 @@ char *get_pron_type(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the numeral type of the parse for universal dependency feature NumType.
+ * @return "Ord" if the parse is Time, Ordinal or the word is '%' or 'kaçıncı'; "Dist" if the word is a
+ * distributive number such as 'beşinci'; "Card" if the number is cardinal or any number or the word is 'kaç'.
+ */
 char *get_num_type(const Morphological_parse *morphological_parse) {
     char* lemma = morphological_parse->root;
     if (parse_contains_tag(morphological_parse, CARDINAL) || parse_contains_tag(morphological_parse, NUMBER) || strcmp(lemma, "kaç") == 0){
@@ -616,6 +626,10 @@ char *get_num_type(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the value for the dependency feature Reflex.
+ * @return "Yes" if the root word is 'kendi', null otherwise.
+ */
 char *get_reflex(const Morphological_parse *morphological_parse) {
     char* lemma = morphological_parse->root;
     if (strcmp(lemma, "kendi") == 0){
@@ -624,6 +638,11 @@ char *get_reflex(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the agreement of the parse for the universal dependency feature Number.
+ * @return "Sing" if the agreement of the parse is singular (contains A1SG, A2SG, A3SG); "Plur" if the agreement
+ * of the parse is plural (contains A1PL, A2PL, A3PL).
+ */
 char *get_number(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, A1SG) || parse_contains_tag(morphological_parse, A2SG) || parse_contains_tag(morphological_parse, A3SG)
         || parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P2SG) || parse_contains_tag(morphological_parse, P3SG)){
@@ -636,6 +655,11 @@ char *get_number(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the case marking of the parse for the universal dependency feature case.
+ * @return "Acc" for accusative marker; "Dat" for dative marker; "Gen" for genitive marker; "Loc" for locative
+ * marker; "Ins" for instrumentative marker; "Abl" for ablative marker; "Nom" for nominative marker.
+ */
 char *get_case(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, ACCUSATIVE) || parse_contains_tag(morphological_parse, PCACCUSATIVE)){
         return "Acc";
@@ -661,6 +685,11 @@ char *get_case(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the definiteness of the parse for the universal dependency feature definite. It applies only for
+ * determiners in Turkish.
+ * @return "Ind" for 'bir', 'bazı', or 'birkaç'. "Def" for 'her', 'bu', 'şu', 'o', 'bütün'.
+ */
 char *get_definite(const Morphological_parse *morphological_parse) {
     char* lemma = morphological_parse->root;
     if (parse_contains_tag(morphological_parse, DETERMINER)){
@@ -674,6 +703,10 @@ char *get_definite(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the degree of the parse for the universal dependency feature degree.
+ * @return "Cmp" for comparative adverb 'daha'; "Sup" for superlative adjective or adverb 'en'.
+ */
 char *get_degree(const Morphological_parse *morphological_parse) {
     char* lemma = morphological_parse->root;
     if (strcmp(lemma, "daha") == 0){
@@ -685,6 +718,10 @@ char *get_degree(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the polarity of the verb for the universal dependency feature polarity.
+ * @return "Pos" for positive polarity containing tag POS; "Neg" for negative polarity containing tag NEG.
+ */
 char *get_polarity(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, POSITIVE)){
         return "Pos";
@@ -695,6 +732,10 @@ char *get_polarity(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the person of the agreement of the parse for the universal dependency feature person.
+ * @return "1" for first person; "2" for second person; "3" for third person.
+ */
 char *get_person(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, A1SG) || parse_contains_tag(morphological_parse, A1PL)
         || parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P1PL)){
@@ -711,6 +752,12 @@ char *get_person(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the voice of the verb parse for the universal dependency feature voice.
+ * @return "CauPass" if the verb parse is both causative and passive; "Pass" if the verb parse is only passive;
+ * "Rcp" if the verb parse is reciprocal; "Cau" if the verb parse is only causative; "Rfl" if the verb parse is
+ * reflexive.
+ */
 char *get_voice(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, PASSIVE)){
         return "Pass";
@@ -727,6 +774,11 @@ char *get_voice(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the aspect of the verb parse for the universal dependency feature aspect.
+ * @return "Perf" for past, narrative and future tenses; "Prog" for progressive tenses; "Hab" for Aorist; "Rapid"
+ * for parses containing HASTILY tag; "Dur" for parses containing START, STAY or REPEAT tags.
+ */
 char *get_aspect(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, PASTTENSE) || parse_contains_tag(morphological_parse, NARRATIVE) || parse_contains_tag(morphological_parse, FUTURE)){
         return "Perf";
@@ -746,6 +798,11 @@ char *get_aspect(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the tense of the verb parse for universal dependency feature tense.
+ * @return "Past" for simple past tense; "Fut" for future tense; "Pqp" for narrative past tense; "Pres" for other
+ * past tenses.
+ */
 char *get_tense(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, PASTTENSE)){
         return "Past";
@@ -762,6 +819,19 @@ char *get_tense(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the modality of the verb parse for the universal dependency feature mood.
+ * @return "GenNecPot" if both necessitative and potential is combined with a suffix of general modality;
+ * "CndGenPot" if both conditional and potential is combined with a suffix of general modality;
+ * "GenNec" if necessitative is combined with a suffix of general modality;
+ * "GenPot" if potential is combined with a suffix of general modality;
+ * "NecPot" if necessitative is combined with potential;
+ * "DesPot" if desiderative is combined with potential;
+ * "CndPot" if conditional is combined with potential;
+ * "CndGen" if conditional is combined with a suffix of general modality;
+ * "Imp" for imperative; "Cnd" for simple conditional; "Des" for simple desiderative; "Opt" for optative; "Nec" for
+ * simple necessitative; "Pot" for simple potential; "Gen" for simple suffix of a general modality.
+ */
 char *get_mood(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, IMPERATIVE)){
         return "Imp";
@@ -784,6 +854,11 @@ char *get_mood(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Returns the form of the verb parse for the universal dependency feature verbForm.
+ * @return "Part" for participles; "Vnoun" for infinitives; "Conv" for parses contaning tags SINCEDOINGSO,
+ * WITHOUTHAVINGDONESO, WITHOUTBEINGABLETOHAVEDONESO, BYDOINGSO, AFTERDOINGSO, INFINITIVE3; "Fin" for others.
+ */
 char *get_verb_form(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, PASTPARTICIPLE) || parse_contains_tag(morphological_parse, FUTUREPARTICIPLE) || parse_contains_tag(morphological_parse, PRESENTPARTICIPLE)){
         return "Part";
@@ -794,6 +869,12 @@ char *get_verb_form(const Morphological_parse *morphological_parse) {
     return NULL;
 }
 
+/**
+ * Construct the universal dependency features as an array of strings. Each element represents a single feature.
+ * Every feature is given as featureType = featureValue.
+ * @param uPos Universal dependency part of speech tag for the parse.
+ * @return An array of universal dependency features for this parse.
+ */
 Array_list_ptr get_universal_dependency_features(const Morphological_parse* morphological_parse, const char *u_pos) {
     Array_list_ptr feature_list = create_array_list();
     char* pron_type = get_pron_type(morphological_parse);
@@ -864,6 +945,12 @@ Array_list_ptr get_universal_dependency_features(const Morphological_parse* morp
     return feature_list;
 }
 
+/**
+ * Returns the universal dependency part of speech for this parse.
+ * @return "AUX" for word 'değil; "PROPN" for proper nouns; "NOUN for nouns; "ADJ" for adjectives; "ADV" for
+ * adverbs; "INTJ" for interjections; "VERB" for verbs; "PUNCT" for punctuation symbols; "DET" for determiners;
+ * "NUM" for numerals; "PRON" for pronouns; "ADP" for post participles; "SCONJ" or "CCONJ" for conjunctions.
+ */
 char *get_universal_dependency_pos(const Morphological_parse *morphological_parse) {
     char* lemma = morphological_parse->root;
     if (strcmp(lemma, "değil") == 0){
@@ -924,6 +1011,12 @@ char *get_universal_dependency_pos(const Morphological_parse *morphological_pars
     return "X";
 }
 
+/**
+ * The overridden toString method gets the root and the first inflectional group as a result {@link String} then concatenates
+ * with ^DB+ and the following inflectional groups.
+ *
+ * @return result {@link String}.
+ */
 char *morphological_parse_to_string(const Morphological_parse *morphological_parse) {
     char tmp[MAX_LINE_LENGTH];
     char* st = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, 0));
@@ -939,6 +1032,10 @@ char *morphological_parse_to_string(const Morphological_parse *morphological_par
     return result;
 }
 
+/**
+ * Frees memory allocated to a morphological parse. Deallocates the array of inflectional groups.
+ * @param morphological_parse Morphological parse to be deallocated.
+ */
 void free_morphological_parse(Morphological_parse_ptr morphological_parse) {
     free_array_list(morphological_parse->inflectional_groups, (void (*)(void *)) free_inflectional_group);
     free_(morphological_parse->root);

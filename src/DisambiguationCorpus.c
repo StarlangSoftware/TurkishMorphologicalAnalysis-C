@@ -4,7 +4,6 @@
 
 #include <FileUtils.h>
 #include <string.h>
-#include <stdlib.h>
 #include <Memory/Memory.h>
 #include "DisambiguationCorpus.h"
 #include "DisambiguatedWord.h"
@@ -50,11 +49,19 @@ Corpus_ptr create_disambiguation_corpus(const char *file_name) {
     return result;
 }
 
+/**
+ * Frees memory allocated for a sentence containing disambiguated words. Frees word array.
+ * @param sentence Sentence to be deallocated.
+ */
 void free_disambiguation_sentence(Sentence_ptr sentence) {
     free_array_list(sentence->words, (void (*)(void *)) free_disambiguated_word);
     free_(sentence);
 }
 
+/**
+ * Frees memory allocated for a disambiguation corpus. Frees sentences, paragraphs and word list.
+ * @param corpus Corpus to be deallocated.
+ */
 void free_disambiguation_corpus(Corpus_ptr corpus) {
     free_array_list(corpus->sentences, (void (*)(void *)) free_disambiguation_sentence);
     free_array_list(corpus->paragraphs, NULL);

@@ -24,6 +24,10 @@ Fsm_parse_ptr create_fsm_parse(Txt_word_ptr root) {
     return result;
 }
 
+/**
+ * Second constructor of FsmParse, which creates an empty FsmParse
+ * @return Empty allocated FsmParse
+ */
 Fsm_parse_ptr create_fsm_parse2() {
     Fsm_parse_ptr result = malloc_(sizeof(Fsm_parse), "create_fsm_parse2");
     result->form_list = create_array_list();
@@ -40,6 +44,11 @@ Fsm_parse_ptr create_fsm_parse2() {
     return result;
 }
 
+/**
+ * Frees memory allocated for a FsmParse. Deallocates root, form list, inflectional groups, suffix list, transition list
+ * and with list.
+ * @param fsm_parse FsmParse to be deallocated.
+ */
 void free_fsm_parse(Fsm_parse_ptr fsm_parse) {
     free_(fsm_parse->form);
     free_txt_word(fsm_parse->root);
@@ -51,6 +60,13 @@ void free_fsm_parse(Fsm_parse_ptr fsm_parse) {
     free_(fsm_parse);
 }
 
+/**
+ * Updates FsmParse by setting the word name as the initial root and form. It also sets the pos, initial_pos, suffix
+ * list and form list by using start state.
+ * @param fsm_parse FsmParse for which initial attributes will be set.
+ * @param name Name of the word.
+ * @param start_state Start state for parse.
+ */
 void update_fsm_parse_with_state_and_name(Fsm_parse_ptr fsm_parse, char *name, Fsm_State_ptr start_state) {
     fsm_parse->root = create_txt_word(name);
     fsm_parse->form = str_copy(fsm_parse->form, fsm_parse->root->name);
@@ -699,6 +715,12 @@ char *fsm_parse_to_string(Fsm_parse_ptr fsm_parse) {
     return transition_list(fsm_parse);
 }
 
+/**
+ * Comparator method to compare two fsm parses. Morphological parses of the parses are lexicographically compared.
+ * @param fsm_parse1 First fsm parse to compare.
+ * @param fsm_parse2 Second fsm parse to compare.
+ * @return -1 if the first fsm parse comes before second in lexicographical order, 0 if they are same, 1 otherwise.
+ */
 int compare_fsm_parse(const Fsm_parse *fsm_parse1, const Fsm_parse *fsm_parse2) {
     char* transition1 = transition_list(fsm_parse1);
     char* transition2 = transition_list(fsm_parse2);
@@ -708,6 +730,11 @@ int compare_fsm_parse(const Fsm_parse *fsm_parse1, const Fsm_parse *fsm_parse2) 
     return result;
 }
 
+/**
+ * The get_word_with_pos2 method returns root with the MorphologicalTag of the first inflectional as a new word.
+ *
+ * @return root with the MorphologicalTag of the first inflectional as a new word.
+ */
 char* get_word_with_pos2(const Fsm_parse *fsm_parse) {
     char tmp[MAX_LINE_LENGTH];
     char *tag = get_tag(get_tag_with_index(first_inflectional_group2(fsm_parse), 0));
@@ -716,6 +743,11 @@ char* get_word_with_pos2(const Fsm_parse *fsm_parse) {
     return clone_string(tmp);
 }
 
+/**
+ * The firstInflectionalGroup method returns the first inflectional group of inflectionalGroups array.
+ *
+ * @return the first inflectional group of inflectionalGroups array.
+ */
 Inflectional_group_ptr first_inflectional_group2(const Fsm_parse *fsm_parse) {
     return array_list_get(fsm_parse->inflectional_groups, 0);
 }

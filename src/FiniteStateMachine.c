@@ -2,7 +2,6 @@
 // Created by Olcay Taner YILDIZ on 18.10.2023.
 //
 
-#include <stdlib.h>
 #include <XmlDocument.h>
 #include <string.h>
 #include <Memory/Memory.h>
@@ -10,16 +9,28 @@
 #include "FsmState.h"
 #include "Transition.h"
 
+/**
+ * Frees memory allocated for a finite state machine. Frees states and transitions.
+ * @param finite_state_machine Finite state machine to be deallocated.
+ */
 void free_finite_state_machine(Finite_state_machine_ptr finite_state_machine) {
     free_array_list(finite_state_machine->states, (void (*)(void *)) free_fsm_state);
     free_hash_map(finite_state_machine->transitions, (void (*)(void *)) free_array_list_with_transitions);
     free_(finite_state_machine);
 }
 
+/**
+ * Frees memory allocated to the transitions as an array.
+ * @param transition_list Transition list to be deallocated.
+ */
 void free_array_list_with_transitions(Array_list_ptr transition_list){
     free_array_list(transition_list, (void (*)(void *)) free_transition);
 }
 
+/**
+ * Creates an empty finite state machine with no empty state and transition arrays.
+ * @return A new allocated finite state machine.
+ */
 Finite_state_machine_ptr create_finite_state_machine2() {
     Finite_state_machine_ptr result = malloc_(sizeof(Finite_state_machine), "create_finite_state_machine2");
     result->states = create_array_list();
@@ -200,6 +211,12 @@ void add_fsm_transition2(Finite_state_machine_ptr finite_state_machine,
     }
 }
 
+/**
+ * The get_transitions method returns the transitions at the given state.
+ *
+ * @param state State input.
+ * @return transitions at given state.
+ */
 Array_list_ptr get_transitions(Finite_state_machine_ptr finite_state_machine, Fsm_State_ptr state) {
     if (hash_map_contains(finite_state_machine->transitions, state)){
         return hash_map_get(finite_state_machine->transitions, state);

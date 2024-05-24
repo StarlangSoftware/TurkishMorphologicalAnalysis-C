@@ -101,15 +101,15 @@ Array_list_ptr morphological_analysis3(Fsm_morphological_analyzer_ptr fsm_morpho
 
 bool pattern_matches(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *expr, char *value);
 
-bool is_proper_noun_fsm(const char *surfaceForm);
+bool is_proper_noun_fsm(const char *surface_form);
 
-bool is_code_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);
+bool is_code_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
 
-bool is_integer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);
+bool is_integer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
 
-bool is_double(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);
+bool is_double(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
 
-bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);
+bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
 
 bool is_percent_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
 
@@ -131,7 +131,7 @@ bool analysis_exists(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
 
 Array_list_ptr analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form, bool is_proper);
 
-Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);
+Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
 
 Fsm_parse_list_ptr
 robust_morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);

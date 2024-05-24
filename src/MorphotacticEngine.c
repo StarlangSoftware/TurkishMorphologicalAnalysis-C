@@ -6,7 +6,21 @@
 #include <Language/TurkishLanguage.h>
 #include "MorphotacticEngine.h"
 
-void resolve_D(Txt_word_ptr root, String_ptr formation, const char *formation_to_check) {
+/**
+ * resolveD resolves the D metamorpheme to 'd' or 't' depending on the root and current formationToCheck. It adds
+ * 'd' if the root is an abbreviation; 't' if the last phoneme is one of the "çfhkpsşt" (fıstıkçı şahap) or 'd'
+ * otherwise; 't' if the word is a number ending with 3, 4, 5, 40, 60, or 70 or 'd' otherwise.
+ * @param root Root of the word
+ * @param formation Formation is current status of the wordform in the current state of the finite state machine. It
+ *                  is always equal to formationToCheck except the case where there is an apostrophe after the
+ *                  formationToCheck such as (3').
+ * @param formation_to_check FormationToCheck is current status of the wordform in the current state of the finite
+ *                         state machine except the apostrophe at the end if it exists.
+ * @return Formation with added 'd' or 't' character.
+ */
+void resolve_D(Txt_word_ptr root,
+               String_ptr formation,
+               const char *formation_to_check) {
     char* added;
     if (is_abbreviation(root)) {
         string_append(formation, "d");
@@ -44,13 +58,31 @@ void resolve_D(Txt_word_ptr root, String_ptr formation, const char *formation_to
     string_append(formation, added);
 }
 
-void resolve_A(Txt_word_ptr root, String_ptr formation, bool rootWord, const char *formationToCheck) {
+/**
+ * resolveA resolves the A metamorpheme to 'a' or 'e' depending on the root and current formation_to_check. It adds
+ * 'e' if the root is an abbreviation; 'a' if the last vowel is a back vowel (except words that do not obey vowel
+ * harmony during agglutination); 'e' if the last vowel is a front vowel (except words that do not obey vowel
+ * harmony during agglutination); 'a' if the word is a number ending with 6, 9, 10, 30, 40, 60, or 90 or 'e'
+ * otherwise.
+ * @param root Root of the word
+ * @param formation Formation is current status of the wordform in the current state of the finite state machine. It
+ *                  is always equal to formation_to_check except the case where there is an apostrophe after the
+ *                  formation_to_check such as (3').
+ * @param root_word True if the current word form is root form, false otherwise.
+ * @param formation_to_check FormationToCheck is current status of the wordform in the current state of the finite
+ *                         state machine except the apostrophe at the end if it exists.
+ * @return Formation with added 'a' or 'e' character.
+ */
+void resolve_A(Txt_word_ptr root,
+               String_ptr formation,
+               bool root_word,
+               const char *formation_to_check) {
     char* added = "";
     if (is_abbreviation(root)) {
         string_append(formation, "e");
         return;
     }
-    String_ptr lastVowel = last_vowel(formationToCheck);
+    String_ptr lastVowel = last_vowel(formation_to_check);
     if (strcmp(lastVowel->s, "0") >= 0 && strcmp(lastVowel->s, "9") <= 0) {
         if (string_equals2(lastVowel, "6") || string_equals2(lastVowel, "9")){
             //6'ya, 9'a
@@ -74,7 +106,7 @@ void resolve_A(Txt_word_ptr root, String_ptr formation, bool rootWord, const cha
         }
     }
     if (is_back_vowel(lastVowel->s)) {
-        if (not_obeys_vowel_harmony_during_agglutination(root) && rootWord) {
+        if (not_obeys_vowel_harmony_during_agglutination(root) && root_word) {
             //alkole, anormale, ampule, tümamirali, spirali, sosyali
             added = "e";
         } else {
@@ -83,7 +115,7 @@ void resolve_A(Txt_word_ptr root, String_ptr formation, bool rootWord, const cha
         }
     }
     if (is_front_vowel(lastVowel->s)) {
-        if (not_obeys_vowel_harmony_during_agglutination(root) && rootWord) {
+        if (not_obeys_vowel_harmony_during_agglutination(root) && root_word) {
             //sakala, kabala, eve, kediye
             added = "a";
         } else {
@@ -108,8 +140,32 @@ void resolve_A(Txt_word_ptr root, String_ptr formation, bool rootWord, const cha
     string_append(formation, added);
 }
 
-void resolve_H(Txt_word_ptr root, String_ptr formation, bool beginning_of_suffix, bool special_case_tense_suffix, bool root_word,
-          const char *formation_to_check) {
+/**
+ * resolveH resolves the H metamorpheme to 'ı', 'i', 'u' or 'ü', depending on the  current formationToCheck, root,
+ * and formation. It adds 'i' if the root is an abbreviation; 'ü' if the  character before the last vowel is
+ * front rounded (or back rounded when the root word does not obey vowel harmony during agglutination); 'i' if the
+ * character before the last vowel is front unrounded; 'u' if the character before the  last vowel is back rounded;
+ * 'ı' if the character before the last vowel is back unrounded (or front unrounded when the root word does not obey
+ * vowel harmony during agglutination); 'ı' if the word is a  number ending with 6, 40, 60 or 90; 'ü' if the word
+ * is a number ending with 3, 4, or 00; 'u' if the word is a number ending with 9, 10, or 30; 'i' otherwise for
+ * numbers. Special case for 'Hyor' suffix is handled with resolveHforSpecialCaseTenseSuffix method.
+ * @param root Root of the word
+ * @param formation Formation is current status of the wordform in the current state of the finite state machine. It
+ *                  is always equal to formationToCheck except the case where there is an apostrophe after the
+ *                  formationToCheck such as (3').
+ * @param beginning_of_suffix True if H appears in the beginning of the suffix, false otherwise.
+ * @param special_case_tense_suffix True if the suffix is 'Hyor', false otherwise.
+ * @param root_word True if the current word form is root form, false otherwise.
+ * @param formation_to_check FormationToCheck is current status of the word form in the current state of the finite
+ *                         state machine except the apostrophe at the end if it exists.
+ * @return Formation with possibly last character dropped and 'ı', 'i', 'u' or 'ü' character added.
+ */
+void resolve_H(Txt_word_ptr root,
+               String_ptr formation,
+               bool beginning_of_suffix,
+               bool special_case_tense_suffix,
+               bool root_word,
+               const char *formation_to_check) {
     char except_last_char[MAX_WORD_LENGTH];
     bool vowel, front_rounded, front_unrounded, back_rounded, back_unrounded;
     if (is_abbreviation(root)) {

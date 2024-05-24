@@ -3,7 +3,6 @@
 //
 
 #include <string.h>
-#include <stdlib.h>
 #include <FileUtils.h>
 #include <Memory/Memory.h>
 #include "MetamorphicParse.h"
@@ -56,6 +55,10 @@ Array_list_ptr get_meta_morpheme_tag1(char *tag) {
     return result;
 }
 
+/**
+ * Frees memory allocated to a metamorphic parse. Deallocates metamorpheme array list.
+ * @param metamorphic_parse Metamorphic parse to be deallocated.
+ */
 void free_metamorphic_parse(Metamorphic_parse_ptr metamorphic_parse) {
     free_array_list(metamorphic_parse->meta_morpheme_list, free_);
     free_(metamorphic_parse->root);

@@ -2,7 +2,6 @@
 // Created by Olcay Taner YILDIZ on 14.10.2023.
 //
 
-#include <stdlib.h>
 #include <StringUtils.h>
 #include <string.h>
 #include <stdio.h>
@@ -31,11 +30,20 @@ Inflectional_group_ptr create_inflectional_group(const char *IG) {
     return result;
 }
 
+/**
+ * Frees memory allocated to an inflectional group. Deallocates IG array.
+ * @param inflectional_group Inflectional group to be deallocated.
+ */
 void free_inflectional_group(Inflectional_group_ptr inflectional_group) {
     free_array_list(inflectional_group->IG, free_);
     free_(inflectional_group);
 }
 
+/**
+ * Clones an InflectionalGroup object. Creates a new IG array list, then clones every IG in that array.
+ * @param inflectional_group Inflectional group to be cloned.
+ * @return Clone of the inflectional group
+ */
 Inflectional_group_ptr clone_inflectional_group(const Inflectional_group *inflectional_group) {
     Inflectional_group_ptr result = malloc_(sizeof(Inflectional_group), "clone_inflectional_group");
     result->IG = create_array_list();

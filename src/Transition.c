@@ -64,6 +64,10 @@ Transition_ptr create_transition3(char *with) {
     return result;
 }
 
+/**
+ * Frees memory allocated for transition object. Deallocates strings.
+ * @param transition Transition to be deallocated.
+ */
 void free_transition(Transition_ptr transition) {
     free_(transition->with);
     free_(transition->with_name);
@@ -133,7 +137,7 @@ bool transition_possible1(Transition_ptr transition, char *current_surface_form,
 }
 
 /**
- * The transitionPossible method takes a FsmParse currentFsmParse as an input. It then checks some special cases;
+ * The transitionPossible method takes a current parse as an input. It then checks some special  cases.
  *
  * @param currentFsmParse Parse to be checked
  * @return true if transition is possible false otherwise
@@ -153,6 +157,13 @@ bool transition_possible2(Transition_ptr transition, Fsm_parse_ptr currentFsmPar
     return true;
 }
 
+/**
+ * The transitionPossible method takes root and current parse as inputs. It then checks some special cases.
+ *
+ * @param root Current root word
+ * @param fromState From which state we arrived to this state.
+ * @return true if transition is possible false otherwise
+ */
 bool transition_possible3(Transition_ptr transition, Txt_word_ptr root, Fsm_State_ptr from_state) {
     if (is_adjective(root) && ((is_nominal(root) && !is_exceptional(root)) || is_pronoun(root)) &&
         strcmp(transition->to_state->name, "NominalRoot(ADJ)") == 0 && strcmp(transition->with, "0") == 0) {
@@ -287,6 +298,23 @@ char *make_transition(Transition_ptr transition, Txt_word_ptr root, char *stem) 
     }
 }
 
+/**
+ * The method is main driving method to accomplish the current transition from one state to another depending on
+ * the root form of the word, current value of the word form, and the type of the start state. The method
+ * (a) returns the original word form if the transition is an epsilon transition, (b) adds 'nunla' if the current
+ * stem is 'bu', 'şu' or 'o', (c) returns 'bana' or 'sana' if the current stem is 'ben' or 'sen' respectively.
+ * For other cases, the method first modifies current stem and then adds the transition using special metamorpheme
+ * resolving methods. These cases are: (d) Converts 'y' of the first character of the transition to 'i' if the
+ * current stem is 'ye' or 'de'. (e) Drops the last two characters and adds last character when the transition is
+ * ('Hl' or 'Hn') and last 'I' drops during passive suffixation. (f) Adds 'y' character when the word ends with 'su'
+ * and the transition does not start with 'y'. (g) Adds the last character again when the root duplicates during
+ * suffixation. (h) Drops the last two characters and adds the last character when last 'i' drops during
+ * suffixation. (i) Replaces the last character with a soft one when the root soften during suffixation.
+ * @param root Root of the current word form
+ * @param stem Current word form
+ * @param startState The state from which this Fsm morphological analysis search has started.
+ * @return The current value of the word form after this transition is completed in the finite state machine.
+ */
 char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem, Fsm_State_ptr startState) {
     char* tmp3 = str_concat(root->name, "'");
     bool rootWord = strcmp(root->name, stem) == 0 || strcmp(tmp3, stem) == 0;

@@ -3,7 +3,6 @@
 //
 
 #include <string.h>
-#include <stdlib.h>
 #include <FileUtils.h>
 #include <Memory/Memory.h>
 #include "FsmParseList.h"
@@ -36,6 +35,10 @@ Fsm_parse_list_ptr create_fsm_parse_list(Array_list_ptr fsmParses) {
     return result;
 }
 
+/**
+ * Frees memory allocated for fsm parse list. Deallocates fsm_parses array list.
+ * @param fsm_parse_list Fsm parse list to be deallocated.
+ */
 void free_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list) {
     free_array_list(fsm_parse_list->fsm_parses, (void (*)(void *)) free_fsm_parse);
     free_(fsm_parse_list);
@@ -329,16 +332,31 @@ char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
     return result;
 }
 
+/**
+ * Empty constructor of FsmParseList. Initializes the fsm_parses array.
+ * @return Allocated and empty FsmParseList.
+ */
 Fsm_parse_list_ptr create_fsm_parse_list2() {
     Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list), "create_fsm_parse_list2");
     result->fsm_parses = create_array_list();
     return result;
 }
 
+/**
+ * The get_fsm_parse method takes an integer index as an input and returns the item of fsm_parses array at given index.
+ *
+ * @param index Integer input.
+ * @return the item of fsm_parses array at given index.
+ */
 Fsm_parse_ptr get_fsm_parse(Fsm_parse_list_ptr fsm_parse_list, int index) {
     return array_list_get(fsm_parse_list->fsm_parses, index);
 }
 
+/**
+ * Clones the FsmParseList object. Creates a new fsm_parses array and fills it with clones of fsm parses.
+ * @param fsm_parse_list FsmParseList to be cloned.
+ * @return A clone of the given FsmParseList object.
+ */
 Fsm_parse_list_ptr clone_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list) {
     Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list), "clone_fsm_parse_list");
     result->fsm_parses = create_array_list();

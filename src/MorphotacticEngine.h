@@ -9,7 +9,7 @@
 
 void resolve_D(Txt_word_ptr root, String_ptr formation, const char *formation_to_check);
 
-void resolve_A(Txt_word_ptr root, String_ptr formation, bool rootWord, const char *formationToCheck);
+void resolve_A(Txt_word_ptr root, String_ptr formation, bool root_word, const char *formation_to_check);
 
 void resolve_H(Txt_word_ptr root,
                String_ptr formation,
