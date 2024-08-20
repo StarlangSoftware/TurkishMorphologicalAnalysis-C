@@ -237,7 +237,7 @@ void resolve_H(Txt_word_ptr root,
     front_unrounded = is_front_unrounded_vowel(last_v->s);
     back_rounded = is_back_rounded_vowel(last_v->s);
     back_unrounded = is_back_unrounded_vowel(last_v->s);
-    if ((front_unrounded && !not_obeys_vowel_harmony_during_agglutination(root)) || (string_equals2(last_v, "a") && not_obeys_vowel_harmony_during_agglutination(root))) {
+    if ((front_unrounded && (!not_obeys_vowel_harmony_during_agglutination(root) || !root_word)) || (string_equals2(last_v, "a") && not_obeys_vowel_harmony_during_agglutination(root))) {
         free_string_ptr(last_v);
         string_append(formation, "i");
         return;

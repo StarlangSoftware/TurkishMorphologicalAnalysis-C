@@ -20,7 +20,7 @@ int main(){
     test_transition(fsm, (char*[]){"hizbi", "kaybı", "ahdi", "nesci", "zehri", "zikri"}, 6);
     test_transition(fsm, (char*[]){"zıddı", "serhaddi", "tıbbı", "ceddi", "fenni", "haddi", "hazzı"}, 7);
     test_transition(fsm, (char*[]){"amibi", "armudu", "ağacı", "akacı", "arkeoloğu", "filoloğu", "küngü", "kitaplığı", "küllüğü", "Kuzguncuk'u", "Leylak'ı"}, 11);
-    test_transition(fsm, (char*[]){"alkole", "anormale", "sakala", "faika", "kediye", "eve"}, 6);
+    test_transition(fsm, (char*[]){"halimi", "alkole", "anormale", "sakala", "faika", "kediye", "eve"}, 6);
     test_transition(fsm, (char*[]){"3'tü", "1'di", "2'ydi", "4'tü", "5'ti", "6'ydı", "7'ydi", "8'di", "9'du", "30'du", "40'tı", "60'tı", "70'ti", "50'ydi"}, 14);
     test_transition(fsm, (char*[]){"2'yi", "5'i", "9'u", "10'u", "30'u", "3'ü", "4'ü", "100'ü", "6'yı", "40'ı", "60'ı", "90'ı"}, 12);
     test_transition(fsm, (char*[]){"6'ya", "9'a", "10'a", "30'a", "40'a", "60'a", "90'a", "8'e", "5'e", "4'e", "1'e", "3'e", "7'ye"}, 13);

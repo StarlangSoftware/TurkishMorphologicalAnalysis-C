@@ -1423,44 +1423,34 @@ Array_list_ptr analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyze
  * @param surface_form Surface form for which we will identify a possible new root form.
  * @return Possible new root form.
  */
-Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
     char* reverse = reverse_string(surface_form);
     Hash_set_ptr words = get_words_with_prefix(fsm_morphological_analyzer->suffix_trie, reverse);
     free_(reverse);
-    int max_length = 0;
-    char *longest_word = NULL;
+    Array_list_ptr candidate_list = create_array_list();
     Array_list_ptr list = hash_set_key_list(words);
     for (int i = 0; i < list->size; i++) {
         Txt_word_ptr word = array_list_get(list, i);
-        if (word_size(word->name) > max_length) {
-            String_ptr st = substring(surface_form, 0, word_size(surface_form) - word_size(word->name));
-            free_(longest_word);
-            longest_word = str_copy(longest_word, st->s);
+        String_ptr candidate_word = substring(surface_form, 0, word_size(surface_form) - word_size(word->name));
+        Txt_word_ptr new_word;
+        if (ends_with(candidate_word->s, "ğ")) {
+            String_ptr st = substring(candidate_word->s, 0, word_size(candidate_word->s) - 1);
+            string_append(st, "k");
+            char* tmp = str_copy(tmp, st->s);
             free_string_ptr(st);
-            max_length = word_size(word->name);
+            new_word = create_txt_word2(tmp, "CL_ISIM");
+            free_(tmp);
+            add_flag(new_word, "IS_SD");
+        } else {
+            new_word = create_txt_word2(candidate_word->s, "CL_ISIM");
+            add_flag(new_word, "CL_FIIL");
         }
+        add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, candidate_word->s, new_word);
+        free_string_ptr(candidate_word);
     }
     free_hash_set(words, (void (*)(void *)) free_txt_word);
     free_array_list(list, NULL);
-    Txt_word_ptr new_word;
-    if (max_length != 0) {
-        if (ends_with(longest_word, "ğ")) {
-            String_ptr st = substring(longest_word, 0, word_size(longest_word) - 1);
-            string_append(st, "k");
-            free_(longest_word);
-            longest_word = str_copy(longest_word, st->s);
-            free_string_ptr(st);
-            new_word = create_txt_word2(longest_word, "CL_ISIM");
-            add_flag(new_word, "IS_SD");
-        } else {
-            new_word = create_txt_word2(longest_word, "CL_ISIM");
-            add_flag(new_word, "CL_FIIL");
-        }
-        add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, longest_word, new_word);
-        free_(longest_word);
-        return new_word;
-    }
-    return NULL;
+    return candidate_list;
 }
 
 /**
@@ -1487,24 +1477,25 @@ robust_morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_a
             array_list_add(fsm_parse, create_fsm_parse5(surfaceForm,
                                                         get_state(fsm_morphological_analyzer->finite_state_machine,
                                                                   "ProperRoot")));
-        } else {
-            if (is_code_fsm(fsm_morphological_analyzer, surfaceForm)) {
-                array_list_add(fsm_parse, create_fsm_parse5(surfaceForm,
+        }
+        if (is_code_fsm(fsm_morphological_analyzer, surfaceForm)) {
+            array_list_add(fsm_parse, create_fsm_parse5(surfaceForm,
                                                             get_state(fsm_morphological_analyzer->finite_state_machine,
                                                                       "CodeRoot")));
-            } else {
-                Txt_word_ptr newRoot = root_of_possibly_new_word(fsm_morphological_analyzer, surfaceForm);
-                if (newRoot != NULL) {
-                    array_list_add(fsm_parse, create_fsm_parse6(newRoot, get_state(
-                            fsm_morphological_analyzer->finite_state_machine, "VerbalRoot")));
-                    array_list_add(fsm_parse, create_fsm_parse6(newRoot, get_state(
-                            fsm_morphological_analyzer->finite_state_machine, "NominalRoot")));
-                } else {
-                    array_list_add(fsm_parse, create_fsm_parse5(surfaceForm, get_state(
-                            fsm_morphological_analyzer->finite_state_machine, "NominalRoot")));
-                }
+        }
+        Array_list_ptr new_candidate_list = root_of_possibly_new_word(fsm_morphological_analyzer, surfaceForm);
+        if (!is_array_list_empty(new_candidate_list)) {
+            for (int i = 0; i < new_candidate_list->size; i++){
+                Txt_word_ptr newRoot = array_list_get(new_candidate_list, i);
+                array_list_add(fsm_parse, create_fsm_parse6(newRoot, get_state(
+                        fsm_morphological_analyzer->finite_state_machine, "VerbalRoot")));
+                array_list_add(fsm_parse, create_fsm_parse6(newRoot, get_state(
+                        fsm_morphological_analyzer->finite_state_machine, "NominalRoot")));
             }
         }
+        array_list_add(fsm_parse, create_fsm_parse5(surfaceForm, get_state(
+                    fsm_morphological_analyzer->finite_state_machine, "NominalRoot")));
+        free_array_list(new_candidate_list, (void (*)(void *)) free_txt_word);
         Array_list_ptr result = parse_word2(fsm_morphological_analyzer, fsm_parse, surfaceForm);
         free_array_list(fsm_parse, NULL);
         return create_fsm_parse_list(result);

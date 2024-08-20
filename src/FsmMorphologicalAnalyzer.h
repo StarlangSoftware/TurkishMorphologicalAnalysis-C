@@ -131,7 +131,7 @@ bool analysis_exists(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
 
 Array_list_ptr analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form, bool is_proper);
 
-Txt_word_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
 
 Fsm_parse_list_ptr
 robust_morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);
