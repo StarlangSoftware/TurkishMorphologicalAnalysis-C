@@ -97,4 +97,6 @@ char* get_fsm_parse_pos(const Fsm_parse *fsm_parse);
 
 bool is_fsm_parse_capital_word(const Fsm_parse *fsm_parse);
 
+void restore_original_form(Fsm_parse *fsm_parse, char* original, char* pronunciation);
+
 #endif //MORPHOLOGICALANALYSIS_FSMPARSE_H

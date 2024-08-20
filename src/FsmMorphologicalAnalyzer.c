@@ -31,6 +31,7 @@ Fsm_morphological_analyzer_ptr  create_fsm_morphological_analyzer(char *fileName
     result->cache = create_lru_cache(cacheSize, (unsigned int (*)(const void *, int)) hash_function_string,
                                      (int (*)(const void *, const void *)) compare_string);
     result->most_used_patterns = create_string_hash_map();
+    add_pronunciations(result, "pronunciations.txt");
     return result;
 }
 
@@ -62,6 +63,7 @@ void free_fsm_morphological_analyzer(Fsm_morphological_analyzer_ptr fsm_morpholo
     }
     free_lru_cache(fsm_morphological_analyzer->cache, free_, (void (*)(void *)) free_fsm_parse_list);
     free_hash_map(fsm_morphological_analyzer->most_used_patterns, (void (*)(void *)) free_regular_expression);
+    free_hash_map2(fsm_morphological_analyzer->pronunciations, free_, free_);
     free_(fsm_morphological_analyzer);
 }
 
@@ -1580,7 +1582,9 @@ bool morphological_analysis_exists(Fsm_morphological_analyzer_ptr fsm_morphologi
 Fsm_parse_list_ptr
 morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm) {
     Fsm_parse_list_ptr fsmParseList;
+    bool is_root_replaced = false;
     char* lowerCased = to_lowercase(surfaceForm);
+    char* possibleRootLowerCased, *pronunciation;
     if (fsm_morphological_analyzer->parsed_surface_forms != NULL &&
         fsm_morphological_analyzer->parsed_surface_forms->count > 0 &&
         hash_map_contains(fsm_morphological_analyzer->parsed_surface_forms, lowerCased) &&
@@ -1667,31 +1671,46 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
                                             fsmParse = analysis(fsm_morphological_analyzer, lowerCased,
                                                                 is_proper_noun_fsm(surfaceForm));
                                         } else {
-                                            if (is_capital(possibleRoot)) {
+                                            String_ptr first_char = substring(possibleRoot, 0, 1);
+                                            if (is_capital(possibleRoot) || str_contains("QWX", first_char->s)) {
                                                 Txt_word_ptr newWord = NULL;
-                                                char *lowerCase = to_lowercase(possibleRoot);
-                                                if (get_word_txt(fsm_morphological_analyzer->dictionary, lowerCase) !=
-                                                    NULL) {
-                                                    add_flag(get_word_txt(fsm_morphological_analyzer->dictionary,
-                                                                          lowerCase), "IS_OA");
-                                                } else {
-                                                    newWord = create_txt_word2(lowerCase, "IS_OA");
-                                                    add_word_to_trie(fsm_morphological_analyzer->dictionary_trie,
-                                                                     lowerCase, newWord);
-                                                }
-                                                free_(lowerCase);
-                                                lowerCase = to_lowercase(surfaceForm);
-                                                fsmParse = analysis(fsm_morphological_analyzer,
-                                                                    lowerCase,
-                                                                    is_proper_noun_fsm(surfaceForm));
-                                                if (fsmParse == NULL && newWord != NULL) {
-                                                    add_flag(newWord, "IS_KIS");
+                                                possibleRootLowerCased = to_lowercase(possibleRoot);
+                                                if (hash_map_contains(fsm_morphological_analyzer->pronunciations, possibleRootLowerCased)){
+                                                    is_root_replaced = true;
+                                                    pronunciation = hash_map_get(fsm_morphological_analyzer->pronunciations, possibleRootLowerCased);
+                                                    if (get_word_txt(fsm_morphological_analyzer->dictionary, pronunciation) !=
+                                                        NULL) {
+                                                        add_flag(get_word_txt(fsm_morphological_analyzer->dictionary,
+                                                                              pronunciation), "IS_OA");
+                                                    } else {
+                                                        newWord = create_txt_word2(pronunciation, "IS_OA");
+                                                        add_word_to_trie(fsm_morphological_analyzer->dictionary_trie,
+                                                                         pronunciation, newWord);
+                                                    }
+                                                    String_ptr st2 = substring2(lowerCased, word_size(possibleRootLowerCased));
+                                                    String_ptr replaced_word = create_string3(pronunciation, st2->s);
                                                     fsmParse = analysis(fsm_morphological_analyzer,
-                                                                        lowerCase,
+                                                                        replaced_word->s,
+                                                                        is_proper_noun_fsm(surfaceForm));
+                                                    free_string_ptr(replaced_word);
+                                                    free_string_ptr(st2);
+                                                } else {
+                                                    free_(possibleRootLowerCased);
+                                                    if (get_word_txt(fsm_morphological_analyzer->dictionary, possibleRootLowerCased) !=
+                                                        NULL) {
+                                                        add_flag(get_word_txt(fsm_morphological_analyzer->dictionary,
+                                                                              possibleRootLowerCased), "IS_OA");
+                                                    } else {
+                                                        newWord = create_txt_word2(possibleRootLowerCased, "IS_OA");
+                                                        add_word_to_trie(fsm_morphological_analyzer->dictionary_trie,
+                                                                         possibleRootLowerCased, newWord);
+                                                    }
+                                                    fsmParse = analysis(fsm_morphological_analyzer,
+                                                                        lowerCased,
                                                                         is_proper_noun_fsm(surfaceForm));
                                                 }
-                                                free_(lowerCase);
                                             }
+                                            free_string_ptr(first_char);
                                         }
                                     }
                                 }
@@ -1704,6 +1723,13 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
         free_(possibleRoot);
     }
     free_(lowerCased);
+    if (is_root_replaced){
+        for (int i = 0; i < fsmParse->size; i++){
+            Fsm_parse_ptr parse = array_list_get(fsmParse, i);
+            restore_original_form(parse, possibleRootLowerCased, pronunciation);
+        }
+        free_(possibleRootLowerCased);
+    }
     if (fsmParse == NULL){
         fsmParse = create_array_list();
     }
@@ -1720,4 +1746,12 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
  */
 Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer3() {
     return create_fsm_morphological_analyzer("turkish_finite_state_machine.xml", create_txt_dictionary(), 100000);
+}
+
+/**
+ * Reads the file for foreign words and their pronunciations.
+ * @param fileName Input file containing foreign words and their pronunciations.
+ */
+void add_pronunciations(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char* file_name) {
+    fsm_morphological_analyzer->pronunciations = read_hash_map(file_name);
 }

@@ -26,6 +26,7 @@ struct fsm_morphological_analyzer {
     Lru_cache_ptr cache;
     Hash_map_ptr most_used_patterns;
     Hash_map_ptr parsed_surface_forms;
+    Hash_map_ptr pronunciations;
 };
 
 typedef struct fsm_morphological_analyzer Fsm_morphological_analyzer;
@@ -146,5 +147,7 @@ bool morphological_analysis_exists(Fsm_morphological_analyzer_ptr fsm_morphologi
                                    char *surfaceForm);
 
 Fsm_parse_list_ptr morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);
+
+void add_pronunciations(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char* file_name);
 
 #endif //MORPHOLOGICALANALYSIS_FSMMORPHOLOGICALANALYZER_H

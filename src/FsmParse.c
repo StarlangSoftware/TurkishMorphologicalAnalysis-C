@@ -847,3 +847,29 @@ bool is_fsm_parse_capital_word(const Fsm_parse *fsm_parse) {
     free_string_ptr(st);
     return result;
 }
+
+/**
+ * In order to morphologically parse special proper nouns in Turkish, whose affixes obeys not the original but their
+ * pronunciations, the morphologicalAnalysis method replaces the original word with its pronunciation and do the
+ * rest. This method reverts it back, that is it restores its original form by replacing the pronunciations in the
+ * parses with the original form.
+ * @param original Original form of the proper noun.
+ * @param pronunciation Pronunciation of the proper noun.
+ */
+void restore_original_form(Fsm_parse *fsm_parse, char *original, char *pronunciation) {
+    free_txt_word(fsm_parse->root);
+    fsm_parse->root = create_txt_word2(original, "IS_OA");
+    String_ptr st = substring2(fsm_parse->form, word_size(pronunciation));
+    free_(fsm_parse->form);
+    String_ptr st2 = create_string3(original, st->s);
+    free_string_ptr(st);
+    fsm_parse->form = str_copy(fsm_parse->form, st2->s);
+    free_string_ptr(st2);
+    for (int i = 0; i < fsm_parse->form_list->size; i++){
+        st = substring2(array_list_get(fsm_parse->form_list, i), word_size(pronunciation));
+        st2 = create_string3(original, st->s);
+        free_string_ptr(st);
+        array_list_replace(fsm_parse->form_list, i, string_copy(st2), free_);
+        free_string_ptr(st2);
+    }
+}
