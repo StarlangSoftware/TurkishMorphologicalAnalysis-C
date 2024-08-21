@@ -533,6 +533,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
                     } else {
                         resolve_H(root, formation, i == 1, false, rootWord, formation_to_check->s);
                     }
+                    rootWord = false;
                 } else {
                     if (string_equals2(sti, "C")){
                         resolve_C(formation, formation_to_check->s);
