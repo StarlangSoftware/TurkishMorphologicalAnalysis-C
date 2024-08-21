@@ -1447,6 +1447,7 @@ Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morp
             new_word = create_txt_word2(candidate_word->s, "CL_ISIM");
             add_flag(new_word, "CL_FIIL");
         }
+        array_list_add(candidate_list, new_word);
         add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, candidate_word->s, new_word);
         free_string_ptr(candidate_word);
     }
@@ -1497,7 +1498,7 @@ robust_morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_a
         }
         array_list_add(fsm_parse, create_fsm_parse5(surfaceForm, get_state(
                     fsm_morphological_analyzer->finite_state_machine, "NominalRoot")));
-        free_array_list(new_candidate_list, (void (*)(void *)) free_txt_word);
+        free_array_list(new_candidate_list, NULL);
         Array_list_ptr result = parse_word2(fsm_morphological_analyzer, fsm_parse, surfaceForm);
         free_array_list(fsm_parse, NULL);
         return create_fsm_parse_list(result);
