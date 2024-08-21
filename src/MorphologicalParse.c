@@ -80,11 +80,13 @@ Morphological_parse_ptr create_morphological_parse2(const Array_list *inflection
  */
 void update_root_and_inflectional_groups(Morphological_parse_ptr morphological_parse,
                                          const Array_list *inflectional_groups) {
-    if (str_contains(array_list_get(inflectional_groups, 0), "+")){
-        String_ptr s1 = substring(array_list_get(inflectional_groups, 0), 0, str_find_c(array_list_get(inflectional_groups, 0), "+"));
+    if (str_contains(array_list_get(inflectional_groups, 0), "+")) {
+        String_ptr s1 = substring(array_list_get(inflectional_groups, 0), 0,
+                                  str_find_c(array_list_get(inflectional_groups, 0), "+"));
         morphological_parse->root = str_copy(morphological_parse->root, s1->s);
         free_string_ptr(s1);
-        String_ptr s2 = substring2(array_list_get(inflectional_groups, 0), str_find_c(array_list_get(inflectional_groups, 0), "+"));
+        String_ptr s2 = substring2(array_list_get(inflectional_groups, 0),
+                                   str_find_c(array_list_get(inflectional_groups, 0), "+"));
         array_list_add(morphological_parse->inflectional_groups, create_inflectional_group(s2->s));
         free_string_ptr(s2);
     } else {
@@ -219,7 +221,7 @@ Inflectional_group_ptr last_inflectional_group(const Morphological_parse *morpho
  *
  * @return root with the MorphologicalTag of the first inflectional as a new word.
  */
-char* get_word_with_pos(const Morphological_parse *morphological_parse) {
+char *get_word_with_pos(const Morphological_parse *morphological_parse) {
     char tmp[MAX_LINE_LENGTH];
     char *tag = get_tag(get_tag_with_index(first_inflectional_group(morphological_parse), 0));
     sprintf(tmp, "%s+%s", morphological_parse->root, tag);
@@ -480,7 +482,7 @@ bool is_parse_plural(const Morphological_parse *morphological_parse) {
  * @return true if the root equals to the et, ol, or yap, and false otherwise.
  */
 bool is_auxiliary(const Morphological_parse *morphological_parse) {
-    return string_in_list(morphological_parse->root, (char*[]){"et", "ol", "yap"}, 3);
+    return string_in_list(morphological_parse->root, (char *[]) {"et", "ol", "yap"}, 3);
 }
 
 /**
@@ -506,60 +508,66 @@ bool parse_contains_tag(const Morphological_parse *morphological_parse, Morpholo
  * @return Tree pos tag of the morphological analysis in string form.
  */
 char *get_tree_pos(const Morphological_parse *morphological_parse) {
-    if (is_parse_proper_noun(morphological_parse)){
+    if (is_parse_proper_noun(morphological_parse)) {
         return "NP";
     } else {
-        if (strcmp(morphological_parse->root, "değil") == 0){
+        if (strcmp(morphological_parse->root, "değil") == 0) {
             return "NEG";
         } else {
-            if (is_parse_verb(morphological_parse)){
-                if (last_ig_contains_tag(morphological_parse, ZERO)){
+            if (is_parse_verb(morphological_parse)) {
+                if (last_ig_contains_tag(morphological_parse, ZERO)) {
                     return "NOMP";
                 } else {
                     return "VP";
                 }
             } else {
-                if (is_parse_adjective(morphological_parse)){
+                if (is_parse_adjective(morphological_parse)) {
                     return "ADJP";
                 } else {
-                    if (is_noun(morphological_parse) || is_parse_percent(morphological_parse)){
+                    if (is_noun(morphological_parse) || is_parse_percent(morphological_parse)) {
                         return "NP";
                     } else {
-                        if (parse_contains_tag(morphological_parse, ADVERB)){
+                        if (parse_contains_tag(morphological_parse, ADVERB)) {
                             return "ADVP";
                         } else {
-                            if (is_number(morphological_parse) || is_parse_fraction(morphological_parse)){
+                            if (is_number(morphological_parse) || is_parse_fraction(morphological_parse)) {
                                 return "NUM";
                             } else {
-                                if (parse_contains_tag(morphological_parse, POSTPOSITION)){
+                                if (parse_contains_tag(morphological_parse, POSTPOSITION)) {
                                     return "PP";
                                 } else {
-                                    if (parse_contains_tag(morphological_parse, CONJUNCTION)){
+                                    if (parse_contains_tag(morphological_parse, CONJUNCTION)) {
                                         return "CONJP";
                                     } else {
-                                        if (parse_contains_tag(morphological_parse,DETERMINER)){
+                                        if (parse_contains_tag(morphological_parse, DETERMINER)) {
                                             return "DP";
                                         } else {
-                                            if (parse_contains_tag(morphological_parse, INTERJECTION)){
+                                            if (parse_contains_tag(morphological_parse, INTERJECTION)) {
                                                 return "INTJP";
                                             } else {
-                                                if (parse_contains_tag(morphological_parse, QUESTIONPRONOUN)){
+                                                if (parse_contains_tag(morphological_parse, QUESTIONPRONOUN)) {
                                                     return "WP";
                                                 } else {
-                                                    if (parse_contains_tag(morphological_parse, PRONOUN)){
+                                                    if (parse_contains_tag(morphological_parse, PRONOUN)) {
                                                         return "NP";
                                                     } else {
-                                                        if (is_parse_punctuation(morphological_parse)){
-                                                            if (string_in_list(morphological_parse->root, (char*[]){"!", "?"}, 2)){
+                                                        if (is_parse_punctuation(morphological_parse)) {
+                                                            if (string_in_list(morphological_parse->root,
+                                                                               (char *[]) {"!", "?"}, 2)) {
                                                                 return ".";
                                                             } else {
-                                                                if (string_in_list(morphological_parse->root, (char*[]){";", "-", "--"}, 3)) {
+                                                                if (string_in_list(morphological_parse->root,
+                                                                                   (char *[]) {";", "-", "--"}, 3)) {
                                                                     return ":";
                                                                 } else {
-                                                                    if (string_in_list(morphological_parse->root, (char*[]) {"(", "-LRB-", "-lrb-"}, 3)) {
+                                                                    if (string_in_list(morphological_parse->root,
+                                                                                       (char *[]) {"(", "-LRB-",
+                                                                                                   "-lrb-"}, 3)) {
                                                                         return "-LRB-";
                                                                     } else {
-                                                                        if (string_in_list(morphological_parse->root, (char*[]) {")", "-RRB-", "-rrb-"}, 3)) {
+                                                                        if (string_in_list(morphological_parse->root,
+                                                                                           (char *[]) {")", "-RRB-",
+                                                                                                       "-rrb-"}, 3)) {
                                                                             return "-rrb-";
                                                                         } else {
                                                                             return morphological_parse->root;
@@ -591,17 +599,17 @@ char *get_tree_pos(const Morphological_parse *morphological_parse) {
  * "Int" if the pronoun is a question pronoun; "Dem" if the pronoun is a demonstrative pronoun.
  */
 char *get_pron_type(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root;
-    if (parse_contains_tag(morphological_parse, PERSONALPRONOUN)){
+    char *lemma = morphological_parse->root;
+    if (parse_contains_tag(morphological_parse, PERSONALPRONOUN)) {
         return "Prs";
     }
-    if (strcmp(lemma, "birbiri") == 0 || strcmp(lemma, "birbirleri") == 0){
+    if (strcmp(lemma, "birbiri") == 0 || strcmp(lemma, "birbirleri") == 0) {
         return "Rcp";
     }
-    if (string_in_list(lemma, (char*[]) {"kim", "nere", "ne", "hangi", "nasıl", "kaç", "mi", "mı", "mu", "mü"}, 10)){
+    if (string_in_list(lemma, (char *[]) {"kim", "nere", "ne", "hangi", "nasıl", "kaç", "mi", "mı", "mu", "mü"}, 10)) {
         return "Int";
     }
-    if (parse_contains_tag(morphological_parse, DEMONSTRATIVEPRONOUN)){
+    if (parse_contains_tag(morphological_parse, DEMONSTRATIVEPRONOUN)) {
         return "Dem";
     }
     return NULL;
@@ -613,14 +621,15 @@ char *get_pron_type(const Morphological_parse *morphological_parse) {
  * distributive number such as 'beşinci'; "Card" if the number is cardinal or any number or the word is 'kaç'.
  */
 char *get_num_type(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root;
-    if (parse_contains_tag(morphological_parse, CARDINAL) || parse_contains_tag(morphological_parse, NUMBER) || strcmp(lemma, "kaç") == 0){
+    char *lemma = morphological_parse->root;
+    if (parse_contains_tag(morphological_parse, CARDINAL) || parse_contains_tag(morphological_parse, NUMBER) ||
+        strcmp(lemma, "kaç") == 0) {
         return "Card";
     }
-    if (parse_contains_tag(morphological_parse, ORDINAL) || strcmp(lemma, "kaçıncı") == 0){
+    if (parse_contains_tag(morphological_parse, ORDINAL) || strcmp(lemma, "kaçıncı") == 0) {
         return "Ord";
     }
-    if (parse_contains_tag(morphological_parse, DISTRIBUTIVE)){
+    if (parse_contains_tag(morphological_parse, DISTRIBUTIVE)) {
         return "Dist";
     }
     return NULL;
@@ -631,8 +640,8 @@ char *get_num_type(const Morphological_parse *morphological_parse) {
  * @return "Yes" if the root word is 'kendi', null otherwise.
  */
 char *get_reflex(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root;
-    if (strcmp(lemma, "kendi") == 0){
+    char *lemma = morphological_parse->root;
+    if (strcmp(lemma, "kendi") == 0) {
         return "Yes";
     }
     return NULL;
@@ -644,12 +653,33 @@ char *get_reflex(const Morphological_parse *morphological_parse) {
  * of the parse is plural (contains A1PL, A2PL, A3PL).
  */
 char *get_number(const Morphological_parse *morphological_parse) {
-    if (parse_contains_tag(morphological_parse, A1SG) || parse_contains_tag(morphological_parse, A2SG) || parse_contains_tag(morphological_parse, A3SG)
-        || parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P2SG) || parse_contains_tag(morphological_parse, P3SG)){
+    if (parse_contains_tag(morphological_parse, A1SG) || parse_contains_tag(morphological_parse, A2SG) ||
+        parse_contains_tag(morphological_parse, A3SG)
+        || parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P2SG) ||
+        parse_contains_tag(morphological_parse, P3SG)) {
         return "Sing";
     }
-    if (parse_contains_tag(morphological_parse, A1PL) || parse_contains_tag(morphological_parse, A2PL) || parse_contains_tag(morphological_parse, A3PL)
-        || parse_contains_tag(morphological_parse, P1PL) || parse_contains_tag(morphological_parse, P2PL) || parse_contains_tag(morphological_parse, P3PL)){
+    if (parse_contains_tag(morphological_parse, A1PL) || parse_contains_tag(morphological_parse, A2PL) ||
+        parse_contains_tag(morphological_parse, A3PL)
+        || parse_contains_tag(morphological_parse, P1PL) || parse_contains_tag(morphological_parse, P2PL) ||
+        parse_contains_tag(morphological_parse, P3PL)) {
+        return "Plur";
+    }
+    return NULL;
+}
+
+/**
+ * Returns the possessive agreement of the parse for the universal dependency feature [Pos].
+ * @return "Sing" if the possessive agreement of the parse is singular (contains P1SG, P2SG, P3SG); "Plur" if the
+ * possessive agreement of the parse is plural (contains P1PL, P2PL, P3PL).
+ */
+char *get_possessive_number(const Morphological_parse *morphological_parse) {
+    if (parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P2SG) ||
+        parse_contains_tag(morphological_parse, P3SG)) {
+        return "Sing";
+    }
+    if (parse_contains_tag(morphological_parse, P1PL) || parse_contains_tag(morphological_parse, P2PL) ||
+        parse_contains_tag(morphological_parse, P3PL)) {
         return "Plur";
     }
     return NULL;
@@ -661,25 +691,29 @@ char *get_number(const Morphological_parse *morphological_parse) {
  * marker; "Ins" for instrumentative marker; "Abl" for ablative marker; "Nom" for nominative marker.
  */
 char *get_case(const Morphological_parse *morphological_parse) {
-    if (parse_contains_tag(morphological_parse, ACCUSATIVE) || parse_contains_tag(morphological_parse, PCACCUSATIVE)){
+    if (parse_contains_tag(morphological_parse, ACCUSATIVE) || parse_contains_tag(morphological_parse, PCACCUSATIVE)) {
         return "Acc";
     }
-    if (parse_contains_tag(morphological_parse, DATIVE) || parse_contains_tag(morphological_parse, PCDATIVE)){
+    if (parse_contains_tag(morphological_parse, DATIVE) || parse_contains_tag(morphological_parse, PCDATIVE)) {
         return "Dat";
     }
-    if (parse_contains_tag(morphological_parse, GENITIVE) || parse_contains_tag(morphological_parse, PCGENITIVE)){
+    if (parse_contains_tag(morphological_parse, GENITIVE) || parse_contains_tag(morphological_parse, PCGENITIVE)) {
         return "Gen";
     }
-    if (parse_contains_tag(morphological_parse, LOCATIVE)){
+    if (parse_contains_tag(morphological_parse, LOCATIVE)) {
         return "Loc";
     }
-    if (parse_contains_tag(morphological_parse, INSTRUMENTAL) || parse_contains_tag(morphological_parse, PCINSTRUMENTAL)){
+    if (parse_contains_tag(morphological_parse, INSTRUMENTAL) ||
+        parse_contains_tag(morphological_parse, PCINSTRUMENTAL)) {
         return "Ins";
     }
-    if (parse_contains_tag(morphological_parse, ABLATIVE) || parse_contains_tag(morphological_parse, PCABLATIVE)){
+    if (parse_contains_tag(morphological_parse, ABLATIVE) || parse_contains_tag(morphological_parse, PCABLATIVE)) {
         return "Abl";
     }
-    if (parse_contains_tag(morphological_parse, NOMINATIVE) || parse_contains_tag(morphological_parse, PCNOMINATIVE)){
+    if (parse_contains_tag(morphological_parse, EQUATIVE)) {
+        return "Equ";
+    }
+    if (parse_contains_tag(morphological_parse, NOMINATIVE) || parse_contains_tag(morphological_parse, PCNOMINATIVE)) {
         return "Nom";
     }
     return NULL;
@@ -691,12 +725,12 @@ char *get_case(const Morphological_parse *morphological_parse) {
  * @return "Ind" for 'bir', 'bazı', or 'birkaç'. "Def" for 'her', 'bu', 'şu', 'o', 'bütün'.
  */
 char *get_definite(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root;
-    if (parse_contains_tag(morphological_parse, DETERMINER)){
-        if (string_in_list(lemma, (char*[]) {"bir", "bazı", "birkaç"}, 3)){
+    char *lemma = morphological_parse->root;
+    if (parse_contains_tag(morphological_parse, DETERMINER)) {
+        if (string_in_list(lemma, (char *[]) {"bir", "bazı", "birkaç", "birçok", "kimi"}, 5)) {
             return "Ind";
         }
-        if (string_in_list(lemma, (char*[]) {"her", "bu", "şu", "o", "bütün"}, 5)){
+        if (string_in_list(lemma, (char *[]) {"her", "bu", "şu", "o", "bütün", "hangi"}, 6)) {
             return "Def";
         }
     }
@@ -708,11 +742,11 @@ char *get_definite(const Morphological_parse *morphological_parse) {
  * @return "Cmp" for comparative adverb 'daha'; "Sup" for superlative adjective or adverb 'en'.
  */
 char *get_degree(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root;
-    if (strcmp(lemma, "daha") == 0){
+    char *lemma = morphological_parse->root;
+    if (strcmp(lemma, "daha") == 0) {
         return "Cmp";
     }
-    if (strcmp(lemma, "en") == 0 && !is_noun(morphological_parse)){
+    if (strcmp(lemma, "en") == 0 && !is_noun(morphological_parse)) {
         return "Sup";
     }
     return NULL;
@@ -723,10 +757,13 @@ char *get_degree(const Morphological_parse *morphological_parse) {
  * @return "Pos" for positive polarity containing tag POS; "Neg" for negative polarity containing tag NEG.
  */
 char *get_polarity(const Morphological_parse *morphological_parse) {
-    if (parse_contains_tag(morphological_parse, POSITIVE)){
+    if (strcmp(morphological_parse->root, "değil") == 0) {
+        return "Neg";
+    }
+    if (parse_contains_tag(morphological_parse, POSITIVE)) {
         return "Pos";
     }
-    if (parse_contains_tag(morphological_parse, NEGATIVE)){
+    if (parse_contains_tag(morphological_parse, NEGATIVE)) {
         return "Neg";
     }
     return NULL;
@@ -738,15 +775,32 @@ char *get_polarity(const Morphological_parse *morphological_parse) {
  */
 char *get_person(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, A1SG) || parse_contains_tag(morphological_parse, A1PL)
-        || parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P1PL)){
+        || parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P1PL)) {
         return "1";
     }
     if (parse_contains_tag(morphological_parse, A2SG) || parse_contains_tag(morphological_parse, A2PL)
-        || parse_contains_tag(morphological_parse, P2SG) || parse_contains_tag(morphological_parse, P2PL)){
+        || parse_contains_tag(morphological_parse, P2SG) || parse_contains_tag(morphological_parse, P2PL)) {
         return "2";
     }
     if (parse_contains_tag(morphological_parse, A3SG) || parse_contains_tag(morphological_parse, A3PL)
-        || parse_contains_tag(morphological_parse, P3SG) || parse_contains_tag(morphological_parse, P3PL)){
+        || parse_contains_tag(morphological_parse, P3SG) || parse_contains_tag(morphological_parse, P3PL)) {
+        return "3";
+    }
+    return NULL;
+}
+
+/**
+ * Returns the person of the possessive agreement of the parse for the universal dependency feature [pos].
+ * @return "1" for first person; "2" for second person; "3" for third person.
+ */
+char *get_possessive_person(const Morphological_parse *morphological_parse) {
+    if (parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P1PL)) {
+        return "1";
+    }
+    if (parse_contains_tag(morphological_parse, P2SG) || parse_contains_tag(morphological_parse, P2PL)) {
+        return "2";
+    }
+    if (parse_contains_tag(morphological_parse, P3SG) || parse_contains_tag(morphological_parse, P3PL)) {
         return "3";
     }
     return NULL;
@@ -759,16 +813,16 @@ char *get_person(const Morphological_parse *morphological_parse) {
  * reflexive.
  */
 char *get_voice(const Morphological_parse *morphological_parse) {
-    if (parse_contains_tag(morphological_parse, PASSIVE)){
+    if (parse_contains_tag(morphological_parse, PASSIVE)) {
         return "Pass";
     }
-    if (parse_contains_tag(morphological_parse, RECIPROCAL)){
+    if (parse_contains_tag(morphological_parse, RECIPROCAL)) {
         return "Rcp";
     }
-    if (parse_contains_tag(morphological_parse, CAUSATIVE)){
+    if (parse_contains_tag(morphological_parse, CAUSATIVE)) {
         return "Cau";
     }
-    if (parse_contains_tag(morphological_parse, REFLEXIVE)){
+    if (parse_contains_tag(morphological_parse, REFLEXIVE)) {
         return "Rfl";
     }
     return NULL;
@@ -780,19 +834,22 @@ char *get_voice(const Morphological_parse *morphological_parse) {
  * for parses containing HASTILY tag; "Dur" for parses containing START, STAY or REPEAT tags.
  */
 char *get_aspect(const Morphological_parse *morphological_parse) {
-    if (parse_contains_tag(morphological_parse, PASTTENSE) || parse_contains_tag(morphological_parse, NARRATIVE) || parse_contains_tag(morphological_parse, FUTURE)){
+    if (parse_contains_tag(morphological_parse, PASTTENSE) || parse_contains_tag(morphological_parse, NARRATIVE) ||
+        parse_contains_tag(morphological_parse, FUTURE)) {
         return "Perf";
     }
-    if (parse_contains_tag(morphological_parse, PROGRESSIVE1) || parse_contains_tag(morphological_parse, PROGRESSIVE2)){
+    if (parse_contains_tag(morphological_parse, PROGRESSIVE1) ||
+        parse_contains_tag(morphological_parse, PROGRESSIVE2)) {
         return "Prog";
     }
-    if (parse_contains_tag(morphological_parse, AORIST)){
+    if (parse_contains_tag(morphological_parse, AORIST)) {
         return "Hab";
     }
-    if (parse_contains_tag(morphological_parse, HASTILY)){
+    if (parse_contains_tag(morphological_parse, HASTILY)) {
         return "Rapid";
     }
-    if (parse_contains_tag(morphological_parse, START) || parse_contains_tag(morphological_parse, STAY) || parse_contains_tag(morphological_parse, REPEAT)){
+    if (parse_contains_tag(morphological_parse, START) || parse_contains_tag(morphological_parse, STAY) ||
+        parse_contains_tag(morphological_parse, REPEAT)) {
         return "Dur";
     }
     return NULL;
@@ -804,16 +861,16 @@ char *get_aspect(const Morphological_parse *morphological_parse) {
  * past tenses.
  */
 char *get_tense(const Morphological_parse *morphological_parse) {
-    if (parse_contains_tag(morphological_parse, PASTTENSE)){
-        return "Past";
-    }
-    if (parse_contains_tag(morphological_parse, FUTURE)){
-        return "Fut";
-    }
-    if (parse_contains_tag(morphological_parse, NARRATIVE) && parse_contains_tag(morphological_parse, PASTTENSE)){
+    if (parse_contains_tag(morphological_parse, NARRATIVE) && parse_contains_tag(morphological_parse, PASTTENSE)) {
         return "Pqp";
     }
-    if (!parse_contains_tag(morphological_parse, PASTTENSE) && !parse_contains_tag(morphological_parse, FUTURE)){
+    if (parse_contains_tag(morphological_parse, NARRATIVE) || parse_contains_tag(morphological_parse, PASTTENSE)) {
+        return "Past";
+    }
+    if (parse_contains_tag(morphological_parse, FUTURE)) {
+        return "Fut";
+    }
+    if (!parse_contains_tag(morphological_parse, PASTTENSE) && !parse_contains_tag(morphological_parse, FUTURE)) {
         return "Pres";
     }
     return NULL;
@@ -833,22 +890,23 @@ char *get_tense(const Morphological_parse *morphological_parse) {
  * simple necessitative; "Pot" for simple potential; "Gen" for simple suffix of a general modality.
  */
 char *get_mood(const Morphological_parse *morphological_parse) {
-    if (parse_contains_tag(morphological_parse, IMPERATIVE)){
+    if (parse_contains_tag(morphological_parse, IMPERATIVE)) {
         return "Imp";
     }
-    if (parse_contains_tag(morphological_parse, CONDITIONAL)){
+    if (parse_contains_tag(morphological_parse, CONDITIONAL)) {
         return "Cnd";
     }
-    if (parse_contains_tag(morphological_parse, DESIRE)){
+    if (parse_contains_tag(morphological_parse, DESIRE)) {
         return "Des";
     }
-    if (parse_contains_tag(morphological_parse, OPTATIVE)){
+    if (parse_contains_tag(morphological_parse, OPTATIVE)) {
         return "Opt";
     }
-    if (parse_contains_tag(morphological_parse, NECESSITY)){
+    if (parse_contains_tag(morphological_parse, NECESSITY)) {
         return "Nec";
     }
-    if (parse_contains_tag(morphological_parse, PASTTENSE) || parse_contains_tag(morphological_parse, PROGRESSIVE1) || parse_contains_tag(morphological_parse, FUTURE)){
+    if (parse_contains_tag(morphological_parse, PASTTENSE) || parse_contains_tag(morphological_parse, PROGRESSIVE1) ||
+        parse_contains_tag(morphological_parse, FUTURE)) {
         return "Ind";
     }
     return NULL;
@@ -860,11 +918,40 @@ char *get_mood(const Morphological_parse *morphological_parse) {
  * WITHOUTHAVINGDONESO, WITHOUTBEINGABLETOHAVEDONESO, BYDOINGSO, AFTERDOINGSO, INFINITIVE3; "Fin" for others.
  */
 char *get_verb_form(const Morphological_parse *morphological_parse) {
-    if (parse_contains_tag(morphological_parse, PASTPARTICIPLE) || parse_contains_tag(morphological_parse, FUTUREPARTICIPLE) || parse_contains_tag(morphological_parse, PRESENTPARTICIPLE)){
+    if (parse_contains_tag(morphological_parse, PASTPARTICIPLE) ||
+        parse_contains_tag(morphological_parse, FUTUREPARTICIPLE) ||
+        parse_contains_tag(morphological_parse, PRESENTPARTICIPLE)) {
         return "Part";
     }
-    if (parse_contains_tag(morphological_parse, SINCEDOINGSO) || parse_contains_tag(morphological_parse, WITHOUTHAVINGDONESO) || parse_contains_tag(morphological_parse, WITHOUTBEINGABLETOHAVEDONESO) || parse_contains_tag(morphological_parse, BYDOINGSO) || parse_contains_tag(morphological_parse, AFTERDOINGSO) || parse_contains_tag(morphological_parse, INFINITIVE3)){
+    if (parse_contains_tag(morphological_parse, SINCEDOINGSO) ||
+        parse_contains_tag(morphological_parse, WITHOUTHAVINGDONESO) ||
+        parse_contains_tag(morphological_parse, WITHOUTBEINGABLETOHAVEDONESO) ||
+        parse_contains_tag(morphological_parse, BYDOINGSO) || parse_contains_tag(morphological_parse, AFTERDOINGSO) ||
+        parse_contains_tag(morphological_parse, INFINITIVE3)) {
         return "Conv";
+    }
+    return NULL;
+}
+
+char *get_evident(const Morphological_parse *morphological_parse) {
+    if (parse_contains_tag(morphological_parse, NARRATIVE)) {
+        return "Nfh";
+    } else {
+        if (parse_contains_tag(morphological_parse, COPULA) ||
+            parse_contains_tag(morphological_parse, ABLE) ||
+            parse_contains_tag(morphological_parse, AORIST) ||
+            parse_contains_tag(morphological_parse, PROGRESSIVE2) ||
+            parse_contains_tag(morphological_parse, DESIRE) ||
+            parse_contains_tag(morphological_parse, NECESSITY) ||
+            parse_contains_tag(morphological_parse, CONDITIONAL) ||
+            parse_contains_tag(morphological_parse, IMPERATIVE) ||
+            parse_contains_tag(morphological_parse, OPTATIVE) ||
+            parse_contains_tag(morphological_parse, PASTTENSE) ||
+            parse_contains_tag(morphological_parse, NARRATIVE) ||
+            parse_contains_tag(morphological_parse, PROGRESSIVE1) ||
+            parse_contains_tag(morphological_parse, FUTURE)) {
+            return "Fh";
+        }
     }
     return NULL;
 }
@@ -875,70 +962,82 @@ char *get_verb_form(const Morphological_parse *morphological_parse) {
  * @param uPos Universal dependency part of speech tag for the parse.
  * @return An array of universal dependency features for this parse.
  */
-Array_list_ptr get_universal_dependency_features(const Morphological_parse* morphological_parse, const char *u_pos) {
+Array_list_ptr get_universal_dependency_features(const Morphological_parse *morphological_parse, const char *u_pos) {
     Array_list_ptr feature_list = create_array_list();
-    char* pron_type = get_pron_type(morphological_parse);
-    if (!pron_type && strcmp(u_pos, "ADJ") != 0 && strcmp(u_pos, "VERB") != 0 && strcmp(u_pos, "CCONJ") != 0){
+    char *pron_type = get_pron_type(morphological_parse);
+    if (!pron_type && strcmp(u_pos, "ADJ") != 0 && strcmp(u_pos, "VERB") != 0 && strcmp(u_pos, "CCONJ") != 0) {
         array_list_add(feature_list, str_concat("PronType=", pron_type));
     }
-    char* num_type = get_num_type(morphological_parse);
-    if (num_type != NULL && strcmp(u_pos, "VERB") != 0){
+    char *num_type = get_num_type(morphological_parse);
+    if (num_type != NULL && strcmp(u_pos, "VERB") != 0) {
         array_list_add(feature_list, str_concat("NumType=", num_type));
     }
-    char* reflex = get_reflex(morphological_parse);
-    if (reflex != NULL){
+    char *reflex = get_reflex(morphological_parse);
+    if (reflex != NULL) {
         array_list_add(feature_list, str_concat("Reflex=", reflex));
     }
-    char* degree = get_degree(morphological_parse);
-    if (degree != NULL){
+    char *degree = get_degree(morphological_parse);
+    if (degree != NULL) {
         array_list_add(feature_list, str_concat("Degree=", degree));
     }
-    if (is_noun(morphological_parse) || is_parse_verb(morphological_parse)){
-        char* number = get_number(morphological_parse);
-        if (number != NULL){
+    if (is_noun(morphological_parse) || is_parse_verb(morphological_parse) || strcmp(morphological_parse->root, "mi") == 0 || (pron_type != NULL && strcmp(pron_type, "Art") != 0)) {
+        char *number = get_number(morphological_parse);
+        if (number != NULL) {
             array_list_add(feature_list, str_concat("Number=", number));
         }
+        char *possessive_number = get_possessive_number(morphological_parse);
+        if (possessive_number != NULL) {
+            array_list_add(feature_list, str_concat("Number[psor]=", possessive_number));
+        }
+        char *person = get_person(morphological_parse);
+        if (person != NULL && strcmp(u_pos, "PROPN") != 0) {
+            array_list_add(feature_list, str_concat("Person=", person));
+        }
+        char *possessive_person = get_possessive_person(morphological_parse);
+        if (possessive_person != NULL && strcmp(u_pos, "PROPN") != 0) {
+            array_list_add(feature_list, str_concat("Person[psor]=", possessive_person));
+        }
     }
-    if (is_noun(morphological_parse)) {
-        char* case_ = get_case(morphological_parse);
-        if (case_ != NULL){
+    if (is_noun(morphological_parse) || (pron_type != NULL && strcmp(pron_type, "Art") != 0)) {
+        char *case_ = get_case(morphological_parse);
+        if (case_ != NULL) {
             array_list_add(feature_list, str_concat("Case=", case_));
         }
     }
-    if (parse_contains_tag(morphological_parse, DETERMINER)){
-        char* definite = get_definite(morphological_parse);
-        if (definite != NULL){
+    if (parse_contains_tag(morphological_parse, DETERMINER)) {
+        char *definite = get_definite(morphological_parse);
+        if (definite != NULL) {
             array_list_add(feature_list, str_concat("Definite=", definite));
         }
     }
-    if (is_parse_verb(morphological_parse)){
-        char* polarity = get_polarity(morphological_parse);
-        if (polarity != NULL){
+    if (is_parse_verb(morphological_parse) || strcmp(morphological_parse->root, "mi") == 0) {
+        char *polarity = get_polarity(morphological_parse);
+        if (polarity != NULL) {
             array_list_add(feature_list, str_concat("Polarity=", polarity));
         }
-        char* person = get_person(morphological_parse);
-        if (person != NULL && strcmp(u_pos, "PROPN") != 0){
-            array_list_add(feature_list, str_concat("Person=", person));
-        }
-        char* voice = get_voice(morphological_parse);
-        if (voice != NULL){
+        char *voice = get_voice(morphological_parse);
+        if (voice != NULL && strcmp(morphological_parse->root, "mi") != 0) {
             array_list_add(feature_list, str_concat("Voice=", voice));
         }
-        char* aspect = get_aspect(morphological_parse);
-        if (aspect != NULL && strcmp(u_pos, "PROPN") != 0){
+        char *aspect = get_aspect(morphological_parse);
+        if (aspect != NULL && strcmp(u_pos, "PROPN") != 0 && strcmp(morphological_parse->root, "mi") != 0) {
             array_list_add(feature_list, str_concat("Aspect=", aspect));
         }
-        char* tense = get_tense(morphological_parse);
-        if (tense != NULL && strcmp(u_pos, "PROPN") != 0){
+        char *tense = get_tense(morphological_parse);
+        if (tense != NULL && strcmp(u_pos, "PROPN") != 0) {
             array_list_add(feature_list, str_concat("Tense=", tense));
         }
-        char* mood = get_mood(morphological_parse);
-        if (mood != NULL && strcmp(u_pos, "PROPN") != 0){
+        char *mood = get_mood(morphological_parse);
+        if (mood != NULL && strcmp(u_pos, "PROPN") != 0 && strcmp(morphological_parse->root, "mi") != 0) {
             array_list_add(feature_list, str_concat("Mood=", mood));
         }
-        char* verbForm = get_verb_form(morphological_parse);
-        if (verbForm != NULL){
+        char *verbForm = get_verb_form(morphological_parse);
+        if (verbForm != NULL) {
             array_list_add(feature_list, str_concat("VerbForm=", verbForm));
+        }
+        char *evident = get_evident(morphological_parse);
+        if (evident != NULL) {
+            array_list_add(feature_list, str_concat("Evident=", evident));
         }
     }
     array_list_sort(feature_list, (int (*)(const void *, const void *)) compare_string);
@@ -952,56 +1051,56 @@ Array_list_ptr get_universal_dependency_features(const Morphological_parse* morp
  * "NUM" for numerals; "PRON" for pronouns; "ADP" for post participles; "SCONJ" or "CCONJ" for conjunctions.
  */
 char *get_universal_dependency_pos(const Morphological_parse *morphological_parse) {
-    char* lemma = morphological_parse->root;
-    if (strcmp(lemma, "değil") == 0){
+    char *lemma = morphological_parse->root;
+    if (strcmp(lemma, "değil") == 0) {
         return "AUX";
     }
-    if (is_parse_proper_noun(morphological_parse)){
+    if (is_parse_proper_noun(morphological_parse)) {
         return "PROPN";
     }
-    if (is_noun(morphological_parse)){
+    if (is_noun(morphological_parse)) {
         return "NOUN";
     }
-    if (is_parse_adjective(morphological_parse)){
+    if (is_parse_adjective(morphological_parse)) {
         return "ADJ";
     }
-    if (parse_contains_tag(morphological_parse, INTERJECTION)){
+    if (parse_contains_tag(morphological_parse, INTERJECTION)) {
         return "INTJ";
     }
-    if (is_parse_verb(morphological_parse)){
+    if (is_parse_verb(morphological_parse)) {
         return "VERB";
     }
-    if (is_parse_punctuation(morphological_parse) || is_hash_tag(morphological_parse)){
+    if (is_parse_punctuation(morphological_parse) || is_hash_tag(morphological_parse)) {
         return "PUNCT";
     }
-    if (parse_contains_tag(morphological_parse,DETERMINER)){
+    if (parse_contains_tag(morphological_parse, DETERMINER)) {
         return "DET";
     }
     if (is_number(morphological_parse) || is_parse_date(morphological_parse) || is_parse_time(morphological_parse) ||
-            is_parse_ordinal(morphological_parse) ||
-        is_parse_fraction(morphological_parse) || strcmp(lemma, "%") == 0){
+        is_parse_ordinal(morphological_parse) ||
+        is_parse_fraction(morphological_parse) || strcmp(lemma, "%") == 0) {
         return "NUM";
     }
-    char* pos = get_pos(morphological_parse) ;
-    if (strcmp(pos, "ADV") == 0){
+    char *pos = get_pos(morphological_parse);
+    if (strcmp(pos, "ADV") == 0) {
         free_(pos);
         return "ADV";
     }
-    if (strcmp(pos, "PRON") == 0){
+    if (strcmp(pos, "PRON") == 0) {
         free_(pos);
         return "PRON";
     }
-    if (strcmp(pos, "POSTP") == 0){
+    if (strcmp(pos, "POSTP") == 0) {
         free_(pos);
         return "ADP";
     }
-    if (strcmp(pos, "QUES") == 0){
+    if (strcmp(pos, "QUES") == 0) {
         free_(pos);
         return "AUX";
     }
-    if (strcmp(pos, "CONJ") == 0){
+    if (strcmp(pos, "CONJ") == 0) {
         free_(pos);
-        if (string_in_list(lemma, (char*[]) {"ki", "eğer", "diye"}, 3)){
+        if (string_in_list(lemma, (char *[]) {"ki", "eğer", "diye"}, 3)) {
             return "SCONJ";
         } else {
             return "CCONJ";
@@ -1019,10 +1118,10 @@ char *get_universal_dependency_pos(const Morphological_parse *morphological_pars
  */
 char *morphological_parse_to_string(const Morphological_parse *morphological_parse) {
     char tmp[MAX_LINE_LENGTH];
-    char* st = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, 0));
+    char *st = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, 0));
     sprintf(tmp, "%s+%s", morphological_parse->root, st);
     free_(st);
-    for (int i = 1; i < morphological_parse->inflectional_groups->size; i++){
+    for (int i = 1; i < morphological_parse->inflectional_groups->size; i++) {
         st = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, i));
         sprintf(tmp, "%s^DB+%s", tmp, st);
         free_(st);

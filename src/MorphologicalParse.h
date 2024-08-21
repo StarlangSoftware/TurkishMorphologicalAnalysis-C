@@ -106,15 +106,21 @@ char* get_reflex(const Morphological_parse* morphological_parse);
 
 char* get_number(const Morphological_parse* morphological_parse);
 
+char* get_possessive_number(const Morphological_parse* morphological_parse);
+
 char* get_case(const Morphological_parse* morphological_parse);
 
 char* get_definite(const Morphological_parse* morphological_parse);
 
 char* get_degree(const Morphological_parse* morphological_parse);
 
+char* get_evident(const Morphological_parse* morphological_parse);
+
 char* get_polarity(const Morphological_parse* morphological_parse);
 
 char* get_person(const Morphological_parse* morphological_parse);
+
+char* get_possessive_person(const Morphological_parse* morphological_parse);
 
 char* get_voice(const Morphological_parse* morphological_parse);
 
