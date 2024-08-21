@@ -965,19 +965,19 @@ char *get_evident(const Morphological_parse *morphological_parse) {
 Array_list_ptr get_universal_dependency_features(const Morphological_parse *morphological_parse, const char *u_pos) {
     Array_list_ptr feature_list = create_array_list();
     char *pron_type = get_pron_type(morphological_parse);
-    if (!pron_type && strcmp(u_pos, "ADJ") != 0 && strcmp(u_pos, "VERB") != 0 && strcmp(u_pos, "CCONJ") != 0) {
+    if (!pron_type && strcmp(u_pos, "NOUN") != 0 && strcmp(u_pos, "ADJ") != 0 && strcmp(u_pos, "VERB") != 0 && strcmp(u_pos, "CCONJ") != 0 && strcmp(u_pos, "PROPN") != 0) {
         array_list_add(feature_list, str_concat("PronType=", pron_type));
     }
     char *num_type = get_num_type(morphological_parse);
-    if (num_type != NULL && strcmp(u_pos, "VERB") != 0) {
+    if (num_type != NULL && strcmp(u_pos, "VERB") != 0 && strcmp(u_pos, "NOUN") != 0 && strcmp(u_pos, "ADV") != 0) {
         array_list_add(feature_list, str_concat("NumType=", num_type));
     }
     char *reflex = get_reflex(morphological_parse);
-    if (reflex != NULL) {
+    if (reflex != NULL && strcmp(u_pos, "VERB") != 0 && strcmp(u_pos, "ADJ") != 0) {
         array_list_add(feature_list, str_concat("Reflex=", reflex));
     }
     char *degree = get_degree(morphological_parse);
-    if (degree != NULL) {
+    if (degree != NULL && strcmp(u_pos, "ADJ") != 0) {
         array_list_add(feature_list, str_concat("Degree=", degree));
     }
     if (is_noun(morphological_parse) || is_parse_verb(morphological_parse) || strcmp(morphological_parse->root, "mi") == 0 || (pron_type != NULL && strcmp(pron_type, "Art") != 0)) {
@@ -1036,7 +1036,7 @@ Array_list_ptr get_universal_dependency_features(const Morphological_parse *morp
             array_list_add(feature_list, str_concat("VerbForm=", verbForm));
         }
         char *evident = get_evident(morphological_parse);
-        if (evident != NULL) {
+        if (evident != NULL && strcmp(morphological_parse->root, "mi") != 0) {
             array_list_add(feature_list, str_concat("Evident=", evident));
         }
     }
