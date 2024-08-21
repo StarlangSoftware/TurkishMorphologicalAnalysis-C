@@ -233,6 +233,7 @@ void resolve_H(Txt_word_ptr root,
         }
     }
     String_ptr last_v = last_vowel(formation_to_check);
+    bool last_vowel_empty = (strcmp(last_v->s, "0") == 0);
     front_rounded = is_front_rounded_vowel(last_v->s);
     front_unrounded = is_front_unrounded_vowel(last_v->s);
     back_rounded = is_back_rounded_vowel(last_v->s);
@@ -284,6 +285,9 @@ void resolve_H(Txt_word_ptr root,
                 }
             }
         }
+    }
+    if (last_vowel_empty){
+        string_append(formation, "i");
     }
 }
 

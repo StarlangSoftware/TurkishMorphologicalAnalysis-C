@@ -31,7 +31,7 @@ int main(){
     test_transition(fsm, (char*[]){"yaparmışçasına", "yiyip", "sana", "bununla", "onunla", "şununla", "bana"}, 7);
     test_transition(fsm, (char*[]){"diyor", "yiyor"}, 2);
     test_transition(fsm, (char*[]){"buyruldu", "yoğruldu"}, 2);
-    test_transition(fsm, (char*[]){"karasuyu", "suyu"}, 2);
+    test_transition(fsm, (char*[]){"suymuş", "suyuymuş", "suyla", "suyuyla", "suydu", "suyuydu", "suyuna", "karasuyu", "suyu"}, 9);
     test_transition(fsm, (char*[]){"cezbediyor", "ediyor", "bahsediyor"}, 3);
     free_fsm_morphological_analyzer(fsm);
 }

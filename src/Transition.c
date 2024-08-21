@@ -385,6 +385,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem,
             if (rootWord && shows_su_regularities(root) && start_with_vowel_or_consonant_drops(transition) && !starts_with(transition->with, "y")) {
                 free_string_ptr(formation);
                 formation = create_string3(stem, "y");
+                i = 1;
                 formation_to_check = formation;
             } else {
                 if (rootWord && duplicates_during_suffixation(root) && !starts_with(startState->name, "VerbalRoot") && is_consonant_drop(with_zero->s)) {
