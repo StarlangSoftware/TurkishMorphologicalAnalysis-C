@@ -600,13 +600,24 @@ char *get_tree_pos(const Morphological_parse *morphological_parse) {
  */
 char *get_pron_type(const Morphological_parse *morphological_parse) {
     char *lemma = morphological_parse->root;
-    if (parse_contains_tag(morphological_parse, PERSONALPRONOUN)) {
+    if (parse_contains_tag(morphological_parse, DETERMINER)) {
+        return "Art";
+    }
+    if (strcmp(lemma, "kendi") == 0 || parse_contains_tag(morphological_parse, PERSONALPRONOUN)) {
         return "Prs";
     }
     if (strcmp(lemma, "birbiri") == 0 || strcmp(lemma, "birbirleri") == 0) {
         return "Rcp";
     }
-    if (string_in_list(lemma, (char *[]) {"kim", "nere", "ne", "hangi", "nasıl", "kaç", "mi", "mı", "mu", "mü"}, 10)) {
+    if (string_in_list(lemma, (char *[]) {"birçoğu", "hep", "kimse", "bazı",
+                                          "biri", "çoğu", "hepsi", "diğeri",
+                                          "tümü", "herkes", "kimi", "öbür",
+                                          "öteki", "birkaçı", "topu", "başkası"}, 16)) {
+        return "Int";
+    }
+    if (string_in_list(lemma, (char *[]) {"kim", "nere", "ne", "hangi",
+                                          "nasıl", "kaç", "mi", "mı",
+                                          "mu", "mü"}, 10)) {
         return "Int";
     }
     if (parse_contains_tag(morphological_parse, DEMONSTRATIVEPRONOUN)) {
@@ -622,15 +633,18 @@ char *get_pron_type(const Morphological_parse *morphological_parse) {
  */
 char *get_num_type(const Morphological_parse *morphological_parse) {
     char *lemma = morphological_parse->root;
-    if (parse_contains_tag(morphological_parse, CARDINAL) || parse_contains_tag(morphological_parse, NUMBER) ||
-        strcmp(lemma, "kaç") == 0) {
-        return "Card";
+    if (parse_contains_tag(morphological_parse, TIME) || strcmp(lemma, "%") == 0) {
+        return "Ord";
     }
     if (parse_contains_tag(morphological_parse, ORDINAL) || strcmp(lemma, "kaçıncı") == 0) {
         return "Ord";
     }
     if (parse_contains_tag(morphological_parse, DISTRIBUTIVE)) {
         return "Dist";
+    }
+    if (parse_contains_tag(morphological_parse, CARDINAL) || parse_contains_tag(morphological_parse, NUMBER) ||
+        strcmp(lemma, "kaç") == 0) {
+        return "Card";
     }
     return NULL;
 }
@@ -813,6 +827,9 @@ char *get_possessive_person(const Morphological_parse *morphological_parse) {
  * reflexive.
  */
 char *get_voice(const Morphological_parse *morphological_parse) {
+    if (parse_contains_tag(morphological_parse, CAUSATIVE) && parse_contains_tag(morphological_parse, PASSIVE)) {
+        return "CauPass";
+    }
     if (parse_contains_tag(morphological_parse, PASSIVE)) {
         return "Pass";
     }
@@ -890,6 +907,30 @@ char *get_tense(const Morphological_parse *morphological_parse) {
  * simple necessitative; "Pot" for simple potential; "Gen" for simple suffix of a general modality.
  */
 char *get_mood(const Morphological_parse *morphological_parse) {
+    if ((parse_contains_tag(morphological_parse, COPULA) || parse_contains_tag(morphological_parse, AORIST)) && parse_contains_tag(morphological_parse, NECESSITY) && parse_contains_tag(morphological_parse, ABLE)){
+        return "GenNecPot";
+    }
+    if ((parse_contains_tag(morphological_parse, COPULA) || parse_contains_tag(morphological_parse, AORIST)) && parse_contains_tag(morphological_parse, CONDITIONAL) && parse_contains_tag(morphological_parse, ABLE)){
+        return "CndGenPot";
+    }
+    if ((parse_contains_tag(morphological_parse, COPULA) || parse_contains_tag(morphological_parse, AORIST)) && parse_contains_tag(morphological_parse, NECESSITY)){
+        return "GenNec";
+    }
+    if ((parse_contains_tag(morphological_parse, COPULA) || parse_contains_tag(morphological_parse, AORIST)) && parse_contains_tag(morphological_parse, ABLE)){
+        return "GenPot";
+    }
+    if (parse_contains_tag(morphological_parse, NECESSITY) && parse_contains_tag(morphological_parse, ABLE)){
+        return "NecPot";
+    }
+    if (parse_contains_tag(morphological_parse, DESIRE) && parse_contains_tag(morphological_parse, ABLE)){
+        return "DesPot";
+    }
+    if (parse_contains_tag(morphological_parse, CONDITIONAL) && parse_contains_tag(morphological_parse, ABLE)){
+        return "CndPot";
+    }
+    if (parse_contains_tag(morphological_parse, CONDITIONAL) && (parse_contains_tag(morphological_parse, COPULA) || parse_contains_tag(morphological_parse, AORIST))){
+        return "CndGen";
+    }
     if (parse_contains_tag(morphological_parse, IMPERATIVE)) {
         return "Imp";
     }
@@ -905,9 +946,17 @@ char *get_mood(const Morphological_parse *morphological_parse) {
     if (parse_contains_tag(morphological_parse, NECESSITY)) {
         return "Nec";
     }
-    if (parse_contains_tag(morphological_parse, PASTTENSE) || parse_contains_tag(morphological_parse, PROGRESSIVE1) ||
-        parse_contains_tag(morphological_parse, FUTURE)) {
+    if (parse_contains_tag(morphological_parse, ABLE)) {
+        return "Pot";
+    }
+    if (parse_contains_tag(morphological_parse, PASTTENSE) || parse_contains_tag(morphological_parse, NARRATIVE) || parse_contains_tag(morphological_parse, PROGRESSIVE1) || parse_contains_tag(morphological_parse, PROGRESSIVE2) || parse_contains_tag(morphological_parse, FUTURE)){
         return "Ind";
+    }
+    if ((parse_contains_tag(morphological_parse, COPULA) || parse_contains_tag(morphological_parse, AORIST))){
+        return "Gen";
+    }
+    if (parse_contains_tag(morphological_parse, ZERO) && !parse_contains_tag(morphological_parse, A3PL)){
+        return "Gen";
     }
     return NULL;
 }
@@ -923,12 +972,17 @@ char *get_verb_form(const Morphological_parse *morphological_parse) {
         parse_contains_tag(morphological_parse, PRESENTPARTICIPLE)) {
         return "Part";
     }
-    if (parse_contains_tag(morphological_parse, SINCEDOINGSO) ||
-        parse_contains_tag(morphological_parse, WITHOUTHAVINGDONESO) ||
-        parse_contains_tag(morphological_parse, WITHOUTBEINGABLETOHAVEDONESO) ||
-        parse_contains_tag(morphological_parse, BYDOINGSO) || parse_contains_tag(morphological_parse, AFTERDOINGSO) ||
-        parse_contains_tag(morphological_parse, INFINITIVE3)) {
+    if (parse_contains_tag(morphological_parse, INFINITIVE) || parse_contains_tag(morphological_parse, INFINITIVE2)){
+        return "Vnoun";
+    }
+    if (parse_contains_tag(morphological_parse, SINCEDOINGSO) || parse_contains_tag(morphological_parse, WITHOUTHAVINGDONESO) || parse_contains_tag(morphological_parse, WITHOUTBEINGABLETOHAVEDONESO) || parse_contains_tag(morphological_parse, BYDOINGSO) || parse_contains_tag(morphological_parse, AFTERDOINGSO) || parse_contains_tag(morphological_parse, INFINITIVE3)){
         return "Conv";
+    }
+    if (parse_contains_tag(morphological_parse, COPULA) || parse_contains_tag(morphological_parse, ABLE) || parse_contains_tag(morphological_parse, AORIST) || parse_contains_tag(morphological_parse, PROGRESSIVE2)
+        || parse_contains_tag(morphological_parse, DESIRE) || parse_contains_tag(morphological_parse, NECESSITY) || parse_contains_tag(morphological_parse, CONDITIONAL) || parse_contains_tag(morphological_parse, IMPERATIVE) || parse_contains_tag(morphological_parse, OPTATIVE)
+        || parse_contains_tag(morphological_parse, PASTTENSE) || parse_contains_tag(morphological_parse, NARRATIVE) || parse_contains_tag(morphological_parse, PROGRESSIVE1) || parse_contains_tag(morphological_parse, FUTURE)
+        || (parse_contains_tag(morphological_parse, ZERO) && !parse_contains_tag(morphological_parse, A3PL))){
+        return "Fin";
     }
     return NULL;
 }
