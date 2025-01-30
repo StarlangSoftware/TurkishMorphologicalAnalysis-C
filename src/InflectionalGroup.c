@@ -94,6 +94,7 @@ char *get_tag(Morphological_tag tag) {
 /**
  * Another getTag method which takes index as an input and returns the corresponding tag from IG vector.
  *
+ * @param inflectional_group Current inflectional group object
  * @param index to get tag.
  * @return tag at input index.
  */
@@ -106,6 +107,7 @@ Morphological_tag get_tag_with_index(const Inflectional_group* inflectional_grou
  * The containsCase method loops through the tags in IG ArrayList and finds out the tags of the NOMINATIVE,
  * ACCUSATIVE, DATIVE, LOCATIVE or ABLATIVE cases.
  *
+ * @param inflectional_group Current inflectional group object
  * @return tag which holds the condition.
  */
 Morphological_tag contains_case(const Inflectional_group *inflectional_group) {
@@ -138,6 +140,7 @@ bool contains_plural(const Inflectional_group *inflectional_group) {
  * The containsTag method takes a MorphologicalTag type tag as an input and loops through the tags in
  * IG vector and returns true if the input matches with on of the tags in the IG.
  *
+ * @param inflectional_group Current inflectional group object
  * @param _tag MorphologicalTag type input to search for.
  * @return true if tag matches with the tag in IG, false otherwise.
  */
@@ -155,6 +158,7 @@ bool contains_tag(const Inflectional_group *inflectional_group, Morphological_ta
  * The containsPossessive method loops through the tags in IG ArrayList and returns true if the tag in IG is
  * one of the possessives: P1PL, P1SG, P2PL, P2SG, P3PL AND P3SG.
  *
+ * @param inflectional_group Current inflectional group object
  * @return true if it contains possessive tag, false otherwise.
  */
 bool contains_possessive(const Inflectional_group *inflectional_group) {
@@ -170,6 +174,7 @@ bool contains_possessive(const Inflectional_group *inflectional_group) {
 /**
  * Overridden toString method to return resulting tags in IG vector.
  *
+ * @param inflectional_group Current inflectional group object
  * @return String result.
  */
 char *inflectional_group_to_string(const Inflectional_group *inflectional_group) {

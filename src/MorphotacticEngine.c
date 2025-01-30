@@ -296,6 +296,7 @@ void resolve_H(Txt_word_ptr root,
  * concatenates given formation with 'ç', if not it concatenates given formation with 'c'.
  *
  * @param formation String input.
+ * @param formationToCheck Current formation to check
  * @return resolved String.
  */
 void resolve_C(String_ptr formation, const char *formationToCheck) {

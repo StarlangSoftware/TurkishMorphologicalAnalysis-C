@@ -72,13 +72,13 @@ void free_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list);
 
 char* root_words(Fsm_parse_list_ptr fsm_parse_list);
 
-void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, char* current_with_pos);
+void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, const char* current_with_pos);
 
 Fsm_parse_ptr get_parse_with_longest_root_word(Fsm_parse_list_ptr fsm_parse_list);
 
 bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr fsm_parse);
 
-void reduce_to_parses_with_same_root(Fsm_parse_list_ptr fsm_parse_list, char* currentRoot);
+void reduce_to_parses_with_same_root(Fsm_parse_list_ptr fsm_parse_list, const char* currentRoot);
 
 Array_list_ptr construct_parse_list_for_different_root_with_pos(Fsm_parse_list_ptr fsm_parse_list);
 

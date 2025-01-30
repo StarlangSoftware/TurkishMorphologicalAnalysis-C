@@ -54,7 +54,7 @@ Finite_state_machine_ptr create_finite_state_machine2() {
  * At the last step, by starting rootNode's first child, it gets all the transitionNodes and next states called toState,
  * then continue with the nextSiblings. Also, if there is no possible toState, it prints this case and the causative states.
  *
- * @param fileName the resource file to read the finite fsm_state machine. Only files in resources folder are supported.
+ * @param file_name the resource file to read the finite fsm_state machine. Only files in resources folder are supported.
  */
 Finite_state_machine_ptr create_finite_state_machine(const char *file_name) {
     Fsm_State_ptr state;
@@ -124,6 +124,7 @@ Finite_state_machine_ptr create_finite_state_machine(const char *file_name) {
  * The isValidTransition loops through states ArrayList and checks transitions between states. If the actual transition
  * equals to the given transition input, method returns true otherwise returns false.
  *
+ * @param finite_state_machine Current finite state machine object
  * @param transition is used to compare with the actual transition of a fsm_state.
  * @return true when the actual transition equals to the transition input, false otherwise.
  */
@@ -146,6 +147,7 @@ bool is_valid_transition(Finite_state_machine_ptr finite_state_machine, const ch
  * The getState method is used to loop through the states ArrayList and return the fsm_state whose name equal
  * to the given input name.
  *
+ * @param finite_state_machine Current finite state machine object
  * @param name is used to compare with the fsm_state's actual name.
  * @return fsm_state if found any, null otherwise.
  */
@@ -163,6 +165,8 @@ Fsm_State_ptr get_state(Finite_state_machine_ptr finite_state_machine, const cha
  * The addTransition method creates a new Transition with given input parameters and adds the transition to
  * transitions ArrayList.
  *
+ * @param finite_state_machine Current finite state machine object
+ * @param from_state  Fsm_State type input indicating the previous fsm_state.
  * @param to_state  Fsm_State type input indicating the next fsm_state.
  * @param with     String input indicating with what the transition will be made.
  * @param with_name String input.
@@ -188,6 +192,8 @@ void add_fsm_transition(Finite_state_machine_ptr finite_state_machine,
  * Another addTransition method which takes additional argument; to_pos and. It creates a new Transition
  * with given input parameters and adds the transition to transitions ArrayList.
  *
+ * @param finite_state_machine Current finite state machine object
+ * @param from_state  Fsm_State type input indicating the previous fsm_state.
  * @param to_state  Fsm_State type input indicating the next fsm_state.
  * @param with     String input indicating with what the transition will be made.
  * @param with_name String input.
@@ -214,6 +220,7 @@ void add_fsm_transition2(Finite_state_machine_ptr finite_state_machine,
 /**
  * The get_transitions method returns the transitions at the given state.
  *
+ * @param finite_state_machine Current finite state machine object
  * @param state State input.
  * @return transitions at given state.
  */

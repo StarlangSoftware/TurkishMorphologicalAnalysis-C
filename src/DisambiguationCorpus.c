@@ -13,11 +13,11 @@
  * and creates a new DisambiguatedWord with current word and its MorphologicalParse. It also creates a new Sentence
  * when a new sentence starts, and adds each word to this sentence till the end of that sentence.
  *
- * @param fileName File which will be read and parsed.
+ * @param file_name File which will be read and parsed.
  */
 Corpus_ptr create_disambiguation_corpus(const char *file_name) {
     Disambiguated_word_ptr new_word;
-    Sentence_ptr new_sentence;
+    Sentence_ptr new_sentence = NULL;
     Corpus_ptr result = create_corpus();
     result->file_name = str_copy(result->file_name, file_name);
     Array_list_ptr lines = read_lines(file_name);

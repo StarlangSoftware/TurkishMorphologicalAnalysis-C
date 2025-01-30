@@ -72,9 +72,10 @@ char *root_words(Fsm_parse_list_ptr fsm_parse_list) {
  * i equals to the size of the fsmParses vector. If the given currentWithPos does not equal to the ith item's
  * root and the MorphologicalTag of the first inflectional of fsmParses, it removes the ith item from the vector.
  *
- * @param currentWithPos Word input.
+ * @param fsm_parse_list Current parse list object
+ * @param current_with_pos Word input.
  */
-void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, char* current_with_pos) {
+void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, const char* current_with_pos) {
     int i = 0;
     while (i < fsm_parse_list->fsm_parses->size) {
         char* name = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i));
@@ -95,7 +96,7 @@ void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, 
  * @return FsmParse Parse with the longest root word.
  */
 Fsm_parse_ptr get_parse_with_longest_root_word(Fsm_parse_list_ptr fsm_parse_list) {
-    Fsm_parse_ptr bestParse;
+    Fsm_parse_ptr bestParse = NULL;
     int maxLength = -1;
     if (fsm_parse_list->fsm_parses->size > 0){
         bestParse = get_fsm_parse(fsm_parse_list, 0);
@@ -114,7 +115,8 @@ Fsm_parse_ptr get_parse_with_longest_root_word(Fsm_parse_list_ptr fsm_parse_list
 /**
  * The isLongestRootException method returns true if the longest root word belongs to an exceptional case, false otherwise.
  *
- * @param fsmParse FsmParse input.
+ * @param fsm_parse_list Current parse list object
+ * @param fsm_parse FsmParse input.
  * @return true if the longest root belongs to an exceptional case, false otherwise.
  */
 bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr fsm_parse) {
@@ -156,9 +158,10 @@ bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr 
  * i equals to the size of the fsmParses vector. If the given currentRoot does not equal to the root of ith item of
  * fsmParses, it removes the ith item from the vector.
  *
+ * @param fsm_parse_list Current parse list object
  * @param currentRoot String input.
  */
-void reduce_to_parses_with_same_root(Fsm_parse_list_ptr fsm_parse_list, char *currentRoot) {
+void reduce_to_parses_with_same_root(Fsm_parse_list_ptr fsm_parse_list, const char *currentRoot) {
     int i = 0;
     while (i < fsm_parse_list->fsm_parses->size) {
         Fsm_parse_ptr fsm_parse = get_fsm_parse(fsm_parse_list, i);
@@ -247,7 +250,8 @@ char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
     char* list = transition_list(get_fsm_parse(fsm_parse_list, 0));
     if (fsm_parse_list->fsm_parses->size == 1) {
         String_ptr st = substring2(list, str_find_c(list, "+") + 1);
-        char* result = str_copy(result, st->s);
+        char* result = NULL;
+        result = str_copy(result, st->s);
         free_string_ptr(st);
         return result;
     }
@@ -345,6 +349,7 @@ Fsm_parse_list_ptr create_fsm_parse_list2() {
 /**
  * The get_fsm_parse method takes an integer index as an input and returns the item of fsm_parses array at given index.
  *
+ * @param fsm_parse_list Current parse list object
  * @param index Integer input.
  * @return the item of fsm_parses array at given index.
  */

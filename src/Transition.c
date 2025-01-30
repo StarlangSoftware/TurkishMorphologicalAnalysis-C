@@ -13,13 +13,13 @@
  * A constructor of Transition class which takes  a Fsm_State, and two Strings as input. Then it
  * initializes toState, with and withName variables with given inputs.
  *
- * @param toState  Fsm_State input.
+ * @param to_state  Fsm_State input.
  * @param with     String input.
- * @param withName String input.
+ * @param with_name String input.
  */
 Transition_ptr create_transition(Fsm_State_ptr to_state,
-                                 char *with,
-                                 char *with_name) {
+                                 const char *with,
+                                 const char *with_name) {
     Transition_ptr result = malloc_(sizeof(Transition), "create_transition");
     result->to_state = to_state;
     result->with = str_copy(result->with, with);
@@ -32,15 +32,15 @@ Transition_ptr create_transition(Fsm_State_ptr to_state,
  * Another constructor of Transition class which takes  a Fsm_State, and three Strings as input. Then it
  * initializes toState, with, withName and toPos variables with given inputs.
  *
- * @param toState  Fsm_State input.
+ * @param to_state  Fsm_State input.
  * @param with     String input.
- * @param withName String input.
- * @param toPos    String input.
+ * @param with_name String input.
+ * @param to_pos    String input.
  */
 Transition_ptr create_transition2(Fsm_State_ptr to_state,
-                                  char *with,
-                                  char *with_name,
-                                  char *to_pos) {
+                                  const char *with,
+                                  const char *with_name,
+                                  const char *to_pos) {
     Transition_ptr result = malloc_(sizeof(Transition), "create_transition2");
     result->to_state = to_state;
     result->with = str_copy(result->with, with);
@@ -55,7 +55,7 @@ Transition_ptr create_transition2(Fsm_State_ptr to_state,
  *
  * @param with String input.
  */
-Transition_ptr create_transition3(char *with) {
+Transition_ptr create_transition3(const char *with) {
     Transition_ptr result = malloc_(sizeof(Transition), "create_transition3");
     result->to_state = NULL;
     result->with = str_copy(result->with, with);
@@ -92,7 +92,7 @@ void free_transition(Transition_ptr transition) {
  * @param real_surface_form    String input.
  * @return true when the transition is possible according to Turkish grammar, false otherwise.
  */
-bool transition_possible1(Transition_ptr transition, char *current_surface_form, char *real_surface_form) {
+bool transition_possible1(Transition_ptr transition, const char *current_surface_form, const char *real_surface_form) {
     if (word_size(current_surface_form) == 0 || word_size(current_surface_form) >= word_size(real_surface_form)) {
         return true;
     }
@@ -139,18 +139,19 @@ bool transition_possible1(Transition_ptr transition, char *current_surface_form,
 /**
  * The transitionPossible method takes a current parse as an input. It then checks some special  cases.
  *
- * @param currentFsmParse Parse to be checked
+ * @param transition Current Transition object
+ * @param current_fsm_parse Parse to be checked
  * @return true if transition is possible false otherwise
  */
-bool transition_possible2(Transition_ptr transition, Fsm_parse_ptr currentFsmParse) {
-    if (strcmp(transition->with, "Ar") == 0 && ends_with(currentFsmParse->form, "l") && strcmp(currentFsmParse->root->name, currentFsmParse->form) != 0) {
+bool transition_possible2(Transition_ptr transition, Fsm_parse_ptr current_fsm_parse) {
+    if (strcmp(transition->with, "Ar") == 0 && ends_with(current_fsm_parse->form, "l") && strcmp(current_fsm_parse->root->name, current_fsm_parse->form) != 0) {
         return false;
     }
-    if (currentFsmParse->verb_agreement != NULL && currentFsmParse->possessive_agreement != NULL && transition->with_name != NULL) {
-        if (strcmp(currentFsmParse->verb_agreement, "A3PL") == 0 && strcmp(transition->with_name, "^DB+VERB+ZERO+PRES+A1SG") == 0) {
+    if (current_fsm_parse->verb_agreement != NULL && current_fsm_parse->possessive_agreement != NULL && transition->with_name != NULL) {
+        if (strcmp(current_fsm_parse->verb_agreement, "A3PL") == 0 && strcmp(transition->with_name, "^DB+VERB+ZERO+PRES+A1SG") == 0) {
             return false;
         }
-        if (strcmp(currentFsmParse->verb_agreement, "A3SG") == 0 && (strcmp(currentFsmParse->possessive_agreement, "P1SG") == 0 || strcmp(currentFsmParse->possessive_agreement, "P2SG") == 0) && strcmp(transition->with_name, "^DB+VERB+ZERO+PRES+A1PL") == 0) {
+        if (strcmp(current_fsm_parse->verb_agreement, "A3SG") == 0 && (strcmp(current_fsm_parse->possessive_agreement, "P1SG") == 0 || strcmp(current_fsm_parse->possessive_agreement, "P2SG") == 0) && strcmp(transition->with_name, "^DB+VERB+ZERO+PRES+A1PL") == 0) {
             return false;
         }
     }
@@ -160,8 +161,9 @@ bool transition_possible2(Transition_ptr transition, Fsm_parse_ptr currentFsmPar
 /**
  * The transitionPossible method takes root and current parse as inputs. It then checks some special cases.
  *
+ * @param transition Current Transition object
  * @param root Current root word
- * @param fromState From which state we arrived to this state.
+ * @param from_state From which state we arrived to this state.
  * @return true if transition is possible false otherwise
  */
 bool transition_possible3(Transition_ptr transition, Txt_word_ptr root, Fsm_State_ptr from_state) {
@@ -201,6 +203,7 @@ bool transition_possible3(Transition_ptr transition, Txt_word_ptr root, Fsm_Stat
 /**
  * The withFirstChar method returns the first character of the with variable.
  *
+ * @param transition Current Transition object
  * @return the first character of the with variable.
  */
 char *with_first_char(Transition_ptr transition) {
@@ -232,6 +235,7 @@ char *with_first_char(Transition_ptr transition) {
  * <p>
  * Or, if the first character of with variable is 'A, H: or any other vowels, it returns true.
  *
+ * @param transition Current Transition object
  * @return true if it starts with vowel or consonant drops, false otherwise.
  */
 bool start_with_vowel_or_consonant_drops(Transition_ptr transition) {
@@ -258,6 +262,7 @@ bool start_with_vowel_or_consonant_drops(Transition_ptr transition) {
  * "Hyor" or equals one of the Strings "yHs, yAn, yA, yAcAk, yAsH, yHncA, yHp, yAlH, yArAk, yAdur, yHver, yAgel, yAgor,
  * yAbil, yAyaz, yAkal, yAkoy, yAmA, yHcH, HCH, Hr, Hs, Hn, yHn", yHnHz, Ar, Hl").
  *
+ * @param transition Current Transition object
  * @param root TxtWord input.
  * @return true if there is softening during suffixation of the given root, false otherwise.
  */
@@ -286,11 +291,12 @@ bool soften_during_suffixation(Transition_ptr transition, Txt_word_ptr root) {
  * it makes transition with given root and stem with the verbal root fsm_state. If given root is not verb, it makes transition
  * with given root and stem and the nominal root fsm_state.
  *
+ * @param transition Current Transition object
  * @param root TxtWord input.
  * @param stem String input.
  * @return String type output that has the transition.
  */
-char *make_transition(Transition_ptr transition, Txt_word_ptr root, char *stem) {
+char *make_transition(Transition_ptr transition, Txt_word_ptr root, const char *stem) {
     if (is_verb(root)) {
         return make_transition2(transition, root, stem, create_fsm_state("VerbalRoot", true, false));
     } else {
@@ -310,19 +316,20 @@ char *make_transition(Transition_ptr transition, Txt_word_ptr root, char *stem) 
  * and the transition does not start with 'y'. (g) Adds the last character again when the root duplicates during
  * suffixation. (h) Drops the last two characters and adds the last character when last 'i' drops during
  * suffixation. (i) Replaces the last character with a soft one when the root soften during suffixation.
+ * @param transition Current Transition object
  * @param root Root of the current word form
  * @param stem Current word form
  * @param startState The state from which this Fsm morphological analysis search has started.
  * @return The current value of the word form after this transition is completed in the finite state machine.
  */
-char *make_transition2(Transition_ptr transition, Txt_word_ptr root, char *stem, Fsm_State_ptr startState) {
+char *make_transition2(Transition_ptr transition, Txt_word_ptr root, const char *stem, Fsm_State_ptr startState) {
     char* tmp3 = str_concat(root->name, "'");
     bool rootWord = strcmp(root->name, stem) == 0 || strcmp(tmp3, stem) == 0;
     free_(tmp3);
     String_ptr formation = create_string2(stem);
     String_ptr formation_to_check;
     bool formation_to_check_allocated = false;
-    char* result;
+    char* result = NULL;
     char except_last[MAX_WORD_LENGTH], except_last_two[MAX_WORD_LENGTH], last[3], last_p[3], with_f[3];
     int i = 0;
     String_ptr tmp = substring_except_last_char(stem);

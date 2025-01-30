@@ -54,7 +54,7 @@ Morphological_parse_ptr create_morphological_parse(const char *parse) {
 /**
  * Another constructor of MorphologicalParse class which takes an vector inflectionalGroups as an input.
  *
- * @param inflectionalGroups vector input.
+ * @param inflectional_groups vector input.
  */
 Morphological_parse_ptr create_morphological_parse2(const Array_list *inflectional_groups) {
     Morphological_parse_ptr result = malloc_(sizeof(Morphological_parse), "create_morphological_parse2");
@@ -76,7 +76,8 @@ Morphological_parse_ptr create_morphological_parse2(const Array_list *inflection
  * method with these substrings. If getMorphologicalTag method returns a tag, it adds this tag to the IG vector
  * and also to the _inflectionalGroups vector.
  *
- * @param _inflectionalGroups vector input.
+ * @param morphological_parse Current morphological parse object
+ * @param inflectional_groups vector input.
  */
 void update_root_and_inflectional_groups(Morphological_parse_ptr morphological_parse,
                                          const Array_list *inflectional_groups) {
@@ -102,6 +103,7 @@ void update_root_and_inflectional_groups(Morphological_parse_ptr morphological_p
  * The getTransitionList method gets the first item of inflectionalGroups ArrayList as a String, then loops
  * through the items of inflectionalGroups and concatenates them by using +.
  *
+ * @param morphological_parse Current morphological parse object
  * @return String that contains transition list.
  */
 char *get_transition_list(const Morphological_parse *morphological_parse) {
@@ -125,6 +127,7 @@ char *get_transition_list(const Morphological_parse *morphological_parse) {
  * root and the first item of inflectionalGroups vector. If the index is not 0, it then returns the corresponding
  * item of inflectionalGroups vector as a String.
  *
+ * @param morphological_parse Current morphological parse object
  * @param index Integer input.
  * @return corresponding item of inflectionalGroups at given index as a String.
  */
@@ -146,6 +149,7 @@ char *get_inflectional_group_string(const Morphological_parse *morphological_par
  * The getInflectionalGroup method takes an Integer index as an input and it directly returns the InflectionalGroup
  * at given index.
  *
+ * @param morphological_parse Current morphological parse object
  * @param index Integer input.
  * @return InflectionalGroup at given index.
  */
@@ -156,6 +160,7 @@ Inflectional_group_ptr get_inflectional_group(const Morphological_parse *morphol
 /**
  * The getLastInflectionalGroup method directly returns the last InflectionalGroup of inflectionalGroups ArrayList.
  *
+ * @param morphological_parse Current morphological parse object
  * @return the last InflectionalGroup of inflectionalGroups ArrayList.
  */
 Inflectional_group_ptr get_last_inflectional_group(const Morphological_parse *morphological_parse) {
@@ -166,6 +171,7 @@ Inflectional_group_ptr get_last_inflectional_group(const Morphological_parse *mo
  * The getTag method takes an Integer index as an input and and if the given index is 0, it directly return the root.
  * then, it loops through the inflectionalGroups ArrayList it returns the MorphologicalTag of the corresponding inflectional group.
  *
+ * @param morphological_parse Current morphological parse object
  * @param index Integer input.
  * @return the MorphologicalTag of the corresponding inflectional group, or null of invalid index inputs.
  */
@@ -187,6 +193,7 @@ char *get_tag_for_index(const Morphological_parse *morphological_parse, int inde
  * The tagSize method loops through the inflectionalGroups ArrayList and accumulates the sizes of each inflectional group
  * in the inflectionalGroups.
  *
+ * @param morphological_parse Current morphological parse object
  * @return total size of the inflectionalGroups ArrayList.
  */
 int tag_size(const Morphological_parse *morphological_parse) {
@@ -201,6 +208,7 @@ int tag_size(const Morphological_parse *morphological_parse) {
 /**
  * The firstInflectionalGroup method returns the first inflectional group of inflectionalGroups ArrayList.
  *
+ * @param morphological_parse Current morphological parse object
  * @return the first inflectional group of inflectionalGroups ArrayList.
  */
 Inflectional_group_ptr first_inflectional_group(const Morphological_parse *morphological_parse) {
@@ -210,6 +218,7 @@ Inflectional_group_ptr first_inflectional_group(const Morphological_parse *morph
 /**
  * The lastInflectionalGroup method returns the last inflectional group of inflectionalGroups ArrayList.
  *
+ * @param morphological_parse Current morphological parse object
  * @return the last inflectional group of inflectionalGroups ArrayList.
  */
 Inflectional_group_ptr last_inflectional_group(const Morphological_parse *morphological_parse) {
@@ -219,6 +228,7 @@ Inflectional_group_ptr last_inflectional_group(const Morphological_parse *morpho
 /**
  * The getWordWithPos method returns root with the MorphologicalTag of the first inflectional as a new word.
  *
+ * @param morphological_parse Current morphological parse object
  * @return root with the MorphologicalTag of the first inflectional as a new word.
  */
 char *get_word_with_pos(const Morphological_parse *morphological_parse) {
@@ -232,6 +242,7 @@ char *get_word_with_pos(const Morphological_parse *morphological_parse) {
 /**
  * The getPos method returns the MorphologicalTag of the last inflectional group.
  *
+ * @param morphological_parse Current morphological parse object
  * @return the MorphologicalTag of the last inflectional group.
  */
 char *get_pos(const Morphological_parse *morphological_parse) {
@@ -241,6 +252,7 @@ char *get_pos(const Morphological_parse *morphological_parse) {
 /**
  * The getRootPos method returns the MorphologicalTag of the first inflectional group.
  *
+ * @param morphological_parse Current morphological parse object
  * @return the MorphologicalTag of the first inflectional group.
  */
 char *get_root_pos(const Morphological_parse *morphological_parse) {
@@ -251,6 +263,7 @@ char *get_root_pos(const Morphological_parse *morphological_parse) {
  * The lastIGContainsCase method returns the MorphologicalTag of last inflectional group if it is one of the NOMINATIVE,
  * ACCUSATIVE, DATIVE, LOCATIVE or ABLATIVE cases, null otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return the MorphologicalTag of last inflectional group if it is one of the NOMINATIVE,
  * ACCUSATIVE, DATIVE, LOCATIVE or ABLATIVE cases, null otherwise.
  */
@@ -266,6 +279,7 @@ char *last_ig_contains_case(const Morphological_parse *morphological_parse) {
  * The lastIGContainsTag method takes a MorphologicalTag as an input and returns true if the last inflectional group's
  * MorphologicalTag matches with one of the tags in the IG ArrayList, falze otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @param tag MorphologicalTag type input.
  * @return true if the last inflectional group's MorphologicalTag matches with one of the tags in the IG ArrayList, false otherwise.
  */
@@ -277,6 +291,7 @@ bool last_ig_contains_tag(const Morphological_parse *morphological_parse, Morpho
  * lastIGContainsPossessive method returns true if the last inflectional group contains one of the
  * possessives: P1PL, P1SG, P2PL, P2SG, P3PL AND P3SG, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the last inflectional group contains one of the possessives: P1PL, P1SG, P2PL, P2SG, P3PL AND P3SG, false otherwise.
  */
 bool last_ig_contains_possessive(const Morphological_parse *morphological_parse) {
@@ -286,6 +301,7 @@ bool last_ig_contains_possessive(const Morphological_parse *morphological_parse)
 /**
  * The isCapitalWord method returns true if the character at first index o f root is an uppercase letter, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the character at first index o f root is an uppercase letter, false otherwise.
  */
 bool is_capital_word(const Morphological_parse *morphological_parse) {
@@ -298,6 +314,7 @@ bool is_capital_word(const Morphological_parse *morphological_parse) {
 /**
  * The isNoun method returns true if the past of speech is NOUN, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the past of speech is NOUN, false otherwise.
  */
 bool is_noun(const Morphological_parse *morphological_parse) {
@@ -310,6 +327,7 @@ bool is_noun(const Morphological_parse *morphological_parse) {
 /**
  * The isVerb method returns true if the past of speech is VERB, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the past of speech is VERB, false otherwise.
  */
 bool is_parse_verb(const Morphological_parse *morphological_parse) {
@@ -322,6 +340,7 @@ bool is_parse_verb(const Morphological_parse *morphological_parse) {
 /**
  * The isRootVerb method returns true if the past of speech of root is BERV, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the past of speech of root is VERB, false otherwise.
  */
 bool is_root_verb(const Morphological_parse *morphological_parse) {
@@ -334,6 +353,7 @@ bool is_root_verb(const Morphological_parse *morphological_parse) {
 /**
  * The isAdjective method returns true if the past of speech is ADJ, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the past of speech is ADJ, false otherwise.
  */
 bool is_parse_adjective(const Morphological_parse *morphological_parse) {
@@ -346,6 +366,7 @@ bool is_parse_adjective(const Morphological_parse *morphological_parse) {
 /**
  * The isProperNoun method returns true if the first inflectional group's MorphologicalTag is a PROPERNOUN, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a PROPERNOUN, false otherwise.
  */
 bool is_parse_proper_noun(const Morphological_parse *morphological_parse) {
@@ -355,6 +376,7 @@ bool is_parse_proper_noun(const Morphological_parse *morphological_parse) {
 /**
  * The isPunctuation method returns true if the first inflectional group's MorphologicalTag is a PUNCTUATION, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a PUNCTUATION, false otherwise.
  */
 bool is_parse_punctuation(const Morphological_parse *morphological_parse) {
@@ -364,6 +386,7 @@ bool is_parse_punctuation(const Morphological_parse *morphological_parse) {
 /**
  * The isCardinal method returns true if the first inflectional group's MorphologicalTag is a CARDINAL, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a CARDINAL, false otherwise.
  */
 bool is_cardinal(const Morphological_parse *morphological_parse) {
@@ -373,6 +396,7 @@ bool is_cardinal(const Morphological_parse *morphological_parse) {
 /**
  * The isOrdinal method returns true if the first inflectional group's MorphologicalTag is a ORDINAL, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a ORDINAL, false otherwise.
  */
 bool is_parse_ordinal(const Morphological_parse *morphological_parse) {
@@ -382,6 +406,7 @@ bool is_parse_ordinal(const Morphological_parse *morphological_parse) {
 /**
  * The isReal method returns true if the first inflectional group's MorphologicalTag is a REAL, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a REAL, false otherwise.
  */
 bool is_parse_real(const Morphological_parse *morphological_parse) {
@@ -391,6 +416,7 @@ bool is_parse_real(const Morphological_parse *morphological_parse) {
 /**
  * The isNumber method returns true if the first inflectional group's MorphologicalTag is REAL or CARDINAL, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a REAL or CARDINAL, false otherwise.
  */
 bool is_number(const Morphological_parse *morphological_parse) {
@@ -400,6 +426,7 @@ bool is_number(const Morphological_parse *morphological_parse) {
 /**
  * The isTime method returns true if the first inflectional group's MorphologicalTag is a TIME, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a TIME, false otherwise.
  */
 bool is_parse_time(const Morphological_parse *morphological_parse) {
@@ -409,6 +436,7 @@ bool is_parse_time(const Morphological_parse *morphological_parse) {
 /**
  * The isDate method returns true if the first inflectional group's MorphologicalTag is a DATE, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a DATE, false otherwise.
  */
 bool is_parse_date(const Morphological_parse *morphological_parse) {
@@ -418,6 +446,7 @@ bool is_parse_date(const Morphological_parse *morphological_parse) {
 /**
  * The isHashTag method returns true if the first inflectional group's MorphologicalTag is a HASHTAG, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a HASHTAG, false otherwise.
  */
 bool is_hash_tag(const Morphological_parse *morphological_parse) {
@@ -427,6 +456,7 @@ bool is_hash_tag(const Morphological_parse *morphological_parse) {
 /**
  * The isEmail method returns true if the first inflectional group's MorphologicalTag is a EMAIL, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a EMAIL, false otherwise.
  */
 bool is_email(const Morphological_parse *morphological_parse) {
@@ -436,6 +466,7 @@ bool is_email(const Morphological_parse *morphological_parse) {
 /**
  * The isPercent method returns true if the first inflectional group's MorphologicalTag is a PERCENT, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a PERCENT, false otherwise.
  */
 bool is_parse_percent(const Morphological_parse *morphological_parse) {
@@ -445,6 +476,7 @@ bool is_parse_percent(const Morphological_parse *morphological_parse) {
 /**
  * The isFraction method returns true if the first inflectional group's MorphologicalTag is a FRACTION, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a FRACTION, false otherwise.
  */
 bool is_parse_fraction(const Morphological_parse *morphological_parse) {
@@ -454,6 +486,7 @@ bool is_parse_fraction(const Morphological_parse *morphological_parse) {
 /**
  * The isRange method returns true if the first inflectional group's MorphologicalTag is a RANGE, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the first inflectional group's MorphologicalTag is a RANGE, false otherwise.
  */
 bool is_parse_range(const Morphological_parse *morphological_parse) {
@@ -464,6 +497,7 @@ bool is_parse_range(const Morphological_parse *morphological_parse) {
  * The isPlural method returns true if InflectionalGroup's MorphologicalTags are from the agreement plural
  * or possessive plural, i.e A1PL, A2PL, A3PL, P1PL, P2PL or P3PL, and false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if InflectionalGroup's MorphologicalTags are from the agreement plural or possessive plural.
  */
 bool is_parse_plural(const Morphological_parse *morphological_parse) {
@@ -479,6 +513,7 @@ bool is_parse_plural(const Morphological_parse *morphological_parse) {
 /**
  * The isAuxiliary method returns true if the root equals to the et, ol, or yap, and false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @return true if the root equals to the et, ol, or yap, and false otherwise.
  */
 bool is_auxiliary(const Morphological_parse *morphological_parse) {
@@ -489,6 +524,7 @@ bool is_auxiliary(const Morphological_parse *morphological_parse) {
  * The containsTag method takes a MorphologicalTag as an input and loops through the inflectionalGroups ArrayList,
  * returns true if the input matches with on of the tags in the IG, false otherwise.
  *
+ * @param morphological_parse Current morphological parse object
  * @param tag checked tag
  * @return true if the input matches with on of the tags in the IG, false otherwise.
  */
@@ -505,6 +541,7 @@ bool parse_contains_tag(const Morphological_parse *morphological_parse, Morpholo
 /**
  * The getTreePos method returns the tree pos tag of a morphological analysis.
  *
+ * @param morphological_parse Current morphological parse object
  * @return Tree pos tag of the morphological analysis in string form.
  */
 char *get_tree_pos(const Morphological_parse *morphological_parse) {
@@ -594,6 +631,7 @@ char *get_tree_pos(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the pronoun type of the parse for universal dependency feature ProType.
+ * @param morphological_parse Current morphological parse object
  * @return "Art" if the pronoun is also a determiner; "Prs" if the pronoun is personal pronoun; "Rcp" if the
  * pronoun is 'birbiri'; "Ind" if the pronoun is an indeterminate pronoun; "Neg" if the pronoun is 'hiçbiri';
  * "Int" if the pronoun is a question pronoun; "Dem" if the pronoun is a demonstrative pronoun.
@@ -628,6 +666,7 @@ char *get_pron_type(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the numeral type of the parse for universal dependency feature NumType.
+ * @param morphological_parse Current morphological parse object
  * @return "Ord" if the parse is Time, Ordinal or the word is '%' or 'kaçıncı'; "Dist" if the word is a
  * distributive number such as 'beşinci'; "Card" if the number is cardinal or any number or the word is 'kaç'.
  */
@@ -651,6 +690,7 @@ char *get_num_type(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the value for the dependency feature Reflex.
+ * @param morphological_parse Current morphological parse object
  * @return "Yes" if the root word is 'kendi', null otherwise.
  */
 char *get_reflex(const Morphological_parse *morphological_parse) {
@@ -663,6 +703,7 @@ char *get_reflex(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the agreement of the parse for the universal dependency feature Number.
+ * @param morphological_parse Current morphological parse object
  * @return "Sing" if the agreement of the parse is singular (contains A1SG, A2SG, A3SG); "Plur" if the agreement
  * of the parse is plural (contains A1PL, A2PL, A3PL).
  */
@@ -684,6 +725,7 @@ char *get_number(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the possessive agreement of the parse for the universal dependency feature [Pos].
+ * @param morphological_parse Current morphological parse object
  * @return "Sing" if the possessive agreement of the parse is singular (contains P1SG, P2SG, P3SG); "Plur" if the
  * possessive agreement of the parse is plural (contains P1PL, P2PL, P3PL).
  */
@@ -701,6 +743,7 @@ char *get_possessive_number(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the case marking of the parse for the universal dependency feature case.
+ * @param morphological_parse Current morphological parse object
  * @return "Acc" for accusative marker; "Dat" for dative marker; "Gen" for genitive marker; "Loc" for locative
  * marker; "Ins" for instrumentative marker; "Abl" for ablative marker; "Nom" for nominative marker.
  */
@@ -736,6 +779,7 @@ char *get_case(const Morphological_parse *morphological_parse) {
 /**
  * Returns the definiteness of the parse for the universal dependency feature definite. It applies only for
  * determiners in Turkish.
+ * @param morphological_parse Current morphological parse object
  * @return "Ind" for 'bir', 'bazı', or 'birkaç'. "Def" for 'her', 'bu', 'şu', 'o', 'bütün'.
  */
 char *get_definite(const Morphological_parse *morphological_parse) {
@@ -753,6 +797,7 @@ char *get_definite(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the degree of the parse for the universal dependency feature degree.
+ * @param morphological_parse Current morphological parse object
  * @return "Cmp" for comparative adverb 'daha'; "Sup" for superlative adjective or adverb 'en'.
  */
 char *get_degree(const Morphological_parse *morphological_parse) {
@@ -768,6 +813,7 @@ char *get_degree(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the polarity of the verb for the universal dependency feature polarity.
+ * @param morphological_parse Current morphological parse object
  * @return "Pos" for positive polarity containing tag POS; "Neg" for negative polarity containing tag NEG.
  */
 char *get_polarity(const Morphological_parse *morphological_parse) {
@@ -785,6 +831,7 @@ char *get_polarity(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the person of the agreement of the parse for the universal dependency feature person.
+ * @param morphological_parse Current morphological parse object
  * @return "1" for first person; "2" for second person; "3" for third person.
  */
 char *get_person(const Morphological_parse *morphological_parse) {
@@ -805,6 +852,7 @@ char *get_person(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the person of the possessive agreement of the parse for the universal dependency feature [pos].
+ * @param morphological_parse Current morphological parse object
  * @return "1" for first person; "2" for second person; "3" for third person.
  */
 char *get_possessive_person(const Morphological_parse *morphological_parse) {
@@ -822,6 +870,7 @@ char *get_possessive_person(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the voice of the verb parse for the universal dependency feature voice.
+ * @param morphological_parse Current morphological parse object
  * @return "CauPass" if the verb parse is both causative and passive; "Pass" if the verb parse is only passive;
  * "Rcp" if the verb parse is reciprocal; "Cau" if the verb parse is only causative; "Rfl" if the verb parse is
  * reflexive.
@@ -847,6 +896,7 @@ char *get_voice(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the aspect of the verb parse for the universal dependency feature aspect.
+ * @param morphological_parse Current morphological parse object
  * @return "Perf" for past, narrative and future tenses; "Prog" for progressive tenses; "Hab" for Aorist; "Rapid"
  * for parses containing HASTILY tag; "Dur" for parses containing START, STAY or REPEAT tags.
  */
@@ -874,6 +924,7 @@ char *get_aspect(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the tense of the verb parse for universal dependency feature tense.
+ * @param morphological_parse Current morphological parse object
  * @return "Past" for simple past tense; "Fut" for future tense; "Pqp" for narrative past tense; "Pres" for other
  * past tenses.
  */
@@ -905,6 +956,7 @@ char *get_tense(const Morphological_parse *morphological_parse) {
  * "CndGen" if conditional is combined with a suffix of general modality;
  * "Imp" for imperative; "Cnd" for simple conditional; "Des" for simple desiderative; "Opt" for optative; "Nec" for
  * simple necessitative; "Pot" for simple potential; "Gen" for simple suffix of a general modality.
+ * @param morphological_parse Current morphological parse object
  */
 char *get_mood(const Morphological_parse *morphological_parse) {
     if ((parse_contains_tag(morphological_parse, COPULA) || parse_contains_tag(morphological_parse, AORIST)) && parse_contains_tag(morphological_parse, NECESSITY) && parse_contains_tag(morphological_parse, ABLE)){
@@ -963,6 +1015,7 @@ char *get_mood(const Morphological_parse *morphological_parse) {
 
 /**
  * Returns the form of the verb parse for the universal dependency feature verbForm.
+ * @param morphological_parse Current morphological parse object
  * @return "Part" for participles; "Vnoun" for infinitives; "Conv" for parses contaning tags SINCEDOINGSO,
  * WITHOUTHAVINGDONESO, WITHOUTBEINGABLETOHAVEDONESO, BYDOINGSO, AFTERDOINGSO, INFINITIVE3; "Fin" for others.
  */
@@ -1013,7 +1066,8 @@ char *get_evident(const Morphological_parse *morphological_parse) {
 /**
  * Construct the universal dependency features as an array of strings. Each element represents a single feature.
  * Every feature is given as featureType = featureValue.
- * @param uPos Universal dependency part of speech tag for the parse.
+ * @param morphological_parse Current morphological parse object
+ * @param u_pos Universal dependency part of speech tag for the parse.
  * @return An array of universal dependency features for this parse.
  */
 Array_list_ptr get_universal_dependency_features(const Morphological_parse *morphological_parse, const char *u_pos) {
@@ -1100,6 +1154,7 @@ Array_list_ptr get_universal_dependency_features(const Morphological_parse *morp
 
 /**
  * Returns the universal dependency part of speech for this parse.
+ * @param morphological_parse Current morphological parse object
  * @return "AUX" for word 'değil; "PROPN" for proper nouns; "NOUN for nouns; "ADJ" for adjectives; "ADV" for
  * adverbs; "INTJ" for interjections; "VERB" for verbs; "PUNCT" for punctuation symbols; "DET" for determiners;
  * "NUM" for numerals; "PRON" for pronouns; "ADP" for post participles; "SCONJ" or "CCONJ" for conjunctions.
@@ -1168,6 +1223,7 @@ char *get_universal_dependency_pos(const Morphological_parse *morphological_pars
  * The overridden toString method gets the root and the first inflectional group as a result {@link String} then concatenates
  * with ^DB+ and the following inflectional groups.
  *
+ * @param morphological_parse Current morphological parse object
  * @return result {@link String}.
  */
 char *morphological_parse_to_string(const Morphological_parse *morphological_parse) {

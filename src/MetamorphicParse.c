@@ -68,7 +68,8 @@ void free_metamorphic_parse(Metamorphic_parse_ptr metamorphic_parse) {
 /**
  * The addMetaMorphemeList method splits input String by + and add to the metaMorphemeList.
  *
- * @param newTacticSet String to add the metaMorphemeList.
+ * @param metamorphic_parse Current metamorphic parse
+ * @param new_tactic_set String to add the metaMorphemeList.
  */
 void add_meta_morpheme_list(Metamorphic_parse_ptr metamorphic_parse, const char *new_tactic_set) {
     Array_list_ptr tactics = str_split(new_tactic_set, '+');
@@ -78,6 +79,7 @@ void add_meta_morpheme_list(Metamorphic_parse_ptr metamorphic_parse, const char 
 /**
  * The removeMetaMorphemeFromIndex method removes the meta morpheme at given index from metaMorphemeList.
  *
+ * @param metamorphic_parse Current metamorphic parse
  * @param index to remove from metaMorphemeList.
  */
 void remove_meta_morpheme_from_index(Metamorphic_parse_ptr metamorphic_parse, int index) {
@@ -89,6 +91,7 @@ void remove_meta_morpheme_from_index(Metamorphic_parse_ptr metamorphic_parse, in
 /**
  * The getMetaMorpheme method gets the meta morpheme at given index.
  *
+ * @param metamorphic_parse Current metamorphic parse
  * @param index is used to get the meta morpheme.
  * @return metaMorphemeList's corresponding meta morpheme.
  */
@@ -103,6 +106,7 @@ char *get_meta_morpheme(const Metamorphic_parse* metamorphic_parse, int index) {
 /**
  * Overridden toString method to return resulting meta morphemes in metaMorphemeList.
  *
+ * @param metamorphic_parse Current metamorphic parse
  * @return String result.
  */
 char *metamorphic_parse_to_string(const Metamorphic_parse* metamorphic_parse) {

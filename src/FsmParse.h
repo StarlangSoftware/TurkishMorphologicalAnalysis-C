@@ -38,9 +38,9 @@ Fsm_parse_ptr create_fsm_parse3(int number, Fsm_State_ptr start_state);
 
 Fsm_parse_ptr create_fsm_parse4(double  number, Fsm_State_ptr start_state);
 
-void update_fsm_parse_with_state_and_name(Fsm_parse_ptr fsm_parse, char* name, Fsm_State_ptr start_state);
+void update_fsm_parse_with_state_and_name(Fsm_parse_ptr fsm_parse, const char* name, Fsm_State_ptr start_state);
 
-Fsm_parse_ptr create_fsm_parse5(char* punctuation, Fsm_State_ptr start_state);
+Fsm_parse_ptr create_fsm_parse5(const char* punctuation, Fsm_State_ptr start_state);
 
 Fsm_parse_ptr create_fsm_parse6(Txt_word_ptr root, Fsm_State_ptr start_state);
 
@@ -54,14 +54,14 @@ char* get_last_lemma(Fsm_parse_ptr fsm_parse);
 
 void add_suffix(Fsm_parse_ptr fsm_parse,
                 Fsm_State_ptr suffix,
-                char* _form,
+                const char* _form,
                 char* transition,
                 char* with,
                 char* toPos);
 
 Fsm_State_ptr get_start_state(Fsm_parse_ptr fsm_parse);
 
-void set_form(Fsm_parse_ptr fsm_parse, char* name);
+void set_form(Fsm_parse_ptr fsm_parse, const char* name);
 
 Fsm_State_ptr get_final_suffix(Fsm_parse_ptr fsm_parse);
 
@@ -97,6 +97,6 @@ char* get_fsm_parse_pos(const Fsm_parse *fsm_parse);
 
 bool is_fsm_parse_capital_word(const Fsm_parse *fsm_parse);
 
-void restore_original_form(Fsm_parse *fsm_parse, char* original, char* pronunciation);
+void restore_original_form(Fsm_parse *fsm_parse, const char* original, const char* pronunciation);
 
 #endif //MORPHOLOGICALANALYSIS_FSMPARSE_H

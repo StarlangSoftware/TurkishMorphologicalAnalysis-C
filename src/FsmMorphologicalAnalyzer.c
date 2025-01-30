@@ -19,7 +19,7 @@
  * @param dictionary the dictionary file that will be used to generate dictionaryTrie.
  * @param cacheSize  the size of the LRUCache.
  */
-Fsm_morphological_analyzer_ptr  create_fsm_morphological_analyzer(char *fileName,
+Fsm_morphological_analyzer_ptr  create_fsm_morphological_analyzer(const char *fileName,
                                                                   Txt_dictionary_ptr dictionary,
                                                                   int cacheSize) {
     Fsm_morphological_analyzer_ptr result = malloc_(sizeof(Fsm_morphological_analyzer), "create_fsm_morphological_analyzer");
@@ -39,19 +39,19 @@ Fsm_morphological_analyzer_ptr  create_fsm_morphological_analyzer(char *fileName
  * Another constructor of FsmMorphologicalAnalyzer class. It generates a new TxtDictionary type dictionary from
  * given input dictionary file name and by using turkish_finite_state_machine.xml file.
  *
- * @param fileName           the file to read the finite fsm_state machine.
- * @param dictionaryFileName the file to read the dictionary.
+ * @param file_name           the file to read the finite fsm_state machine.
+ * @param dictionary_file_name the file to read the dictionary.
  */
-Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer2(char *dictionaryFileName, char *fileName) {
-    return create_fsm_morphological_analyzer(fileName,
-                                             create_txt_dictionary3(dictionaryFileName, "turkish_misspellings.txt",
+Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer2(const char *dictionary_file_name, const char *file_name) {
+    return create_fsm_morphological_analyzer(file_name,
+                                             create_txt_dictionary3(dictionary_file_name, "turkish_misspellings.txt",
                                                                     "turkish_morphological_lexicon.txt"), 10000);
 }
 
 /**
  * Frees memory allocated for the Fsm based morphological analyzer. Frees finite state machine, dictionary, dictionary
  * and suffix tries, if allocated parsed surface forms, lru cache, and most used patterns hash map.
- * @param fsm_morphological_analyzer Fsm based morphological analyzer to be deallocated.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  */
 void free_fsm_morphological_analyzer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer) {
     free_finite_state_machine(fsm_morphological_analyzer->finite_state_machine);
@@ -71,6 +71,7 @@ void free_fsm_morphological_analyzer(Fsm_morphological_analyzer_ptr fsm_morpholo
  * Constructs the suffix trie from the input file suffixes.txt. suffixes.txt contains the most frequent 6000
  * suffixes that a verb or a noun can take. The suffix trie is a trie that stores these suffixes in reverse form,
  * which can be then used to match a given word for its possible suffix content.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  */
 void prepare_suffix_tree(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer) {
     fsm_morphological_analyzer->suffix_trie = create_trie();
@@ -87,7 +88,8 @@ void prepare_suffix_tree(Fsm_morphological_analyzer_ptr fsm_morphological_analyz
 /**
  * Reads the file for correct surface forms and their most frequent root forms, in other words, the surface forms
  * which have at least one morphological analysis in  Turkish.
- * @param fileName Input file containing analyzable surface forms and their root forms.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
+ * @param file_name Input file containing analyzable surface forms and their root forms.
  */
 void add_surface_forms(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *file_name) {
     fsm_morphological_analyzer->parsed_surface_forms = read_hash_map(file_name);
@@ -106,8 +108,9 @@ void add_surface_forms(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
  * it directly adds the verb to result after making transition to currentRoot with currentWord String. Else, it creates a new
  * transition with -lar and make this transition then adds to the result.
  *
- * @param morphologicalParse MorphologicalParse type input.
- * @param parse              MetamorphicParse type input.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
+ * @param morphological_parse MorphologicalParse type input.
+ * @param metamorphic_parse              MetamorphicParse type input.
  * @return HashSet result.
  */
 Hash_set_ptr get_possible_words(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
@@ -193,26 +196,26 @@ Hash_set_ptr get_possible_words(Fsm_morphological_analyzer_ptr fsm_morphological
  * or endingKChangesIntoG then it returns true if the last index is not equal to 2 and distance is not greater than
  * MAX_DISTANCE and false otherwise.
  *
- * @param shortString the possible substring.
- * @param longString  the long string to compare with substring.
+ * @param short_string the possible substring.
+ * @param long_string  the long string to compare with substring.
  * @param root        the root of the long string.
  * @return true if given substring is the actual substring of the longString, false otherwise.
  */
-bool is_possible_substring(const char *shortString,
-                           const char *longString,
+bool is_possible_substring(const char *short_string,
+                           const char *long_string,
                            Txt_word_ptr root) {
-    bool rootWord = strcmp(shortString, root->name) == 0 || strcmp(longString, root->name) == 0;
+    bool rootWord = strcmp(short_string, root->name) == 0 || strcmp(long_string, root->name) == 0;
     int distance = 0, j, last = 1;
-    for (j = 0; j < word_size(shortString); j++) {
-        String_ptr ch1 = char_at(shortString, j);
-        String_ptr ch2 = char_at(longString, j);
+    for (j = 0; j < word_size(short_string); j++) {
+        String_ptr ch1 = char_at(short_string, j);
+        String_ptr ch2 = char_at(long_string, j);
         if (!string_equals(ch1, ch2)) {
             free_string_ptr(ch1);
             free_string_ptr(ch2);
-            if (j < word_size(shortString) - 2) {
+            if (j < word_size(short_string) - 2) {
                 return false;
             }
-            last = word_size(shortString) - j;
+            last = word_size(short_string) - j;
             distance++;
             if (distance > MAX_DISTANCE) {
                 break;
@@ -227,7 +230,7 @@ bool is_possible_substring(const char *shortString,
          last_i_drops_during_passive_suffixation(root))) {
         return (distance <= MAX_DISTANCE);
     } else {
-        String_ptr ch = last_char(shortString);
+        String_ptr ch = last_char(short_string);
         if (string_in_list(ch->s, (char *[]) {"e", "a", "p", "ç", "t", "k"}, 6) ||
             (rootWord && (root_soften_during_suffixation(root) ||
                           vowel_e_changes_to_i_during_y_suffixation(root) ||
@@ -360,6 +363,7 @@ bool is_possible_substring(const char *shortString,
  * with the name of AdverbRoot.
  * Ex : Acilen
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param fsm_parse ArrayList to initialize.
  * @param root     word to check properties and add to fsm_parse according to them.
  * @param is_proper is used to check a word is proper or not.
@@ -654,9 +658,10 @@ void initialize_parse_list(Fsm_morphological_analyzer_ptr fsm_morphological_anal
  * this HashSet and uses each word as a root and calls initializeParseList method with this root and ArrayList.
  * <p>
  *
- * @param parseList ArrayList to initialize.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer to be deallocated.
+ * @param parse_list ArrayList to initialize.
  * @param root the root form to generate initial parse list.
- * @param isProper    is used to check a word is proper or not.
+ * @param is_proper    is used to check a word is proper or not.
  */
 void initialize_parse_list_from_root(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
                                      Array_list_ptr parse_list,
@@ -705,7 +710,8 @@ void initialize_parse_list_from_root(Fsm_morphological_analyzer_ptr fsm_morpholo
  * this HashSet and uses each word as a root and calls initializeParseList method with this root and ArrayList.
  * <p>
  *
- * @param surfaceForm the String used to generate a HashSet of words.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer
+ * @param surface_form the String used to generate a HashSet of words.
  * @param is_proper    is used to check a word is proper or not.
  * @return initialFsmParse ArrayList.
  */
@@ -733,9 +739,10 @@ Array_list_ptr initialize_parse_list_from_surface_form(Fsm_morphological_analyze
  * and by using the currentState information it gets the new analysis. Then loops through each currentState's transition.
  * If the currentTransition is possible, it makes the transition
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer
  * @param current_fsm_parse FsmParse type input.
  * @param fsm_parse_queue        an ArrayList of FsmParse.
- * @param surfaceForm     String to use during transition.
+ * @param max_length Maximum length allowed during state transition.
  * @param root            TxtWord used to make transition.
  */
 void add_new_parses_from_current_parse(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
@@ -775,6 +782,7 @@ void add_new_parses_from_current_parse(Fsm_morphological_analyzer_ptr fsm_morpho
  * and by using the currentState information it gets the currentSurfaceForm. Then loops through each currentState's transition.
  * If the currentTransition is possible, it makes the transition
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer
  * @param current_fsm_parse FsmParse type input.
  * @param fsm_parse_queue        an ArrayList of FsmParse.
  * @param surface_form     String to use during transition.
@@ -817,8 +825,9 @@ void add_new_parses_from_current_parse2(Fsm_morphological_analyzer_ptr fsm_morph
 /**
  * The parseExists method is used to check the existence of the parse.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param fsm_parses    an ArrayList of FsmParse
- * @param surfaceForm String to use during transition.
+ * @param surface_form String to use during transition.
  * @return true when the currentState is end fsm_state and input surfaceForm id equal to currentSurfaceForm, otherwise false.
  */
 bool
@@ -849,6 +858,7 @@ parse_exists(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_li
  * The parseWord method is used to parse a given fsm_parses. It simply adds new parses to the current parse by
  * using addNewParsesFromCurrentParse method.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param fsm_parses    an ArrayList of FsmParse
  * @param max_length maximum length of the surfaceform.
  * @return result ArrayList which has the currentFsmParse.
@@ -896,7 +906,8 @@ parse_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_list
  * The parseWord method is used to parse a given fsmParse. It simply adds new parses to the current parse by
  * using addNewParsesFromCurrentParse method.
  *
- * @param fsmParse    an ArrayList of FsmParse
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
+ * @param fsm_parses    an ArrayList of FsmParse
  * @param surface_form String to use during transition.
  * @return result ArrayList which has the currentFsmParse.
  */
@@ -943,6 +954,7 @@ parse_word2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_lis
  * The morphologicalAnalysis with 3 inputs is used to initialize an ArrayList and add a new FsmParse
  * with given root and fsm_state.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param root        TxtWord input.
  * @param surface_form String input to use for parsing.
  * @param state       String input.
@@ -951,7 +963,7 @@ parse_word2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_lis
 Array_list_ptr morphological_analysis2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
                                        Txt_word_ptr root,
                                        char *surface_form,
-                                       char *state) {
+                                       const char *state) {
     Array_list_ptr initial_fsm_parses = create_array_list();
     array_list_add(initial_fsm_parses,
                    create_fsm_parse6(root, get_state(fsm_morphological_analyzer->finite_state_machine, state)));
@@ -964,6 +976,7 @@ Array_list_ptr morphological_analysis2(Fsm_morphological_analyzer_ptr fsm_morpho
  * The generateAllParses with 2 inputs is used to generate all parses with given root. Then it calls initializeParseListFromRoot method to initialize list with newly created ArrayList, input root,
  * and maximum length.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param root        TxtWord input.
  * @param max_length Maximum length of the surface form.
  * @return parseWord method with newly populated FsmParse ArrayList and maximum length.
@@ -985,8 +998,9 @@ generate_all_parses(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, T
  * with given root. Then it calls initializeParseList method to initialize list with newly created ArrayList, input root,
  * and input surfaceForm.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param root        TxtWord input.
- * @param surfaceForm String input to use for parsing.
+ * @param surface_form String input to use for parsing.
  * @return parseWord method with newly populated FsmParse ArrayList and input surfaceForm.
  */
 Array_list_ptr morphological_analysis3(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Txt_word_ptr root,
@@ -1004,11 +1018,12 @@ Array_list_ptr morphological_analysis3(Fsm_morphological_analyzer_ptr fsm_morpho
  * the previously used patterns. When Fsm tries to match a string to a pattern, first we check if it exists in
  * most_used_patterns. If it exists, we directly use the compiled pattern to match the string. Otherwise, new pattern
  * is compiled and put in the most_used_patterns.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param expr Pattern to check
  * @param value String to match the pattern
  * @return True if the string matches the pattern, false otherwise.
  */
-bool pattern_matches(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *expr, char *value) {
+bool pattern_matches(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *expr, const char *value) {
     Regular_expression_ptr r;
     if (!hash_map_contains(fsm_morphological_analyzer->most_used_patterns, expr)) {
         r = create_regular_expression(expr);
@@ -1040,10 +1055,11 @@ bool is_proper_noun_fsm(const char *surface_form) {
 /**
  * The is_code_fsm method takes surface_form String as input and checks if it consists of both letters and numbers
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form String to check for code-like word.
  * @return True if it is a code-like word, return false otherwise.
  */
-bool is_code_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+bool is_code_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form) {
     if (surface_form == NULL) {
         return false;
     }
@@ -1055,10 +1071,11 @@ bool is_code_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char
  * The isInteger method compares input surface_form with regex \+?\d+ and returns the result.
  * Supports positive integer checks only.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form String to check.
  * @return true if surface_form matches with the regex.
  */
-bool is_integer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+bool is_integer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form) {
     if (!pattern_matches(fsm_morphological_analyzer, "[\\-\\+]?\\d+", surface_form)) {
         return false;
     }
@@ -1077,26 +1094,29 @@ bool is_integer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char 
 /**
  * The isDouble method compares input surface_form with regex \+?(\d+)?\.\d* and returns the result.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form String to check.
  * @return true if surface_form matches with the regex.
  */
-bool is_double(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+bool is_double(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "[\\+\\-]?\\d*\\.\\d*", surface_form);
 }
 
 /**
  * The isNumber method compares input surface_form with the array of written numbers and returns the result.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form String to check.
  * @return true if surface_form matches with the regex.
  */
-bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form) {
     bool found;
     int count = 0;
     char *numbers[] = {"bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz",
                        "on", "yirmi", "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan",
                        "yüz", "bin", "milyon", "milyar", "trilyon", "katrilyon"};
-    char *word = str_copy(word, surface_form);
+    char *word = NULL;
+    word = str_copy(word, surface_form);
     while (word != NULL) {
         found = false;
         for (int i = 0; i < 24; i++) {
@@ -1123,20 +1143,22 @@ bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, ch
 
 /**
  * Checks if a given surface form matches to a percent value. It should be something like %4, %45, %4.3 or %56.786
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form Surface form to be checked.
  * @return True if the surface form is in percent form
  */
-bool is_percent_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+bool is_percent_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "%(\\d\\d|\\d)", surface_form) ||
            pattern_matches(fsm_morphological_analyzer, "%(\\d\\d|\\d)\\.\\d+", surface_form);
 }
 
 /**
  * Checks if a given surface form matches to a time form. It should be something like 3:34, 12:56 etc.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form Surface form to be checked.
  * @return True if the surface form is in time form
  */
-bool is_time_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+bool is_time_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d):(\\d\\d|\\d):(\\d\\d|\\d)", surface_form) ||
            pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d):(\\d\\d|\\d)", surface_form);
 }
@@ -1144,10 +1166,11 @@ bool is_time_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char
 /**
  * Checks if a given surface form matches to a range form. It should be something like 123-1400 or 12:34-15:78 or
  * 3.45-4.67.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form Surface form to be checked.
  * @return True if the surface form is in range form
  */
-bool is_range_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+bool is_range_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "\\d+\\-\\d+", surface_form) ||
            pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d):(\\d\\d|\\d)-(\\d\\d|\\d):(\\d\\d|\\d)",
                            surface_form) ||
@@ -1157,16 +1180,18 @@ bool is_range_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, cha
 
 /**
  * Checks if a given surface form matches to a date form. It should be something like 3/10/2023 or 2.3.2012
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form Surface form to be checked.
  * @return True if the surface form is in date form
  */
-bool is_date_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+bool is_date_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form) {
     return pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d)/(\\d\\d|\\d)/\\d+", surface_form) ||
            pattern_matches(fsm_morphological_analyzer, "(\\d\\d|\\d)\\.(\\d\\d|\\d)\\.\\d+", surface_form);
 }
 
 /**
  * Replaces previous lemma in the sentence with the new lemma. Both lemma can contain multiple words.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param original Original sentence to be replaced with.
  * @param previous_word Root word in the original sentence
  * @param new_word New word to be replaced.
@@ -1179,7 +1204,7 @@ Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_a
     int i;
     Array_list_ptr previous_word_splitted = create_array_list(), new_word_splitted = create_array_list();
     Sentence_ptr result = create_sentence();
-    char *replaced_word, *last_word, *new_root_word;
+    char *replaced_word = NULL, *last_word, *new_root_word;
     bool previous_word_multiple = str_contains(previous_word, " ");
     bool new_word_multiple = str_contains(new_word, " ");
     if (previous_word_multiple) {
@@ -1274,6 +1299,7 @@ Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_a
  * returns true. If it is not a root word, then it initializes the parse list and returns the parseExists method with
  * this newly initialized list and surface_form.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param root_word    TxtWord root.
  * @param surface_form String input.
  * @param is_proper    boolean variable indicates a word is proper or not.
@@ -1308,6 +1334,7 @@ bool analysis_exists(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
  * and mail or checks its variable type as integer or double. After finding the right case for given surface_form, it calls
  * constructInflectionalGroups method which creates sub-word units.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form String to analyse.
  * @param is_proper    is used to indicate the proper words.
  * @return ArrayList type initialFsmParse which holds the analyses.
@@ -1422,10 +1449,11 @@ Array_list_ptr analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyze
  * will identify 'lerimizle' as suffix and will return 'homeless' as a possible root form. If the root word ends
  * with 'ğ', it is replacesd with 'k'. 'morfolojikliğini' will return 'morfolojikliğ' then which will be replaced
  * with 'morfolojiklik'.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surface_form Surface form for which we will identify a possible new root form.
  * @return Possible new root form.
  */
-Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form) {
+Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form) {
     char* reverse = reverse_string(surface_form);
     Hash_set_ptr words = get_words_with_prefix(fsm_morphological_analyzer->suffix_trie, reverse);
     free_(reverse);
@@ -1462,6 +1490,7 @@ Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morp
  * whose state name is ProperRoot to an ArrayList, of it is not a proper noon, it adds the surfaceForm
  * whose state name is NominalRoot to the ArrayList.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surfaceForm String to analyse.
  * @return FsmParseList type currentParse which holds morphological analysis of the surfaceForm.
  */
@@ -1510,6 +1539,7 @@ robust_morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_a
 /**
  * The morphologicalAnalysis is used for debug purposes.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param sentence  to get word from.
  * @return FsmParseList type result.
  */
@@ -1532,6 +1562,7 @@ Fsm_parse_list_ptr *morphological_analysis4(Fsm_morphological_analyzer_ptr fsm_m
  * The robustMorphologicalAnalysis method takes just one argument as an input. It gets the name of the words from
  * input sentence then calls robustMorphologicalAnalysis with surfaceForm.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param sentence Sentence type input used to get surfaceForm.
  * @return FsmParseList array which holds the result of the analysis.
  */
@@ -1554,12 +1585,13 @@ Fsm_parse_list_ptr *robust_morphological_analysis2(Fsm_morphological_analyzer_pt
  * The morphologicalAnalysisExists method calls analysisExists to check the existence of the analysis with given
  * root and surfaceForm.
  *
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
  * @param surfaceForm String to check.
  * @param rootWord    TxtWord input root.
  * @return true an analysis exists, otherwise return false.
  */
 bool morphological_analysis_exists(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Txt_word_ptr rootWord,
-                                   char *surfaceForm) {
+                                   const char *surfaceForm) {
     return analysis_exists(fsm_morphological_analyzer, rootWord, to_lowercase(surfaceForm), true);
 }
 
@@ -1585,7 +1617,7 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
     Fsm_parse_list_ptr fsmParseList;
     bool is_root_replaced = false;
     char* lowerCased = to_lowercase(surfaceForm);
-    char* possibleRootLowerCased, *pronunciation;
+    char* possibleRootLowerCased = NULL, *pronunciation = NULL;
     if (fsm_morphological_analyzer->parsed_surface_forms != NULL &&
         fsm_morphological_analyzer->parsed_surface_forms->count > 0 &&
         hash_map_contains(fsm_morphological_analyzer->parsed_surface_forms, lowerCased) &&
@@ -1622,7 +1654,8 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
     Array_list_ptr fsmParse = NULL;
     if (str_contains(surfaceForm, "'")) {
         String_ptr st = substring(surfaceForm, 0, str_find_c(surfaceForm, "'"));
-        char *possibleRoot = str_copy(possibleRoot, st->s);
+        char *possibleRoot = NULL;
+        possibleRoot = str_copy(possibleRoot, st->s);
         free_string_ptr(st);
         if (possibleRoot != NULL) {
             if (str_contains_c(possibleRoot, '/') || str_contains(possibleRoot, "\\/")) {
@@ -1751,8 +1784,9 @@ Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer3() {
 
 /**
  * Reads the file for foreign words and their pronunciations.
- * @param fileName Input file containing foreign words and their pronunciations.
+ * @param fsm_morphological_analyzer Fsm based morphological analyzer.
+ * @param file_name Input file containing foreign words and their pronunciations.
  */
-void add_pronunciations(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char* file_name) {
+void add_pronunciations(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char* file_name) {
     fsm_morphological_analyzer->pronunciations = read_hash_map(file_name);
 }

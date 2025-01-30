@@ -18,9 +18,9 @@ typedef struct fsm_state Fsm_State;
 
 typedef Fsm_State *Fsm_State_ptr;
 
-Fsm_State_ptr create_fsm_state(char* name, bool start_state, bool end_state);
+Fsm_State_ptr create_fsm_state(const char* name, bool start_state, bool end_state);
 
-Fsm_State_ptr create_fsm_state2(char* name, bool start_state, bool end_state, char* pos);
+Fsm_State_ptr create_fsm_state2(const char* name, bool start_state, bool end_state, const char* pos);
 
 Fsm_State_ptr create_fsm_state3();
 

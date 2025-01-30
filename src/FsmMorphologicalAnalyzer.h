@@ -34,9 +34,9 @@ typedef struct fsm_morphological_analyzer Fsm_morphological_analyzer;
 typedef Fsm_morphological_analyzer *Fsm_morphological_analyzer_ptr;
 
 Fsm_morphological_analyzer_ptr
-create_fsm_morphological_analyzer(char *fileName, Txt_dictionary_ptr dictionary, int cacheSize);
+create_fsm_morphological_analyzer(const char *fileName, Txt_dictionary_ptr dictionary, int cacheSize);
 
-Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer2(char *dictionaryFileName, char *fileName);
+Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer2(const char *dictionary_file_name, const char *file_name);
 
 Fsm_morphological_analyzer_ptr create_fsm_morphological_analyzer3();
 
@@ -50,8 +50,8 @@ Hash_set_ptr get_possible_words(Fsm_morphological_analyzer_ptr fsm_morphological
                                 const Morphological_parse *morphological_parse,
                                 const Metamorphic_parse *metamorphic_parse);
 
-bool is_possible_substring(const char *shortString,
-                           const char *longString,
+bool is_possible_substring(const char *short_string,
+                           const char *long_string,
                            Txt_word_ptr root);
 
 void initialize_parse_list(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
@@ -92,7 +92,7 @@ parse_word2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_lis
 Array_list_ptr morphological_analysis2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
                                        Txt_word_ptr root,
                                        char *surface_form,
-                                       char *state);
+                                       const char *state);
 
 Array_list_ptr
 generate_all_parses(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Txt_word_ptr root, int max_length);
@@ -100,25 +100,25 @@ generate_all_parses(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, T
 Array_list_ptr morphological_analysis3(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Txt_word_ptr root,
                                        char *surface_form);
 
-bool pattern_matches(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *expr, char *value);
+bool pattern_matches(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *expr, const char *value);
 
 bool is_proper_noun_fsm(const char *surface_form);
 
-bool is_code_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+bool is_code_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form);
 
-bool is_integer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+bool is_integer(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form);
 
-bool is_double(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+bool is_double(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form);
 
-bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+bool is_number_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form);
 
-bool is_percent_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+bool is_percent_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form);
 
-bool is_time_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+bool is_time_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form);
 
-bool is_range_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+bool is_range_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form);
 
-bool is_date_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+bool is_date_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form);
 
 Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
                               Sentence_ptr original,
@@ -132,7 +132,7 @@ bool analysis_exists(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer,
 
 Array_list_ptr analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form, bool is_proper);
 
-Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surface_form);
+Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char *surface_form);
 
 Fsm_parse_list_ptr
 robust_morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);
@@ -144,10 +144,10 @@ Fsm_parse_list_ptr *
 robust_morphological_analysis2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Sentence_ptr sentence);
 
 bool morphological_analysis_exists(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Txt_word_ptr rootWord,
-                                   char *surfaceForm);
+                                   const char *surfaceForm);
 
 Fsm_parse_list_ptr morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char *surfaceForm);
 
-void add_pronunciations(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, char* file_name);
+void add_pronunciations(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, const char* file_name);
 
 #endif //MORPHOLOGICALANALYSIS_FSMMORPHOLOGICALANALYZER_H
