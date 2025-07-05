@@ -708,6 +708,18 @@ char *get_reflex(const Morphological_parse *morphological_parse) {
  * of the parse is plural (contains A1PL, A2PL, A3PL).
  */
 char *get_number(const Morphological_parse *morphological_parse) {
+    if (last_ig_contains_tag(morphological_parse, A1SG) || last_ig_contains_tag(morphological_parse, A2SG) ||
+        last_ig_contains_tag(morphological_parse, A3SG)
+        || last_ig_contains_tag(morphological_parse, P1SG) || last_ig_contains_tag(morphological_parse, P2SG) ||
+        last_ig_contains_tag(morphological_parse, P3SG)) {
+        return "Sing";
+        }
+    if (last_ig_contains_tag(morphological_parse, A1PL) || last_ig_contains_tag(morphological_parse, A2PL) ||
+        last_ig_contains_tag(morphological_parse, A3PL)
+        || last_ig_contains_tag(morphological_parse, P1PL) || last_ig_contains_tag(morphological_parse, P2PL) ||
+        last_ig_contains_tag(morphological_parse, P3PL)) {
+        return "Plur";
+        }
     if (parse_contains_tag(morphological_parse, A1SG) || parse_contains_tag(morphological_parse, A2SG) ||
         parse_contains_tag(morphological_parse, A3SG)
         || parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P2SG) ||
@@ -730,6 +742,14 @@ char *get_number(const Morphological_parse *morphological_parse) {
  * possessive agreement of the parse is plural (contains P1PL, P2PL, P3PL).
  */
 char *get_possessive_number(const Morphological_parse *morphological_parse) {
+    if (last_ig_contains_tag(morphological_parse, P1SG) || last_ig_contains_tag(morphological_parse, P2SG) ||
+        last_ig_contains_tag(morphological_parse, P3SG)) {
+        return "Sing";
+        }
+    if (last_ig_contains_tag(morphological_parse, P1PL) || last_ig_contains_tag(morphological_parse, P2PL) ||
+        last_ig_contains_tag(morphological_parse, P3PL)) {
+        return "Plur";
+        }
     if (parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P2SG) ||
         parse_contains_tag(morphological_parse, P3SG)) {
         return "Sing";
@@ -835,6 +855,18 @@ char *get_polarity(const Morphological_parse *morphological_parse) {
  * @return "1" for first person; "2" for second person; "3" for third person.
  */
 char *get_person(const Morphological_parse *morphological_parse) {
+    if (last_ig_contains_tag(morphological_parse, A1SG) || last_ig_contains_tag(morphological_parse, A1PL)
+        || last_ig_contains_tag(morphological_parse, P1SG) || last_ig_contains_tag(morphological_parse, P1PL)) {
+        return "1";
+        }
+    if (last_ig_contains_tag(morphological_parse, A2SG) || last_ig_contains_tag(morphological_parse, A2PL)
+        || last_ig_contains_tag(morphological_parse, P2SG) || last_ig_contains_tag(morphological_parse, P2PL)) {
+        return "2";
+        }
+    if (last_ig_contains_tag(morphological_parse, A3SG) || last_ig_contains_tag(morphological_parse, A3PL)
+        || last_ig_contains_tag(morphological_parse, P3SG) || last_ig_contains_tag(morphological_parse, P3PL)) {
+        return "3";
+        }
     if (parse_contains_tag(morphological_parse, A1SG) || parse_contains_tag(morphological_parse, A1PL)
         || parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P1PL)) {
         return "1";
@@ -856,6 +888,15 @@ char *get_person(const Morphological_parse *morphological_parse) {
  * @return "1" for first person; "2" for second person; "3" for third person.
  */
 char *get_possessive_person(const Morphological_parse *morphological_parse) {
+    if (last_ig_contains_tag(morphological_parse, P1SG) || last_ig_contains_tag(morphological_parse, P1PL)) {
+        return "1";
+    }
+    if (last_ig_contains_tag(morphological_parse, P2SG) || last_ig_contains_tag(morphological_parse, P2PL)) {
+        return "2";
+    }
+    if (last_ig_contains_tag(morphological_parse, P3SG) || last_ig_contains_tag(morphological_parse, P3PL)) {
+        return "3";
+    }
     if (parse_contains_tag(morphological_parse, P1SG) || parse_contains_tag(morphological_parse, P1PL)) {
         return "1";
     }
