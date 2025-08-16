@@ -28,7 +28,7 @@ int main(){
     if (end_state_count != 37){
         printf("End fsm_state count %d does not match\n", end_state_count);
     }
-    if (transition_count != 779){
+    if (transition_count != 783){
         printf("Transition count %d does not match\n", transition_count);
     }
     free_finite_state_machine(fsm);

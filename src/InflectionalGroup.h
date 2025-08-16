@@ -8,7 +8,7 @@
 #include <ArrayList.h>
 #include "MorphologicalTag.h"
 
-static char* tags[131] = {"Noun", "Adv", "Adj", "Verb", "A1sg",
+static char* tags[133] = {"Noun", "Adv", "Adj", "Verb", "A1sg",
                           "A2sg", "A3sg", "A1Pl", "A2pl", "A3pl",
                           "P1sg", "P2sg", "P3sg", "P1Pl", "P2pl",
                           "P3pl", "Prop", "Pnon", "Nom", "With",
@@ -33,9 +33,10 @@ static char* tags[131] = {"Noun", "Adv", "Adj", "Verb", "A1sg",
                           "Inf2", "Inf3", "BSTag", "ESTag", "BTTag",
                           "ETTag", "BDTag", "EDTag", "Inf1", "AsLongAs",
                           "Dist", "Adamantly", "Percent", "WithoutBeingAbleToHaveDoneSo", "Dim",
-                          "Pers", "Fraction", "Hashtag", "Email", "Date", "Code", "Metric"};
+                          "Pers", "Fraction", "Hashtag", "Email", "Date",
+                          "Code", "Metric", "Pol", "Urge"};
 
-static Morphological_tag morpho_tags[131] = {NOUN, ADVERB, ADJECTIVE,
+static Morphological_tag morpho_tags[133] = {NOUN, ADVERB, ADJECTIVE,
                                              VERB, A1SG, A2SG, A3SG, A1PL,
                                              A2PL, A3PL, P1SG, P2SG, P3SG, P1PL,
                                              P2PL, P3PL, PROPERNOUN, PNON, NOMINATIVE,
@@ -61,7 +62,7 @@ static Morphological_tag morpho_tags[131] = {NOUN, ADVERB, ADJECTIVE,
                                              ENDOFTITLE, BEGINNINGOFDOCUMENT, ENDOFDOCUMENT, INFINITIVE, ASLONGAS,
                                              DISTRIBUTIVE, ADAMANTLY, PERCENT, WITHOUTBEINGABLETOHAVEDONESO, DIMENSION,
                                              PERSONALPRONOUN, FRACTION, HASHTAG, EMAIL, DATE,
-                                             CODE, METRIC};
+                                             CODE, METRIC, POLITE, URGE};
 
 struct inflectional_group{
     Array_list_ptr IG;

@@ -522,6 +522,14 @@ enum morphological_tag{
      * Metric : 6cmx7cmx8cm
      */
     METRIC,
+    /**
+    * Polite: yapınız, gidiniz
+    */
+    POLITE,
+    /**
+    * Urge: Baksana, yapsana
+    */
+    URGE,
     NOTAG
 };
 

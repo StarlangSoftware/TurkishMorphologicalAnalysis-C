@@ -866,13 +866,13 @@ parse_exists(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_li
 Array_list_ptr
 parse_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_list_ptr fsm_parses, int max_length) {
     Array_list_ptr result = create_array_list();
-    Array_list_ptr result_suffix_list = create_array_list();
+    Array_list_ptr result_transition_list = create_array_list();
     Fsm_parse_ptr current_fsm_parse;
     Txt_word_ptr root;
     Fsm_State_ptr current_state;
     bool is_a_correct_parse;
     char *current_surface_form;
-    char *current_suffix_list;
+    char *current_transition_list;
     Queue_ptr parse_queue = create_queue2(fsm_parses);
     while (!is_queue_empty(parse_queue)) {
         current_fsm_parse = dequeue(parse_queue);
@@ -881,15 +881,15 @@ parse_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_list
         current_state = get_final_suffix(current_fsm_parse);
         current_surface_form = current_fsm_parse->form;
         if (current_state->end_state && word_size(current_surface_form) <= max_length) {
-            current_suffix_list = get_suffix_list(current_fsm_parse);
-            if (!array_list_contains(result_suffix_list, current_suffix_list,
+            current_transition_list = transition_list(current_fsm_parse);
+            if (!array_list_contains(result_transition_list, current_transition_list,
                                      (int (*)(const void *, const void *)) compare_string)) {
                 is_a_correct_parse = true;
                 construct_inflectional_groups(current_fsm_parse);
                 array_list_add(result, current_fsm_parse);
-                array_list_add(result_suffix_list, current_suffix_list);
+                array_list_add(result_transition_list, current_transition_list);
             } else {
-                free_(current_suffix_list);
+                free_(current_transition_list);
             }
         }
         add_new_parses_from_current_parse(fsm_morphological_analyzer, current_fsm_parse, parse_queue, max_length, root);
@@ -897,7 +897,7 @@ parse_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_list
             free_fsm_parse(current_fsm_parse);
         }
     }
-    free_array_list(result_suffix_list, free_);
+    free_array_list(result_transition_list, free_);
     free_queue(parse_queue, (void (*)(void *)) free_fsm_parse);
     return result;
 }
@@ -914,13 +914,13 @@ parse_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_list
 Array_list_ptr
 parse_word2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_list_ptr fsm_parses, char *surface_form) {
     Array_list_ptr result = create_array_list();
-    Array_list_ptr result_suffix_list = create_array_list();
+    Array_list_ptr result_transition_list = create_array_list();
     Fsm_parse_ptr current_fsm_parse;
     Txt_word_ptr root;
     Fsm_State_ptr current_state;
     bool is_a_correct_parse;
     char *current_surface_form;
-    char *current_suffix_list;
+    char *current_transition_list;
     Queue_ptr parse_queue = create_queue2(fsm_parses);
     while (!is_queue_empty(parse_queue)) {
         current_fsm_parse = dequeue(parse_queue);
@@ -929,15 +929,15 @@ parse_word2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_lis
         current_state = get_final_suffix(current_fsm_parse);
         current_surface_form = current_fsm_parse->form;
         if (current_state->end_state && strcmp(current_surface_form, surface_form) == 0) {
-            current_suffix_list = get_suffix_list(current_fsm_parse);
-            if (!array_list_contains(result_suffix_list, current_suffix_list,
+            current_transition_list = get_suffix_list(current_fsm_parse);
+            if (!array_list_contains(result_transition_list, current_transition_list,
                                      (int (*)(const void *, const void *)) compare_string)) {
                 is_a_correct_parse = true;
                 construct_inflectional_groups(current_fsm_parse);
                 array_list_add(result, current_fsm_parse);
-                array_list_add(result_suffix_list, current_suffix_list);
+                array_list_add(result_transition_list, current_transition_list);
             } else {
-                free_(current_suffix_list);
+                free_(current_transition_list);
             }
         }
         add_new_parses_from_current_parse2(fsm_morphological_analyzer, current_fsm_parse, parse_queue, surface_form, root);
@@ -945,7 +945,7 @@ parse_word2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_lis
             free_fsm_parse(current_fsm_parse);
         }
     }
-    free_array_list(result_suffix_list, free_);
+    free_array_list(result_transition_list, free_);
     free_queue(parse_queue, (void (*)(void *)) free_fsm_parse);
     return result;
 }
