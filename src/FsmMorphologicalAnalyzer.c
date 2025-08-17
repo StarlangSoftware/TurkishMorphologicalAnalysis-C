@@ -872,7 +872,9 @@ parse_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_list
     Fsm_State_ptr current_state;
     bool is_a_correct_parse;
     char *current_surface_form;
-    char *current_transition_list;
+    char *current_transition_list = NULL;
+    char* tmp_transition_list;
+    String_ptr st;
     Queue_ptr parse_queue = create_queue2(fsm_parses);
     while (!is_queue_empty(parse_queue)) {
         current_fsm_parse = dequeue(parse_queue);
@@ -881,7 +883,11 @@ parse_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_list
         current_state = get_final_suffix(current_fsm_parse);
         current_surface_form = current_fsm_parse->form;
         if (current_state->end_state && word_size(current_surface_form) <= max_length) {
-            current_transition_list = transition_list(current_fsm_parse);
+            tmp_transition_list = transition_list(current_fsm_parse);
+            st = create_string4(current_surface_form, " ", tmp_transition_list);
+            free_(tmp_transition_list);
+            current_transition_list = str_copy(current_transition_list, st->s);
+            free_string_ptr(st);
             if (!array_list_contains(result_transition_list, current_transition_list,
                                      (int (*)(const void *, const void *)) compare_string)) {
                 is_a_correct_parse = true;
