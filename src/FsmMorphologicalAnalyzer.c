@@ -1241,7 +1241,7 @@ Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_a
         if (replaced && replaced_word != NULL) {
             if (previous_word_multiple) {
                 for (int k = 0; k < i - previous_word_splitted->size + 1; k++) {
-                    sentence_add_word(result, array_list_get(original->words, k));
+                    sentence_add_word_copy(result, array_list_get(original->words, k));
                 }
             }
             if (new_word_multiple) {
@@ -1269,6 +1269,7 @@ Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_a
                 String_ptr st2 = create_string2(ch);
                 String_ptr st3 = substring2(replaced_word, 1);
                 string_append_s(st2, st3);
+                free_(replaced_word);
                 replaced_word = str_copy(replaced_word, st2->s);
                 free_string_ptr(st);
                 free_string_ptr(st2);
@@ -1276,13 +1277,14 @@ Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_a
                 free_(ch);
             }
             sentence_add_word_copy(result, replaced_word);
+            free_(replaced_word);
             if (previous_word_multiple) {
                 i++;
                 break;
             }
         } else {
             if (!previous_word_multiple) {
-                sentence_add_word(result, array_list_get(original->words, i));
+                sentence_add_word_copy(result, array_list_get(original->words, i));
             }
         }
     }
@@ -1292,7 +1294,7 @@ Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_a
     free_(parse_list);
     if (previous_word_multiple) {
         for (; i < original->words->size; i++) {
-            sentence_add_word(result, array_list_get(original->words, i));
+            sentence_add_word_copy(result, array_list_get(original->words, i));
         }
     }
     free_array_list(previous_word_splitted, free_);

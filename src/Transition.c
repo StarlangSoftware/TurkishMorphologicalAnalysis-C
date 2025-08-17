@@ -297,11 +297,17 @@ bool soften_during_suffixation(Transition_ptr transition, Txt_word_ptr root) {
  * @return String type output that has the transition.
  */
 char *make_transition(Transition_ptr transition, Txt_word_ptr root, const char *stem) {
+    Fsm_State_ptr state;
+    char* result;
     if (is_verb(root)) {
-        return make_transition2(transition, root, stem, create_fsm_state("VerbalRoot", true, false));
+        state = create_fsm_state("VerbalRoot", true, false);
+        result = make_transition2(transition, root, stem, state);
     } else {
-        return make_transition2(transition, root, stem, create_fsm_state("NominalRoot", true, false));
+        state = create_fsm_state("NominalRoot", true, false);
+        result = make_transition2(transition, root, stem, state);
     }
+    free_fsm_state(state);
+    return result;
 }
 
 /**

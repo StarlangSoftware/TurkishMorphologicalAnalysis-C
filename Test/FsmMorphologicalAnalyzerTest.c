@@ -35,7 +35,7 @@ void test_replace_word_single(Fsm_morphological_analyzer_ptr fsm, char* sentence
     }
     free_string_ptr(st);
     free_sentence(s1);
-    free_(s2);
+    free_sentence(s2);
 }
 
 void test_replace_word(Fsm_morphological_analyzer_ptr fsm){
