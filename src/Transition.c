@@ -266,8 +266,8 @@ bool start_with_vowel_or_consonant_drops(Transition_ptr transition) {
  * @param root TxtWord input.
  * @return true if there is softening during suffixation of the given root, false otherwise.
  */
-bool soften_during_suffixation(Transition_ptr transition, Txt_word_ptr root) {
-    if ((is_nominal(root) || is_adjective(root)) && noun_soften_during_suffixation(root) &&
+bool soften_during_suffixation(Transition_ptr transition, Txt_word_ptr root, Fsm_State_ptr start_state) {
+    if (!starts_with(start_state->name, "VerbalRoot") && (is_nominal(root) || is_adjective(root)) && noun_soften_during_suffixation(root) &&
         string_in_list(transition->with,
                        (char *[]) {"Hm", "nDAn", "ncA", "nDA", "yA",
                                    "yHm", "yHz", "yH", "nH",
@@ -275,7 +275,7 @@ bool soften_during_suffixation(Transition_ptr transition, Txt_word_ptr root) {
                                    "Hn", "HnHz", "HmHz"}, 16)) {
         return true;
     }
-    if (is_verb(root) && verb_soften_during_suffixation(root) &&
+    if (starts_with(start_state->name, "VerbalRoot") && is_verb(root) && verb_soften_during_suffixation(root) &&
         (starts_with(transition->with, "Hyor") || starts_with(transition->with, "yAcAk") ||
          starts_with(transition->with, "Hr") || starts_with(transition->with, "Ar") || string_in_list(transition->with, (
         char*[]){ "yHs", "yAn", "yA", "yAsH", "yHncA", "yHp", "yAlH", "yArAk",
@@ -403,7 +403,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, const char 
             } else {
                 if (rootWord && duplicates_during_suffixation(root) && !starts_with(startState->name, "VerbalRoot") && is_consonant_drop(with_zero->s)) {
                     //---duplicatesDuringSuffixation---
-                    if (soften_during_suffixation(transition, root)) {
+                    if (soften_during_suffixation(transition, root, startState)) {
                         //--extra softenDuringSuffixation
                         if (strcmp(last_p, "p") == 0){
                             //tıp->tıbbı
@@ -426,7 +426,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, const char 
                 } else {
                     if (rootWord && last_i_drops_during_suffixation(root) && !starts_with(startState->name, "VerbalRoot") && !starts_with(startState->name, "ProperRoot") && start_with_vowel_or_consonant_drops(transition)) {
                         //---lastIdropsDuringSuffixation---
-                        if (soften_during_suffixation(transition, root)) {
+                        if (soften_during_suffixation(transition, root, startState)) {
                             //---softenDuringSuffixation---
                             if (strcmp(last_p, "p") == 0){
                                 //hizip->hizbi, kayıp->kaybı, kayıt->kaydı, kutup->kutbu
@@ -457,7 +457,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, const char 
                         //---nounSoftenDuringSuffixation or verbSoftenDuringSuffixation
                         if (strcmp(last_p, "p") == 0){
                             //adap->adabı, amip->amibi, azap->azabı, gazap->gazabı
-                            if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root)) {
+                            if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root, startState)) {
                                 free_string_ptr(formation);
                                 formation = create_string3(except_last, "b");
                             }
@@ -465,21 +465,21 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, const char 
                             if (strcmp(last_p, "t") == 0){
                                 //abat->abadı, adet->adedi, akort->akordu, armut->armudu
                                 //affet->affedi, yoket->yokedi, sabret->sabredi, rakset->raksedi
-                                if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root)) {
+                                if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root, startState)) {
                                     free_string_ptr(formation);
                                     formation = create_string3(except_last, "d");
                                 }
                             } else {
                                 if (strcmp(last_p, "ç") == 0){
                                     //ağaç->ağacı, almaç->almacı, akaç->akacı, avuç->avucu
-                                    if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root)) {
+                                    if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root, startState)) {
                                         free_string_ptr(formation);
                                         formation = create_string3(except_last, "c");
                                     }
                                 } else {
                                     if (strcmp(last_p, "g") == 0){
                                         //arkeolog->arkeoloğu, filolog->filoloğu, minerolog->mineroloğu
-                                        if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root)) {
+                                        if (start_with_vowel_or_consonant_drops(transition) && rootWord && soften_during_suffixation(transition, root, startState)) {
                                             free_string_ptr(formation);
                                             formation = create_string3(except_last, "ğ");
                                         }
@@ -491,7 +491,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, const char 
                                                 formation = create_string3(except_last, "g");
                                             } else {
                                                 //ablak->ablağı, küllük->küllüğü, kitaplık->kitaplığı, evcilik->evciliği
-                                                if (start_with_vowel_or_consonant_drops(transition) && (!rootWord || (soften_during_suffixation(transition, root) && (!is_proper_noun(root) || strcmp(startState->name, "ProperRoot") != 0)))) {
+                                                if (start_with_vowel_or_consonant_drops(transition) && (!rootWord || (soften_during_suffixation(transition, root, startState) && (!is_proper_noun(root) || strcmp(startState->name, "ProperRoot") != 0)))) {
                                                     free_string_ptr(formation);
                                                     formation = create_string3(except_last, "ğ");
                                                 }

@@ -164,7 +164,7 @@ int main(){
     Fsm_morphological_analyzer_ptr fsm = create_fsm_morphological_analyzer3();
     int sizeOfAnalyses[4] = {6, 8, 5, 8};
     test_robust_analysis(fsm, (char*[]){"googlecılardan", "zaptıraplaştırılmayana", "abzürtleşenmiş", "vışlığından"}, sizeOfAnalyses, 4);
-    test_analysis(fsm, (char*[]){"TL", "Won'un", "Slack'in", "SPK'ya", "Stephen'ın"}, 5);
+    test_analysis(fsm, (char*[]){"TL", "Won'un", "Slack'in", "SPK'ya", "Stephen'ın", "uça"}, 6);
     test_analysis(fsm, (char*[]){"3/4", "3\\/4", "4/2/1973", "14/2/1993", "14/12/1933", "6/12/1903", "%34.5", "%3", "%56", "2:3", "12:3", "4:23", "11:56", "1:2:3", "3:12:3", "5:4:23", "7:11:56", "12:2:3", "10:12:3", "11:4:23", "22:11:56", "34.23"}, 22);
     test_tags(fsm);
     test_replace_word(fsm);

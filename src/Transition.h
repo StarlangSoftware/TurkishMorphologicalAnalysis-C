@@ -38,7 +38,7 @@ char* with_first_char(Transition_ptr transition);
 
 bool start_with_vowel_or_consonant_drops(Transition_ptr transition);
 
-bool soften_during_suffixation(Transition_ptr transition, Txt_word_ptr root);
+bool soften_during_suffixation(Transition_ptr transition, Txt_word_ptr root, Fsm_State_ptr start_state);
 
 char* make_transition(Transition_ptr transition, Txt_word_ptr root, const char* stem);
 
