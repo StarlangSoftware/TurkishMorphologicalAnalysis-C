@@ -147,14 +147,6 @@ bool transition_possible2(Transition_ptr transition, Fsm_parse_ptr current_fsm_p
     if (strcmp(transition->with, "Ar") == 0 && ends_with(current_fsm_parse->form, "l") && strcmp(current_fsm_parse->root->name, current_fsm_parse->form) != 0) {
         return false;
     }
-    if (current_fsm_parse->verb_agreement != NULL && current_fsm_parse->possessive_agreement != NULL && transition->with_name != NULL) {
-        if (strcmp(current_fsm_parse->verb_agreement, "A3PL") == 0 && strcmp(transition->with_name, "^DB+VERB+ZERO+PRES+A1SG") == 0) {
-            return false;
-        }
-        if (strcmp(current_fsm_parse->verb_agreement, "A3SG") == 0 && (strcmp(current_fsm_parse->possessive_agreement, "P1SG") == 0 || strcmp(current_fsm_parse->possessive_agreement, "P2SG") == 0) && strcmp(transition->with_name, "^DB+VERB+ZERO+PRES+A1PL") == 0) {
-            return false;
-        }
-    }
     return true;
 }
 
