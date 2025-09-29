@@ -663,11 +663,12 @@ char *transition_list(const Fsm_parse* fsm_parse) {
  * @return result String accumulated with the items of formList and suffixList.
  */
 char *get_suffix_list(Fsm_parse_ptr fsm_parse) {
-    char tmp[MAX_LINE_LENGTH];
+    char tmp[MAX_LINE_LENGTH], tmp1[MAX_LINE_LENGTH];
     sprintf(tmp, "%s(%s)", ((Fsm_State_ptr) array_list_get(fsm_parse->suffix_list, 0))->name, (char*) array_list_get(fsm_parse->form_list, 0));
     for (int i = 1; i < fsm_parse->form_list->size; i++) {
         if (strcmp(array_list_get(fsm_parse->form_list, i), array_list_get(fsm_parse->form_list, i - 1)) != 0) {
-            sprintf(tmp, "%s+%s(%s)", tmp, ((Fsm_State_ptr) array_list_get(fsm_parse->suffix_list, i))->name, (char*) array_list_get(fsm_parse->form_list, i));
+            sprintf(tmp1, "%s+%s(%s)", tmp, ((Fsm_State_ptr) array_list_get(fsm_parse->suffix_list, i))->name, (char*) array_list_get(fsm_parse->form_list, i));
+            strcpy(tmp, tmp1);
         }
     }
     char *result = NULL;
@@ -682,10 +683,11 @@ char *get_suffix_list(Fsm_parse_ptr fsm_parse) {
  * @return result String accumulated with items of withList.
  */
 char *get_with_list(Fsm_parse_ptr fsm_parse) {
-    char tmp[MAX_LINE_LENGTH];
+    char tmp[MAX_LINE_LENGTH], tmp1[MAX_LINE_LENGTH];
     sprintf(tmp, "%s", fsm_parse->root->name);
     for (int i = 0; i < fsm_parse->with_list->size; i++) {
-        sprintf(tmp, "%s+%s", tmp, (char*) array_list_get(fsm_parse->with_list, i));
+        sprintf(tmp1, "%s+%s", tmp, (char*) array_list_get(fsm_parse->with_list, i));
+        strcpy(tmp, tmp1);
     }
     char *result = NULL;
     result = str_copy(result, tmp);

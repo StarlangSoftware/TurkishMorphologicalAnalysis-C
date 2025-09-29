@@ -178,13 +178,14 @@ bool contains_possessive(const Inflectional_group *inflectional_group) {
  * @return String result.
  */
 char *inflectional_group_to_string(const Inflectional_group *inflectional_group) {
-    char tmp[MAX_LINE_LENGTH];
+    char tmp[MAX_LINE_LENGTH], tmp1[MAX_LINE_LENGTH];
     char* tag = get_tag(*(Morphological_tag*) array_list_get(inflectional_group->IG, 0));
     sprintf(tmp, "%s", tag);
     free_(tag);
     for (int i = 1; i < inflectional_group->IG->size; i++){
         tag = get_tag(*(Morphological_tag*) array_list_get(inflectional_group->IG, i));
-        sprintf(tmp, "%s+%s", tmp, tag);
+        sprintf(tmp1, "%s+%s", tmp, tag);
+        strcpy(tmp, tmp1);
         free_(tag);
     }
     char *result = NULL;

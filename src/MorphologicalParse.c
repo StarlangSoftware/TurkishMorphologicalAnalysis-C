@@ -107,14 +107,15 @@ void update_root_and_inflectional_groups(Morphological_parse_ptr morphological_p
  * @return String that contains transition list.
  */
 char *get_transition_list(const Morphological_parse *morphological_parse) {
-    char tmp[MAX_LINE_LENGTH];
+    char tmp[MAX_LINE_LENGTH], tmp1[MAX_LINE_LENGTH];
     char *ig;
     ig = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, 0));
     sprintf(tmp, "%s", ig);
     free_(ig);
     for (int i = 1; i < morphological_parse->inflectional_groups->size; i++) {
         ig = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, i));
-        sprintf(tmp, "%s+%s", tmp, ig);
+        sprintf(tmp1, "%s+%s", tmp, ig);
+        strcpy(tmp, tmp1);
         free_(ig);
     }
     char *result = NULL;
@@ -1268,13 +1269,14 @@ char *get_universal_dependency_pos(const Morphological_parse *morphological_pars
  * @return result {@link String}.
  */
 char *morphological_parse_to_string(const Morphological_parse *morphological_parse) {
-    char tmp[MAX_LINE_LENGTH];
+    char tmp[MAX_LINE_LENGTH], tmp1[MAX_LINE_LENGTH];
     char *st = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, 0));
     sprintf(tmp, "%s+%s", morphological_parse->root, st);
     free_(st);
     for (int i = 1; i < morphological_parse->inflectional_groups->size; i++) {
         st = inflectional_group_to_string(array_list_get(morphological_parse->inflectional_groups, i));
-        sprintf(tmp, "%s^DB+%s", tmp, st);
+        sprintf(tmp1, "%s^DB+%s", tmp, st);
+        strcpy(tmp, tmp1);
         free_(st);
     }
     char *result = NULL;

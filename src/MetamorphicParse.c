@@ -110,10 +110,11 @@ char *get_meta_morpheme(const Metamorphic_parse* metamorphic_parse, int index) {
  * @return String result.
  */
 char *metamorphic_parse_to_string(const Metamorphic_parse* metamorphic_parse) {
-    char tmp[MAX_LINE_LENGTH];
+    char tmp[MAX_LINE_LENGTH], tmp1[MAX_LINE_LENGTH];
     sprintf(tmp, "%s", metamorphic_parse->root);
     for (int i = 0; i < metamorphic_parse->meta_morpheme_list->size; i++){
-        sprintf(tmp, "%s+%s", tmp, (char*) array_list_get(metamorphic_parse->meta_morpheme_list, i));
+        sprintf(tmp1, "%s+%s", tmp, (char*) array_list_get(metamorphic_parse->meta_morpheme_list, i));
+        strcpy(tmp, tmp1);
     }
     char *result = NULL;
     result = str_copy(result, tmp);

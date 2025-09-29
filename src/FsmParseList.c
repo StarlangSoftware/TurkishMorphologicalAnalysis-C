@@ -52,14 +52,15 @@ void free_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list) {
  * @return String result that has root words.
  */
 char *root_words(Fsm_parse_list_ptr fsm_parse_list) {
-    char tmp[MAX_LINE_LENGTH];
+    char tmp[MAX_LINE_LENGTH], tmp1[MAX_LINE_LENGTH];
     char* currentRoot = (get_fsm_parse(fsm_parse_list, 0))->root->name;
     sprintf(tmp, "%s", currentRoot);
     for (int i = 1; i < fsm_parse_list->fsm_parses->size; i++) {
         char* name = (get_fsm_parse(fsm_parse_list, i))->root->name;
         if (strcmp(name, currentRoot) != 0) {
             currentRoot = name;
-            sprintf(tmp, "%s$%s", tmp, currentRoot);
+            sprintf(tmp1, "%s$%s", tmp, currentRoot);
+            strcpy(tmp, tmp1);
         }
     }
     char *result = NULL;
@@ -217,10 +218,11 @@ Array_list_ptr construct_parse_list_for_different_root_with_pos(Fsm_parse_list_p
  * @return result String that has the items of fsmParses ArrayList.
  */
 char *fsm_parse_list_to_string(Fsm_parse_list_ptr fsm_parse_list) {
-    char tmp[MAX_LINE_LENGTH] = "";
+    char tmp[MAX_LINE_LENGTH] = "", tmp1[MAX_LINE_LENGTH];
     for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++) {
         Fsm_parse_ptr fsm_parse = get_fsm_parse(fsm_parse_list, i);
-        sprintf(tmp, "%s%s\n", tmp, fsm_parse_to_string(fsm_parse));
+        sprintf(tmp1, "%s%s\n", tmp, fsm_parse_to_string(fsm_parse));
+        strcpy(tmp, tmp1);
     }
     char *result = NULL;
     result = str_copy(result, tmp);
@@ -244,7 +246,7 @@ char *fsm_parse_list_to_string(Fsm_parse_list_ptr fsm_parse_list) {
  * @return result String that has the accumulated items of analyses array.
  */
 char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
-    char tmp[MAX_LINE_LENGTH] = "";
+    char tmp[MAX_LINE_LENGTH] = "", tmp1[MAX_LINE_LENGTH];
     char* analyses[fsm_parse_list->fsm_parses->size];
     bool removePrefix = true, removeSuffix = true;
     char* list = transition_list(get_fsm_parse(fsm_parse_list, 0));
@@ -329,7 +331,8 @@ char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
     }
     sprintf(tmp, "%s", analyses[0]);
     for (int i = 1; i < fsm_parse_list->fsm_parses->size; i++) {
-        sprintf(tmp, "%s$%s", tmp, analyses[i]);
+        sprintf(tmp1, "%s$%s", tmp, analyses[i]);
+        strcpy(tmp, tmp1);
     }
     char *result = NULL;
     result = str_copy(result, tmp);
