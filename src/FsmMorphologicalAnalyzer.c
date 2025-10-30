@@ -22,7 +22,7 @@
 Fsm_morphological_analyzer_ptr  create_fsm_morphological_analyzer(const char *fileName,
                                                                   Txt_dictionary_ptr dictionary,
                                                                   int cacheSize) {
-    Fsm_morphological_analyzer_ptr result = malloc_(sizeof(Fsm_morphological_analyzer), "create_fsm_morphological_analyzer");
+    Fsm_morphological_analyzer_ptr result = malloc_(sizeof(Fsm_morphological_analyzer));
     result->finite_state_machine = create_finite_state_machine(fileName);
     result->dictionary_trie = prepare_trie(dictionary);
     prepare_suffix_tree(result);
@@ -1553,7 +1553,7 @@ robust_morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_a
  */
 Fsm_parse_list_ptr *morphological_analysis4(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Sentence_ptr sentence) {
     Fsm_parse_list_ptr word_fsm_parse_list;
-    Fsm_parse_list_ptr *result = malloc_(sentence_word_count(sentence) * sizeof(Fsm_parse_list_ptr), "morphological_analysis4");
+    Fsm_parse_list_ptr *result = malloc_(sentence_word_count(sentence) * sizeof(Fsm_parse_list_ptr));
     for (int i = 0; i < sentence_word_count(sentence); i++) {
         char *original_form = sentence_get_word(sentence, i);
         char *spell_corrected_form = get_correct_form(fsm_morphological_analyzer->dictionary, original_form);
@@ -1576,7 +1576,7 @@ Fsm_parse_list_ptr *morphological_analysis4(Fsm_morphological_analyzer_ptr fsm_m
  */
 Fsm_parse_list_ptr *robust_morphological_analysis2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Sentence_ptr sentence) {
     Fsm_parse_list_ptr word_fsm_parse_list;
-    Fsm_parse_list_ptr *result = malloc_(sentence_word_count(sentence) * sizeof(Fsm_parse_list_ptr), "robust_morphological_analysis2");
+    Fsm_parse_list_ptr *result = malloc_(sentence_word_count(sentence) * sizeof(Fsm_parse_list_ptr));
     for (int i = 0; i < sentence_word_count(sentence); i++) {
         char *original_form = sentence_get_word(sentence, i);
         char *spell_corrected_form = get_correct_form(fsm_morphological_analyzer->dictionary, original_form);

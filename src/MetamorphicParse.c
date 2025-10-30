@@ -14,7 +14,7 @@
  * @param parse String to parse.
  */
 Metamorphic_parse_ptr create_metamorphic_parse(const char *parse) {
-    Metamorphic_parse_ptr result = malloc_(sizeof(Metamorphic_parse), "create_metamorphic_parse");
+    Metamorphic_parse_ptr result = malloc_(sizeof(Metamorphic_parse));
     result->meta_morpheme_list = create_array_list();
     if (strcmp(parse, "+") == 0) {
         result->root = str_copy(result->root, "+");
@@ -47,7 +47,7 @@ Array_list_ptr get_meta_morpheme_tag1(char *tag) {
     free_string_ptr(st);
     for (int j = 0; j < 109; j++) {
         if (strcmp(_tag, meta_morphemes[j]) == 0) {
-            Morphological_tag* tag_ptr = malloc_(sizeof(Morphological_tag), "get_meta_morpheme_tag1");
+            Morphological_tag* tag_ptr = malloc_(sizeof(Morphological_tag));
             *tag_ptr = morphotactic_tags[j];
             array_list_add(result, tag_ptr);
         }

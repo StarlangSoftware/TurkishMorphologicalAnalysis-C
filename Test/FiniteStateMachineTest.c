@@ -7,6 +7,7 @@
 #include "../src/FiniteStateMachine.h"
 
 int main(){
+    start_memory_check();
     Finite_state_machine_ptr fsm = create_finite_state_machine("turkish_finite_state_machine.xml");
     if (fsm->states->size != 141){
         printf("Fsm_State count does not match\n");
@@ -32,4 +33,5 @@ int main(){
         printf("Transition count %d does not match\n", transition_count);
     }
     free_finite_state_machine(fsm);
+    end_memory_check();
 }

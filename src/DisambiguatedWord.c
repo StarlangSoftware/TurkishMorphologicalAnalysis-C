@@ -14,7 +14,7 @@
  * @param parse MorphologicalParse of the DisambiguatedWord.
  */
 Disambiguated_word_ptr create_disambiguated_word(const char *name, Morphological_parse_ptr parse) {
-    Disambiguated_word_ptr result = malloc_(sizeof(Disambiguated_word), "create_disambiguated_word");
+    Disambiguated_word_ptr result = malloc_(sizeof(Disambiguated_word));
     result->name = str_copy(result->name, name);
     result->parse = parse;
     return result;

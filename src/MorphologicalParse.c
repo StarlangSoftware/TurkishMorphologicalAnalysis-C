@@ -38,7 +38,7 @@
  * @param parse String input.
  */
 Morphological_parse_ptr create_morphological_parse(const char *parse) {
-    Morphological_parse_ptr result = malloc_(sizeof(Morphological_parse), "create_morphological_parse");
+    Morphological_parse_ptr result = malloc_(sizeof(Morphological_parse));
     result->inflectional_groups = create_array_list();
     Array_list_ptr iGs = str_split2(parse, "^DB+");
     if (strcmp(((char *) array_list_get(iGs, 0)), "++Punc") == 0) {
@@ -57,7 +57,7 @@ Morphological_parse_ptr create_morphological_parse(const char *parse) {
  * @param inflectional_groups vector input.
  */
 Morphological_parse_ptr create_morphological_parse2(const Array_list *inflectional_groups) {
-    Morphological_parse_ptr result = malloc_(sizeof(Morphological_parse), "create_morphological_parse2");
+    Morphological_parse_ptr result = malloc_(sizeof(Morphological_parse));
     result->inflectional_groups = create_array_list();
     update_root_and_inflectional_groups(result, inflectional_groups);
     return result;

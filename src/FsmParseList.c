@@ -17,7 +17,7 @@
  * @param fsmParses FsmParse type vector input.
  */
 Fsm_parse_list_ptr create_fsm_parse_list(Array_list_ptr fsmParses) {
-    Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list), "create_fsm_parse_list");
+    Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list));
     if (fsmParses->size > 0){
         array_list_merge_sort(fsmParses, (int (*)(const void *, const void *)) compare_fsm_parse);
         for (int i = 0; i < fsmParses->size - 1; i++) {
@@ -344,7 +344,7 @@ char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
  * @return Allocated and empty FsmParseList.
  */
 Fsm_parse_list_ptr create_fsm_parse_list2() {
-    Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list), "create_fsm_parse_list2");
+    Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list));
     result->fsm_parses = create_array_list();
     return result;
 }
@@ -366,7 +366,7 @@ Fsm_parse_ptr get_fsm_parse(Fsm_parse_list_ptr fsm_parse_list, int index) {
  * @return A clone of the given FsmParseList object.
  */
 Fsm_parse_list_ptr clone_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list) {
-    Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list), "clone_fsm_parse_list");
+    Fsm_parse_list_ptr result = malloc_(sizeof(Fsm_parse_list));
     result->fsm_parses = create_array_list();
     for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++){
         Fsm_parse_ptr fsm_parse = array_list_get(fsm_parse_list->fsm_parses, i);

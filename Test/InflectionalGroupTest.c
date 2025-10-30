@@ -3,6 +3,8 @@
 //
 
 #include <stdio.h>
+#include <Memory/Memory.h>
+
 #include "../src/InflectionalGroup.h"
 
 void test_get_morphological_tag(){
@@ -106,10 +108,12 @@ void test_contains_possessive(){
 }
 
 int main(){
+    start_memory_check();
     test_get_morphological_tag();
     test_size();
     test_contains_case();
     test_contains_plural();
     test_contains_tag();
     test_contains_possessive();
+    end_memory_check();
 }

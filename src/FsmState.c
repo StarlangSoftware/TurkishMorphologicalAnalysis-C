@@ -16,7 +16,7 @@
  * @param end_state   boolean input.
  */
 Fsm_State_ptr create_fsm_state(const char *name, bool start_state, bool end_state) {
-    Fsm_State_ptr result = malloc_(sizeof(Fsm_State), "create_fsm_state");
+    Fsm_State_ptr result = malloc_(sizeof(Fsm_State));
     result->name = str_copy(result->name, name);
     result->start_state = start_state;
     result->end_state = end_state;
@@ -34,7 +34,7 @@ Fsm_State_ptr create_fsm_state(const char *name, bool start_state, bool end_stat
  * @param pos        String input.
  */
 Fsm_State_ptr create_fsm_state2(const char *name, bool start_state, bool end_state, const char *pos) {
-    Fsm_State_ptr result = malloc_(sizeof(Fsm_State), "create_fsm_state2");
+    Fsm_State_ptr result = malloc_(sizeof(Fsm_State));
     result->name = str_copy(result->name, name);
     result->start_state = start_state;
     result->end_state = end_state;
@@ -78,7 +78,7 @@ int compare_fsm_state(const Fsm_State *first, const Fsm_State *second) {
  * @return Empty allocated State object.
  */
 Fsm_State_ptr create_fsm_state3() {
-    Fsm_State_ptr result = malloc_(sizeof(Fsm_State), "create_fsm_state3");
+    Fsm_State_ptr result = malloc_(sizeof(Fsm_State));
     result->name = NULL;
     result->pos = NULL;
     result->start_state = false;

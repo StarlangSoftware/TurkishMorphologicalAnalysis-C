@@ -17,12 +17,12 @@
  * @param IG String input.
  */
 Inflectional_group_ptr create_inflectional_group(const char *IG) {
-    Inflectional_group_ptr result = malloc_(sizeof(Inflectional_group), "create_inflectional_group_1");
+    Inflectional_group_ptr result = malloc_(sizeof(Inflectional_group));
     result->IG = create_array_list();
     Array_list_ptr morphological_tags = str_split(IG, '+');
     for (int i = 0; i < morphological_tags->size; i++){
         char* s = array_list_get(morphological_tags, i);
-        Morphological_tag* tag = malloc_(sizeof(Morphological_tag), "create_inflectional_group_2");
+        Morphological_tag* tag = malloc_(sizeof(Morphological_tag));
         *tag = get_morphological_tag(s);
         array_list_add(result->IG, tag);
     }
@@ -45,7 +45,7 @@ void free_inflectional_group(Inflectional_group_ptr inflectional_group) {
  * @return Clone of the inflectional group
  */
 Inflectional_group_ptr clone_inflectional_group(const Inflectional_group *inflectional_group) {
-    Inflectional_group_ptr result = malloc_(sizeof(Inflectional_group), "clone_inflectional_group");
+    Inflectional_group_ptr result = malloc_(sizeof(Inflectional_group));
     result->IG = create_array_list();
     for (int i = 0; i < inflectional_group->IG->size; i++){
         array_list_add(result->IG, clone_string(array_list_get(inflectional_group->IG, i)));

@@ -20,7 +20,7 @@
 Transition_ptr create_transition(Fsm_State_ptr to_state,
                                  const char *with,
                                  const char *with_name) {
-    Transition_ptr result = malloc_(sizeof(Transition), "create_transition");
+    Transition_ptr result = malloc_(sizeof(Transition));
     result->to_state = to_state;
     result->with = str_copy(result->with, with);
     result->with_name = str_copy(result->with_name, with_name);
@@ -41,7 +41,7 @@ Transition_ptr create_transition2(Fsm_State_ptr to_state,
                                   const char *with,
                                   const char *with_name,
                                   const char *to_pos) {
-    Transition_ptr result = malloc_(sizeof(Transition), "create_transition2");
+    Transition_ptr result = malloc_(sizeof(Transition));
     result->to_state = to_state;
     result->with = str_copy(result->with, with);
     result->with_name = str_copy(result->with_name, with_name);
@@ -56,7 +56,7 @@ Transition_ptr create_transition2(Fsm_State_ptr to_state,
  * @param with String input.
  */
 Transition_ptr create_transition3(const char *with) {
-    Transition_ptr result = malloc_(sizeof(Transition), "create_transition3");
+    Transition_ptr result = malloc_(sizeof(Transition));
     result->to_state = NULL;
     result->with = str_copy(result->with, with);
     result->with_name = NULL;

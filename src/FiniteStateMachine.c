@@ -32,7 +32,7 @@ void free_array_list_with_transitions(Array_list_ptr transition_list){
  * @return A new allocated finite state machine.
  */
 Finite_state_machine_ptr create_finite_state_machine2() {
-    Finite_state_machine_ptr result = malloc_(sizeof(Finite_state_machine), "create_finite_state_machine2");
+    Finite_state_machine_ptr result = malloc_(sizeof(Finite_state_machine));
     result->states = create_array_list();
     result->transitions = create_hash_map((unsigned int (*)(const void *, int)) hash_function_fsm_state,
                                           (int (*)(const void *, const void *)) compare_fsm_state);

@@ -2,6 +2,8 @@
 // Created by Olcay Taner YILDIZ on 5.11.2023.
 //
 
+#include <Memory/Memory.h>
+
 #include "../src/FsmMorphologicalAnalyzer.h"
 
 void test_transition(Fsm_morphological_analyzer_ptr fsm, char* list[], int size){
@@ -15,6 +17,7 @@ void test_transition(Fsm_morphological_analyzer_ptr fsm, char* list[], int size)
 }
 
 int main(){
+    start_x_large_memory_check();
     Fsm_morphological_analyzer_ptr fsm = create_fsm_morphological_analyzer3();
     test_transition(fsm, (char*[]){"kabala", "halika", "adabı", "ahengi", "adedi", "adeti", "ağıdı", "ağıtı", "anotu", "halli", "hali", "şakı", "şakkı", "metni", "metini", "katli", "katili"}, 17);
     test_transition(fsm, (char*[]){"hizbi", "kaybı", "ahdi", "nesci", "zehri", "zikri"}, 6);
@@ -34,4 +37,5 @@ int main(){
     test_transition(fsm, (char*[]){"suymuş", "suyuymuş", "suyla", "suyuyla", "suydu", "suyuydu", "suyuna", "karasuyu", "suyu"}, 9);
     test_transition(fsm, (char*[]){"cezbediyor", "ediyor", "bahsediyor"}, 3);
     free_fsm_morphological_analyzer(fsm);
+    end_memory_check();
 }

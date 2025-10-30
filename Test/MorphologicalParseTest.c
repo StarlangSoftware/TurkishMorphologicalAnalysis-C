@@ -225,6 +225,7 @@ void test_is_plural(){
 }
 
 int main(){
+    start_memory_check();
     test_get_transition_list();
     test_get_tag();
     test_get_tag_size();
@@ -237,4 +238,5 @@ int main(){
     test_is_adjective();
     test_is_noun();
     test_is_plural();
+    end_memory_check();
 }

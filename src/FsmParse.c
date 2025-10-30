@@ -28,7 +28,7 @@ Fsm_parse_ptr create_fsm_parse(Txt_word_ptr root) {
  * @return Empty allocated FsmParse
  */
 Fsm_parse_ptr create_fsm_parse2() {
-    Fsm_parse_ptr result = malloc_(sizeof(Fsm_parse), "create_fsm_parse2");
+    Fsm_parse_ptr result = malloc_(sizeof(Fsm_parse));
     result->form_list = create_array_list();
     result->inflectional_groups = create_array_list();
     result->suffix_list = create_array_list();
@@ -767,7 +767,7 @@ Inflectional_group_ptr first_inflectional_group2(const Fsm_parse *fsm_parse) {
  * @return FsmParse object.
  */
 Fsm_parse_ptr clone_fsm_parse(const Fsm_parse *fsm_parse) {
-    Fsm_parse_ptr p = malloc_(sizeof(Fsm_parse), "clone_fsm_parse");
+    Fsm_parse_ptr p = malloc_(sizeof(Fsm_parse));
     p->root = clone_txt_word(fsm_parse->root);
     p->form = str_copy(p->form, fsm_parse->form);
     p->pos = fsm_parse->pos;
