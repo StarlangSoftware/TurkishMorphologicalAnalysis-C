@@ -1737,7 +1737,6 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
                                                     free_string_ptr(replaced_word);
                                                     free_string_ptr(st2);
                                                 } else {
-                                                    free_(possibleRootLowerCased);
                                                     if (get_word_txt(fsm_morphological_analyzer->dictionary, possibleRootLowerCased) !=
                                                         NULL) {
                                                         add_flag(get_word_txt(fsm_morphological_analyzer->dictionary,
@@ -1747,6 +1746,7 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
                                                         add_word_to_trie(fsm_morphological_analyzer->dictionary_trie,
                                                                          possibleRootLowerCased, newWord);
                                                     }
+                                                    free_(possibleRootLowerCased);
                                                     fsmParse = analysis(fsm_morphological_analyzer,
                                                                         lowerCased,
                                                                         is_proper_noun_fsm(surfaceForm));
