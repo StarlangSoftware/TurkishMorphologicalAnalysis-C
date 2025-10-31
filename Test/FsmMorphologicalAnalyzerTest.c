@@ -26,6 +26,19 @@ void test_robust_analysis(Fsm_morphological_analyzer_ptr fsm, char* list[], cons
     }
 }
 
+void test_robust_analysis2(Fsm_morphological_analyzer_ptr fsm, char* list[], int size){
+    for (int i = 0; i < size; i++){
+        Sentence_ptr sentence = create_sentence3(list[i]);
+        Fsm_parse_list_ptr* parse_list = robust_morphological_analysis2(fsm, sentence);
+        for (int j = 0; j < sentence_word_count(sentence); j++) {
+            printf("%s\n", fsm_parse_list_to_string(parse_list[j]));
+            free_fsm_parse_list(parse_list[j]);
+        }
+        free_(parse_list);
+        free_sentence(sentence);
+    }
+}
+
 void test_replace_word_single(Fsm_morphological_analyzer_ptr fsm, char* sentence, char* previous, char* new, char* new_sentence){
     Sentence_ptr s1 = create_sentence3(sentence);
     Sentence_ptr s2 = replace_word_fsm(fsm, s1, previous, new);
@@ -164,6 +177,7 @@ int main(){
     Fsm_morphological_analyzer_ptr fsm = create_fsm_morphological_analyzer3();
     int sizeOfAnalyses[4] = {6, 8, 5, 8};
     test_robust_analysis(fsm, (char*[]){"googlecılardan", "zaptıraplaştırılmayana", "abzürtleşenmiş", "vışlığından"}, sizeOfAnalyses, 4);
+    test_robust_analysis2(fsm, (char*[]){"ali topu at"}, 1);
     test_analysis(fsm, (char*[]){"TL", "Won'un", "Slack'in", "SPK'ya", "Stephen'ın", "uça"}, 6);
     test_analysis(fsm, (char*[]){"3/4", "3\\/4", "4/2/1973", "14/2/1993", "14/12/1933", "6/12/1903", "%34.5", "%3", "%56", "2:3", "12:3", "4:23", "11:56", "1:2:3", "3:12:3", "5:4:23", "7:11:56", "12:2:3", "10:12:3", "11:4:23", "22:11:56", "34.23"}, 22);
     test_tags(fsm);
