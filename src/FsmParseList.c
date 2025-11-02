@@ -257,8 +257,10 @@ char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
         char* result = NULL;
         result = str_copy(result, st->s);
         free_string_ptr(st);
+        free_(list);
         return result;
     }
+    free_(list);
     for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++) {
         analyses[i] = transition_list(get_fsm_parse(fsm_parse_list, i));
     }
@@ -335,6 +337,9 @@ char *parses_without_prefix_and_suffix(Fsm_parse_list_ptr fsm_parse_list) {
     for (int i = 1; i < fsm_parse_list->fsm_parses->size; i++) {
         sprintf(tmp1, "%s$%s", tmp, analyses[i]);
         strcpy(tmp, tmp1);
+    }
+    for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++) {
+        free_(analyses[i]);
     }
     char *result = NULL;
     result = str_copy(result, tmp);
