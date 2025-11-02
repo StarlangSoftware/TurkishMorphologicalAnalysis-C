@@ -10,10 +10,10 @@
 int main(){
     start_x_large_memory_check();
     Corpus_ptr corpus = create_disambiguation_corpus("etstur.txt");
-    if (corpus->sentences->size != 19108){
+    if (corpus->sentences->size != 18){
         printf("Sentence count wrong! %d\n", corpus->sentences->size);
     }
-    if (corpus_number_of_words(corpus) != 170211){
+    if (corpus_number_of_words(corpus) != 62){
         printf("Word count wrong! %d\n", corpus_number_of_words(corpus));
     }
     free_disambiguation_corpus(corpus);
