@@ -1484,7 +1484,7 @@ Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morp
             add_flag(new_word, "CL_FIIL");
         }
         array_list_add(candidate_list, new_word);
-        add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, candidate_word->s, new_word);
+        add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, new_word->name, new_word);
         free_string_ptr(candidate_word);
     }
     free_hash_set(words, (void (*)(void *)) free_txt_word);
