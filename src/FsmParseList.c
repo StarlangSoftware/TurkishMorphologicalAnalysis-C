@@ -221,8 +221,10 @@ char *fsm_parse_list_to_string(Fsm_parse_list_ptr fsm_parse_list) {
     char tmp[MAX_LINE_LENGTH] = "", tmp1[MAX_LINE_LENGTH];
     for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++) {
         Fsm_parse_ptr fsm_parse = get_fsm_parse(fsm_parse_list, i);
-        sprintf(tmp1, "%s%s\n", tmp, fsm_parse_to_string(fsm_parse));
+        char* tmp2 = fsm_parse_to_string(fsm_parse);
+        sprintf(tmp1, "%s%s\n", tmp, tmp2);
         strcpy(tmp, tmp1);
+        free_(tmp2);
     }
     char *result = NULL;
     result = str_copy(result, tmp);

@@ -31,7 +31,9 @@ void test_robust_analysis2(Fsm_morphological_analyzer_ptr fsm, char* list[], int
         Sentence_ptr sentence = create_sentence3(list[i]);
         Fsm_parse_list_ptr* parse_list = robust_morphological_analysis2(fsm, sentence);
         for (int j = 0; j < sentence_word_count(sentence); j++) {
-            printf("%s\n", fsm_parse_list_to_string(parse_list[j]));
+            char* tmp = fsm_parse_list_to_string(parse_list[j]);
+            printf("%s\n", tmp);
+            free_(tmp);
             free_fsm_parse_list(parse_list[j]);
         }
         free_(parse_list);

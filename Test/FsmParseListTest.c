@@ -141,6 +141,7 @@ void test_parses_without_prefix_and_suffix(Fsm_morphological_analyzer_ptr fsm){
 }
 
 int main(){
+    start_x_large_memory_check();
     Fsm_morphological_analyzer_ptr fsm = create_fsm_morphological_analyzer3();
     test_size(fsm);
     test_root_words(fsm);
@@ -149,5 +150,6 @@ int main(){
     test_reduce_to_parses_with_same_root(fsm);
     test_construct_parse_list_for_different_root_with_pos(fsm);
     free_fsm_morphological_analyzer(fsm);
+    end_memory_check();
 }
 
