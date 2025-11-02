@@ -3,10 +3,13 @@
 //
 
 #include <Corpus.h>
+#include <Memory/Memory.h>
+
 #include "../src/DisambiguationCorpus.h"
 
 int main(){
-    Corpus_ptr corpus = create_disambiguation_corpus("penntreebank.txt");
+    start_x_large_memory_check();
+    Corpus_ptr corpus = create_disambiguation_corpus("etstur.txt");
     if (corpus->sentences->size != 19108){
         printf("Sentence count wrong! %d\n", corpus->sentences->size);
     }
@@ -14,4 +17,5 @@ int main(){
         printf("Word count wrong! %d\n", corpus_number_of_words(corpus));
     }
     free_disambiguation_corpus(corpus);
+    end_memory_check();
 }

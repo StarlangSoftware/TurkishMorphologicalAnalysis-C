@@ -29,15 +29,20 @@ Corpus_ptr create_disambiguation_corpus(const char *file_name) {
         if (word != NULL && parse != NULL){
             new_word = create_disambiguated_word(word, create_morphological_parse(parse));
             if (strcmp(word, "<S>") == 0) {
+                free_disambiguated_word(new_word);
                 new_sentence = create_sentence();
             } else {
                 if (strcmp(word, "</S>") == 0) {
+                    free_disambiguated_word(new_word);
                     corpus_add_sentence(result, new_sentence);
                 } else {
                     if (string_in_list(word, (char*[]) {"<DOC>", "</DOC>", "<TITLE>", "</TITLE>"}, 4)) {
+                        free_disambiguated_word(new_word);
                     } else {
                         if (new_sentence != NULL) {
                             array_list_add(new_sentence->words, new_word);
+                        } else {
+                            free_disambiguated_word(new_word);
                         }
                     }
                 }
@@ -66,5 +71,6 @@ void free_disambiguation_corpus(Corpus_ptr corpus) {
     free_array_list(corpus->sentences, (void (*)(void *)) free_disambiguation_sentence);
     free_array_list(corpus->paragraphs, NULL);
     free_counter_hash_map(corpus->word_list);
+    free_(corpus->file_name);
     free_(corpus);
 }
