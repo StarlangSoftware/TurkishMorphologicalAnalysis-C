@@ -1483,8 +1483,19 @@ Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morp
             new_word = create_txt_word2(candidate_word->s, "CL_ISIM");
             add_flag(new_word, "CL_FIIL");
         }
-        array_list_add(candidate_list, new_word);
-        add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, new_word->name, new_word);
+        bool found = false;
+        for (int j = 0; j < candidate_list->size; j++) {
+            Txt_word_ptr word1 = array_list_get(candidate_list, j);
+            if (strcmp(word1->name, new_word->name) == 0) {
+                found = true;
+            }
+        }
+        if (!found) {
+            array_list_add(candidate_list, new_word);
+            add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, new_word->name, new_word);
+        } else {
+            free_txt_word(new_word);
+        }
         free_string_ptr(candidate_word);
     }
     free_hash_set(words, (void (*)(void *)) free_txt_word);
