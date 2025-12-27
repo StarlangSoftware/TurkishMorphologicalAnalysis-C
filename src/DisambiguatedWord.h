@@ -8,7 +8,7 @@
 #include "MorphologicalParse.h"
 
 struct disambiguated_word{
-    char* name;
+    Word word;
     Morphological_parse_ptr parse;
 };
 

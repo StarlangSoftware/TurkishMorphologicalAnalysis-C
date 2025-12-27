@@ -53,10 +53,10 @@ void free_fsm_parse_list(Fsm_parse_list_ptr fsm_parse_list) {
  */
 char *root_words(Fsm_parse_list_ptr fsm_parse_list) {
     char tmp[MAX_LINE_LENGTH], tmp1[MAX_LINE_LENGTH];
-    char* currentRoot = (get_fsm_parse(fsm_parse_list, 0))->root->name;
+    char* currentRoot = (get_fsm_parse(fsm_parse_list, 0))->parse.root->name;
     sprintf(tmp, "%s", currentRoot);
     for (int i = 1; i < fsm_parse_list->fsm_parses->size; i++) {
-        char* name = (get_fsm_parse(fsm_parse_list, i))->root->name;
+        char* name = (get_fsm_parse(fsm_parse_list, i))->parse.root->name;
         if (strcmp(name, currentRoot) != 0) {
             currentRoot = name;
             sprintf(tmp1, "%s$%s", tmp, currentRoot);
@@ -79,7 +79,7 @@ char *root_words(Fsm_parse_list_ptr fsm_parse_list) {
 void reduce_to_parses_with_same_root_and_pos(Fsm_parse_list_ptr fsm_parse_list, const char* current_with_pos) {
     int i = 0;
     while (i < fsm_parse_list->fsm_parses->size) {
-        char* name = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i));
+        char* name = get_word_with_pos((Morphological_parse_ptr) get_fsm_parse(fsm_parse_list, i));
         if (strcmp(name, current_with_pos) != 0) {
             array_list_remove(fsm_parse_list->fsm_parses, i, (void (*)(void *)) free_fsm_parse);
         } else {
@@ -104,7 +104,7 @@ Fsm_parse_ptr get_parse_with_longest_root_word(Fsm_parse_list_ptr fsm_parse_list
     }
     for (int i = 0; i < fsm_parse_list->fsm_parses->size; i++){
         Fsm_parse_ptr fsmParse = get_fsm_parse(fsm_parse_list, i);
-        int length = word_size(fsmParse->root->name);
+        int length = word_size(fsmParse->parse.root->name);
         if (length > maxLength && !is_longest_root_exception(fsm_parse_list, fsmParse)){
             maxLength = length;
             bestParse = fsmParse;
@@ -122,7 +122,7 @@ Fsm_parse_ptr get_parse_with_longest_root_word(Fsm_parse_list_ptr fsm_parse_list
  */
 bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr fsm_parse) {
     char* surfaceForm = fsm_parse->form;
-    char* root = fsm_parse->root->name;
+    char* root = fsm_parse->parse.root->name;
     for (int i = 0; i < 231; i++) {
         char* longestRootException = longestRootExceptions[i];
         Array_list_ptr exceptionItems = str_split(longestRootException, ' ');
@@ -131,13 +131,13 @@ bool is_longest_root_exception(Fsm_parse_list_ptr fsm_parse_list, Fsm_parse_ptr 
         char* longestRootPos = array_list_get(exceptionItems, 2);
         char* possibleRootPos = array_list_get(exceptionItems, 3);
         char* possibleRoot = replace_all(surfaceForm, surfaceFormEnding, "");
-        char* rootPos1 = get_tag(get_tag_with_index(first_inflectional_group2(fsm_parse), 0));
+        char* rootPos1 = get_tag(get_tag_with_index(first_inflectional_group((Morphological_parse_ptr) fsm_parse), 0));
         if (ends_with(surfaceForm, surfaceFormEnding) && ends_with(root, longestRootEnding) && strcmp(rootPos1, longestRootPos) == 0) {
             free_(rootPos1);
             for (int j = 0; j < fsm_parse_list->fsm_parses->size; j++) {
                 Fsm_parse_ptr currentParse = get_fsm_parse(fsm_parse_list, j);
-                char* rootPos2 = get_tag(get_tag_with_index(first_inflectional_group2(currentParse), 0));
-                if (strcmp(currentParse->root->name, possibleRoot) == 0 && strcmp(rootPos2, possibleRootPos) == 0) {
+                char* rootPos2 = get_tag(get_tag_with_index(first_inflectional_group((Morphological_parse_ptr) currentParse), 0));
+                if (strcmp(currentParse->parse.root->name, possibleRoot) == 0 && strcmp(rootPos2, possibleRootPos) == 0) {
                     free_(rootPos2);
                     free_(possibleRoot);
                     free_array_list(exceptionItems, free_);
@@ -166,7 +166,7 @@ void reduce_to_parses_with_same_root(Fsm_parse_list_ptr fsm_parse_list, const ch
     int i = 0;
     while (i < fsm_parse_list->fsm_parses->size) {
         Fsm_parse_ptr fsm_parse = get_fsm_parse(fsm_parse_list, i);
-        if (strcmp(fsm_parse->root->name, currentRoot) != 0) {
+        if (strcmp(fsm_parse->parse.root->name, currentRoot) != 0) {
             array_list_remove(fsm_parse_list->fsm_parses, i, (void (*)(void *)) free_fsm_parse);
         } else {
             i++;
@@ -194,8 +194,8 @@ Array_list_ptr construct_parse_list_for_different_root_with_pos(Fsm_parse_list_p
             array_list_add(initial, clone_fsm_parse(get_fsm_parse(fsm_parse_list, i)));
             array_list_add(result, create_fsm_parse_list(initial));
         } else {
-            char* word1 = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i));
-            char* word2 = get_word_with_pos2(get_fsm_parse(fsm_parse_list, i - 1));
+            char* word1 = get_word_with_pos((Morphological_parse_ptr) get_fsm_parse(fsm_parse_list, i));
+            char* word2 = get_word_with_pos((Morphological_parse_ptr) get_fsm_parse(fsm_parse_list, i - 1));
             if (strcmp(word1, word2) == 0) {
                 array_list_add(((Fsm_parse_list_ptr)array_list_get(result, result->size - 1))->fsm_parses,
                                clone_fsm_parse(get_fsm_parse(fsm_parse_list, i)));

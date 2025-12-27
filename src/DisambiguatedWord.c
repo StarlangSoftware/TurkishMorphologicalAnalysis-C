@@ -15,7 +15,7 @@
  */
 Disambiguated_word_ptr create_disambiguated_word(const char *name, Morphological_parse_ptr parse) {
     Disambiguated_word_ptr result = malloc_(sizeof(Disambiguated_word));
-    result->name = str_copy(result->name, name);
+    result->word.name = str_copy(result->word.name, name);
     result->parse = parse;
     return result;
 }
@@ -25,7 +25,7 @@ Disambiguated_word_ptr create_disambiguated_word(const char *name, Morphological
  * @param disambiguated_word Disambiguated word to be deallocated.
  */
 void free_disambiguated_word(Disambiguated_word_ptr disambiguated_word) {
-    free_(disambiguated_word->name);
+    free_(disambiguated_word->word.name);
     free_morphological_parse(disambiguated_word->parse);
     free_(disambiguated_word);
 }

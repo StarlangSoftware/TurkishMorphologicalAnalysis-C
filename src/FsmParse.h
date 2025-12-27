@@ -9,10 +9,10 @@
 #include <Dictionary/TxtWord.h>
 #include "FsmState.h"
 #include "InflectionalGroup.h"
+#include "MorphologicalParse.h"
 
 struct fsm_parse{
-    Array_list_ptr inflectional_groups;
-    Txt_word_ptr root;
+    Morphological_parse parse;
     Array_list_ptr suffix_list;
     Array_list_ptr form_list;
     Array_list_ptr transition_list;
@@ -81,21 +81,7 @@ char* fsm_parse_to_string(Fsm_parse_ptr fsm_parse);
 
 int compare_fsm_parse(const Fsm_parse* fsm_parse1, const Fsm_parse* fsm_parse2);
 
-char* get_word_with_pos2(const Fsm_parse * fsm_parse);
-
-Inflectional_group_ptr first_inflectional_group2(const Fsm_parse * fsm_parse);
-
 Fsm_parse_ptr clone_fsm_parse(const Fsm_parse * fsm_parse);
-
-bool fsm_parse_contains_tag(const Fsm_parse* fsm_parse, Morphological_tag tag);
-
-bool is_fsm_parse_noun(const Fsm_parse* fsm_parse);
-
-bool is_fsm_parse_plural(const Fsm_parse *fsm_parse);
-
-char* get_fsm_parse_pos(const Fsm_parse *fsm_parse);
-
-bool is_fsm_parse_capital_word(const Fsm_parse *fsm_parse);
 
 void restore_original_form(Fsm_parse *fsm_parse, const char* original, const char* pronunciation);
 

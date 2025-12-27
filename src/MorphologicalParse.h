@@ -11,7 +11,7 @@
 
 struct morphological_parse{
     Array_list_ptr inflectional_groups;
-    char* root;
+    Word_ptr root;
 };
 
 typedef struct morphological_parse Morphological_parse;

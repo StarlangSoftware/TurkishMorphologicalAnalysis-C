@@ -133,12 +133,12 @@ Hash_set_ptr get_possible_words(Fsm_morphological_analyzer_ptr fsm_morphological
     int plural_index = -1;
     compound_word = get_compound_word_starting_with(fsm_morphological_analyzer->dictionary_trie, current_word);
     if (!is_root_verb) {
-        if (compound_word != NULL && word_size(compound_word->name) - word_size(current_word) < 3) {
-            hash_set_insert(result, compound_word->name);
+        if (compound_word != NULL && word_size(compound_word->word.name) - word_size(current_word) < 3) {
+            hash_set_insert(result, compound_word->word.name);
         }
         hash_set_insert(result, current_word);
     }
-    current_root = get_word_txt(fsm_morphological_analyzer->dictionary, metamorphic_parse->root);
+    current_root = get_word((Dictionary_ptr)fsm_morphological_analyzer->dictionary, metamorphic_parse->root);
     if (current_root == NULL && compound_word != NULL) {
         current_root = compound_word;
     }
@@ -204,7 +204,7 @@ Hash_set_ptr get_possible_words(Fsm_morphological_analyzer_ptr fsm_morphological
 bool is_possible_substring(const char *short_string,
                            const char *long_string,
                            Txt_word_ptr root) {
-    bool rootWord = strcmp(short_string, root->name) == 0 || strcmp(long_string, root->name) == 0;
+    bool rootWord = strcmp(short_string, root->word.name) == 0 || strcmp(long_string, root->word.name) == 0;
     int distance = 0, j, last = 1;
     for (j = 0; j < word_size(short_string); j++) {
         String_ptr ch1 = char_at(short_string, j);
@@ -226,7 +226,7 @@ bool is_possible_substring(const char *short_string,
         }
     }
     if (rootWord &&
-        (string_in_list(root->name, (char *[]) {"ben", "sen"}, 2) || last_i_drops_during_suffixation(root) ||
+        (string_in_list(root->word.name, (char *[]) {"ben", "sen"}, 2) || last_i_drops_during_suffixation(root) ||
          last_i_drops_during_passive_suffixation(root))) {
         return (distance <= MAX_DISTANCE);
     } else {
@@ -379,7 +379,7 @@ void initialize_parse_list(Fsm_morphological_analyzer_ptr fsm_morphological_anal
         array_list_add(fsm_parse, current_fsm_parse);
     } else {
         if (is_portmanteau_ending_with_si(root)) {
-            String_ptr st = substring_except_last_two_chars(root->name);
+            String_ptr st = substring_except_last_two_chars(root->word.name);
             current_fsm_parse = create_fsm_parse5(st->s, get_state(fsm_morphological_analyzer->finite_state_machine,
                                                                    "CompoundNounRoot"));
             free_string_ptr(st);
@@ -394,9 +394,9 @@ void initialize_parse_list(Fsm_morphological_analyzer_ptr fsm_morphological_anal
                                                           get_state(fsm_morphological_analyzer->finite_state_machine,
                                                                     "NominalRootNoPossesive"));
                     array_list_add(fsm_parse, current_fsm_parse);
-                    String_ptr st = substring_except_last_two_chars(root->name);
-                    String_ptr st1 = last_char(root->name);
-                    String_ptr st2 = char_at(root->name, word_size(root->name) - 2);
+                    String_ptr st = substring_except_last_two_chars(root->word.name);
+                    String_ptr st1 = last_char(root->word.name);
+                    String_ptr st2 = char_at(root->word.name, word_size(root->word.name) - 2);
                     string_append_s(st, st1);
                     string_append_s(st, st2);
                     current_fsm_parse = create_fsm_parse5(st->s,
@@ -410,36 +410,36 @@ void initialize_parse_list(Fsm_morphological_analyzer_ptr fsm_morphological_anal
                         current_fsm_parse = create_fsm_parse6(root, get_state(
                                 fsm_morphological_analyzer->finite_state_machine, "NominalRootNoPossesive"));
                         array_list_add(fsm_parse, current_fsm_parse);
-                        String_ptr lastBefore = char_at(root->name, word_size(root->name) - 2);
+                        String_ptr lastBefore = char_at(root->word.name, word_size(root->word.name) - 2);
                         if (string_equals2(lastBefore, "b")) {
-                            String_ptr st = substring_except_last_two_chars(root->name);
+                            String_ptr st = substring_except_last_two_chars(root->word.name);
                             string_append(st, "p");
                             current_fsm_parse = create_fsm_parse5(st->s, get_state(
                                     fsm_morphological_analyzer->finite_state_machine, "CompoundNounRoot"));
                             free_string_ptr(st);
                         } else {
                             if (string_equals2(lastBefore, "c")) {
-                                String_ptr st = substring_except_last_two_chars(root->name);
+                                String_ptr st = substring_except_last_two_chars(root->word.name);
                                 string_append(st, "ç");
                                 current_fsm_parse = create_fsm_parse5(st->s, get_state(
                                         fsm_morphological_analyzer->finite_state_machine, "CompoundNounRoot"));
                                 free_string_ptr(st);
                             } else {
                                 if (string_equals2(lastBefore, "d")) {
-                                    String_ptr st = substring_except_last_two_chars(root->name);
+                                    String_ptr st = substring_except_last_two_chars(root->word.name);
                                     string_append(st, "t");
                                     current_fsm_parse = create_fsm_parse5(st->s, get_state(
                                             fsm_morphological_analyzer->finite_state_machine, "CompoundNounRoot"));
                                     free_string_ptr(st);
                                 } else {
                                     if (string_equals2(lastBefore, "ğ")) {
-                                        String_ptr st = substring_except_last_two_chars(root->name);
+                                        String_ptr st = substring_except_last_two_chars(root->word.name);
                                         string_append(st, "k");
                                         current_fsm_parse = create_fsm_parse5(st->s, get_state(
                                                 fsm_morphological_analyzer->finite_state_machine, "CompoundNounRoot"));
                                         free_string_ptr(st);
                                     } else {
-                                        String_ptr st = substring_except_last_char(root->name);
+                                        String_ptr st = substring_except_last_char(root->word.name);
                                         current_fsm_parse = create_fsm_parse5(st->s, get_state(
                                                 fsm_morphological_analyzer->finite_state_machine, "CompoundNounRoot"));
                                         free_string_ptr(st);
@@ -449,7 +449,7 @@ void initialize_parse_list(Fsm_morphological_analyzer_ptr fsm_morphological_anal
                         }
                         free_string_ptr(lastBefore);
                     } else {
-                        String_ptr st = substring_except_last_char(root->name);
+                        String_ptr st = substring_except_last_char(root->word.name);
                         current_fsm_parse = create_fsm_parse5(st->s, get_state(
                                 fsm_morphological_analyzer->finite_state_machine, "CompoundNounRoot"));
                         free_string_ptr(st);
@@ -553,36 +553,36 @@ void initialize_parse_list(Fsm_morphological_analyzer_ptr fsm_morphological_anal
                     array_list_add(fsm_parse, current_fsm_parse);
                 }
                 if (is_pronoun(root)) {
-                    if (strcmp(root->name, "kendi") == 0) {
+                    if (strcmp(root->word.name, "kendi") == 0) {
                         current_fsm_parse = create_fsm_parse6(root, get_state(
                                 fsm_morphological_analyzer->finite_state_machine, "PronounRoot(REFLEX)"));
                         array_list_add(fsm_parse, current_fsm_parse);
                     }
-                    if (string_in_list(root->name,
+                    if (string_in_list(root->word.name,
                                        (char *[]) {"öbür", "öteki", "hep", "kimse", "diğeri", "hiçbiri", "böylesi",
                                                    "birbiri", "birbirleri", "biri", "başkası", "bazı", "kimi"}, 13)) {
                         current_fsm_parse = create_fsm_parse6(root, get_state(
                                 fsm_morphological_analyzer->finite_state_machine, "PronounRoot(QUANT)"));
                         array_list_add(fsm_parse, current_fsm_parse);
                     }
-                    if (string_in_list(root->name,
+                    if (string_in_list(root->word.name,
                                        (char *[]) {"tümü", "topu", "herkes", "cümlesi", "çoğu", "birçoğu", "birkaçı",
                                                    "birçokları", "hepsi"}, 9)) {
                         current_fsm_parse = create_fsm_parse6(root, get_state(
                                 fsm_morphological_analyzer->finite_state_machine, "PronounRoot(QUANTPLURAL)"));
                         array_list_add(fsm_parse, current_fsm_parse);
                     }
-                    if (string_in_list(root->name, (char *[]) {"o", "bu", "şu"}, 3)) {
+                    if (string_in_list(root->word.name, (char *[]) {"o", "bu", "şu"}, 3)) {
                         current_fsm_parse = create_fsm_parse6(root, get_state(
                                 fsm_morphological_analyzer->finite_state_machine, "PronounRoot(DEMONS)"));
                         array_list_add(fsm_parse, current_fsm_parse);
                     }
-                    if (string_in_list(root->name, (char *[]) {"ben", "sen", "o", "biz", "siz", "onlar"}, 6)) {
+                    if (string_in_list(root->word.name, (char *[]) {"ben", "sen", "o", "biz", "siz", "onlar"}, 6)) {
                         current_fsm_parse = create_fsm_parse6(root, get_state(
                                 fsm_morphological_analyzer->finite_state_machine, "PronounRoot(PERS)"));
                         array_list_add(fsm_parse, current_fsm_parse);
                     }
-                    if (string_in_list(root->name, (char *[]) {"nere", "ne", "kaçı", "kim", "hangi"}, 5)) {
+                    if (string_in_list(root->word.name, (char *[]) {"nere", "ne", "kaçı", "kim", "hangi"}, 5)) {
                         current_fsm_parse = create_fsm_parse6(root, get_state(
                                 fsm_morphological_analyzer->finite_state_machine, "PronounRoot(QUES)"));
                         array_list_add(fsm_parse, current_fsm_parse);
@@ -760,7 +760,7 @@ void add_new_parses_from_current_parse(Fsm_morphological_analyzer_ptr fsm_morpho
     for (int i = 0; i < transitions->size; i++) {
         Transition_ptr current_transition = array_list_get(transitions, i);
         if (transition_possible2(current_transition, current_fsm_parse) &&
-            (strcmp(current_surface_form, root->name) != 0 || (strcmp(current_surface_form, root->name) == 0 &&
+            (strcmp(current_surface_form, root->word.name) != 0 || (strcmp(current_surface_form, root->word.name) == 0 &&
                                                                      transition_possible3(current_transition, root,
                                                                                           current_state)))) {
             char *tmp = make_transition2(current_transition, root, current_surface_form,
@@ -804,7 +804,7 @@ void add_new_parses_from_current_parse2(Fsm_morphological_analyzer_ptr fsm_morph
         Transition_ptr currentTransition = array_list_get(transitions, i);
         if (transition_possible1(currentTransition, current_fsm_parse->form, surface_form) &&
             transition_possible2(currentTransition, current_fsm_parse) &&
-            (strcmp(current_surface_form, root->name) != 0 || (strcmp(current_surface_form, root->name) == 0 &&
+            (strcmp(current_surface_form, root->word.name) != 0 || (strcmp(current_surface_form, root->word.name) == 0 &&
                                                                      transition_possible3(currentTransition, root,
                                                                                         current_state)))) {
             char *tmp = make_transition2(currentTransition, root, current_surface_form,
@@ -839,7 +839,7 @@ parse_exists(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_li
     Queue_ptr parse_queue = create_queue2(fsm_parses);
     while (!is_queue_empty(parse_queue)) {
         current_fsm_parse = dequeue(parse_queue);
-        root = current_fsm_parse->root;
+        root = (Txt_word_ptr) current_fsm_parse->parse.root;
         current_state = get_final_suffix(current_fsm_parse);
         current_surface_form = current_fsm_parse->form;
         if (current_state->end_state && strcmp(current_surface_form, surface_form) == 0) {
@@ -879,7 +879,7 @@ parse_word(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_list
     while (!is_queue_empty(parse_queue)) {
         current_fsm_parse = dequeue(parse_queue);
         is_a_correct_parse = false;
-        root = current_fsm_parse->root;
+        root = (Txt_word_ptr) current_fsm_parse->parse.root;
         current_state = get_final_suffix(current_fsm_parse);
         current_surface_form = current_fsm_parse->form;
         if (current_state->end_state && word_size(current_surface_form) <= max_length) {
@@ -931,7 +931,7 @@ parse_word2(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer, Array_lis
     while (!is_queue_empty(parse_queue)) {
         current_fsm_parse = dequeue(parse_queue);
         is_a_correct_parse = false;
-        root = current_fsm_parse->root;
+        root = (Txt_word_ptr) current_fsm_parse->parse.root;
         current_state = get_final_suffix(current_fsm_parse);
         current_surface_form = current_fsm_parse->form;
         if (current_state->end_state && strcmp(current_surface_form, surface_form) == 0) {
@@ -1227,13 +1227,13 @@ Sentence_ptr replace_word_fsm(Fsm_morphological_analyzer_ptr fsm_morphological_a
     } else {
         new_root_word = new_word;
     }
-    Txt_word_ptr new_root_txt_word = get_word_txt(fsm_morphological_analyzer->dictionary, new_root_word);
+    Txt_word_ptr new_root_txt_word = get_word((Dictionary_ptr) fsm_morphological_analyzer->dictionary, new_root_word);
     Fsm_parse_list_ptr *parse_list = morphological_analysis4(fsm_morphological_analyzer, original);
     for (i = 0; i < original->words->size; i++) {
         bool replaced = false;
         for (int j = 0; j < parse_list[i]->fsm_parses->size; j++) {
             Fsm_parse_ptr fsm_parse = get_fsm_parse(parse_list[i], j);
-            if (strcmp(fsm_parse->root->name, last_word) == 0 && new_root_txt_word != NULL) {
+            if (strcmp(fsm_parse->parse.root->name, last_word) == 0 && new_root_txt_word != NULL) {
                 replaced = true;
                 replaced_word = replace_root_word(fsm_parse, new_root_txt_word);
             }
@@ -1469,7 +1469,7 @@ Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morp
     Array_list_ptr list = hash_set_key_list(words);
     for (int i = 0; i < list->size; i++) {
         Txt_word_ptr word = array_list_get(list, i);
-        String_ptr candidate_word = substring(surface_form, 0, word_size(surface_form) - word_size(word->name));
+        String_ptr candidate_word = substring(surface_form, 0, word_size(surface_form) - word_size(word->word.name));
         Txt_word_ptr new_word;
         if (ends_with(candidate_word->s, "ğ")) {
             String_ptr st = substring(candidate_word->s, 0, word_size(candidate_word->s) - 1);
@@ -1486,13 +1486,13 @@ Array_list_ptr root_of_possibly_new_word(Fsm_morphological_analyzer_ptr fsm_morp
         bool found = false;
         for (int j = 0; j < candidate_list->size; j++) {
             Txt_word_ptr word1 = array_list_get(candidate_list, j);
-            if (strcmp(word1->name, new_word->name) == 0) {
+            if (strcmp(word1->word.name, new_word->word.name) == 0) {
                 found = true;
             }
         }
         if (!found) {
             array_list_add(candidate_list, new_word);
-            add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, new_word->name, new_word);
+            add_word_to_trie(fsm_morphological_analyzer->dictionary_trie, new_word->word.name, new_word);
         } else {
             free_txt_word(new_word);
         }
@@ -1731,9 +1731,9 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
                                                 if (hash_map_contains(fsm_morphological_analyzer->pronunciations, possibleRootLowerCased)){
                                                     is_root_replaced = true;
                                                     pronunciation = hash_map_get(fsm_morphological_analyzer->pronunciations, possibleRootLowerCased);
-                                                    if (get_word_txt(fsm_morphological_analyzer->dictionary, pronunciation) !=
+                                                    if (get_word((Dictionary_ptr) fsm_morphological_analyzer->dictionary, pronunciation) !=
                                                         NULL) {
-                                                        add_flag(get_word_txt(fsm_morphological_analyzer->dictionary,
+                                                        add_flag(get_word((Dictionary_ptr) fsm_morphological_analyzer->dictionary,
                                                                               pronunciation), "IS_OA");
                                                     } else {
                                                         newWord = create_txt_word2(pronunciation, "IS_OA");
@@ -1748,9 +1748,9 @@ morphological_analysis(Fsm_morphological_analyzer_ptr fsm_morphological_analyzer
                                                     free_string_ptr(replaced_word);
                                                     free_string_ptr(st2);
                                                 } else {
-                                                    if (get_word_txt(fsm_morphological_analyzer->dictionary, possibleRootLowerCased) !=
+                                                    if (get_word((Dictionary_ptr) fsm_morphological_analyzer->dictionary, possibleRootLowerCased) !=
                                                         NULL) {
-                                                        add_flag(get_word_txt(fsm_morphological_analyzer->dictionary,
+                                                        add_flag(get_word((Dictionary_ptr) fsm_morphological_analyzer->dictionary,
                                                                               possibleRootLowerCased), "IS_OA");
                                                     } else {
                                                         newWord = create_txt_word2(possibleRootLowerCased, "IS_OA");

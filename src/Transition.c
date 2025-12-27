@@ -144,7 +144,7 @@ bool transition_possible1(Transition_ptr transition, const char *current_surface
  * @return true if transition is possible false otherwise
  */
 bool transition_possible2(Transition_ptr transition, Fsm_parse_ptr current_fsm_parse) {
-    if (strcmp(transition->with, "Ar") == 0 && ends_with(current_fsm_parse->form, "l") && strcmp(current_fsm_parse->root->name, current_fsm_parse->form) != 0) {
+    if (strcmp(transition->with, "Ar") == 0 && ends_with(current_fsm_parse->form, "l") && strcmp(current_fsm_parse->parse.root->name, current_fsm_parse->form) != 0) {
         return false;
     }
     return true;
@@ -321,8 +321,8 @@ char *make_transition(Transition_ptr transition, Txt_word_ptr root, const char *
  * @return The current value of the word form after this transition is completed in the finite state machine.
  */
 char *make_transition2(Transition_ptr transition, Txt_word_ptr root, const char *stem, Fsm_State_ptr startState) {
-    char* tmp3 = str_concat(root->name, "'");
-    bool rootWord = strcmp(root->name, stem) == 0 || strcmp(tmp3, stem) == 0;
+    char* tmp3 = str_concat(root->word.name, "'");
+    bool rootWord = strcmp(root->word.name, stem) == 0 || strcmp(tmp3, stem) == 0;
     free_(tmp3);
     String_ptr formation = create_string2(stem);
     String_ptr formation_to_check;
@@ -370,7 +370,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, const char 
     //de->d(i)yor, ye->y(i)yor
     String_ptr with_first = char_at(transition->with, 1);
     String_ptr with_zero = char_at(transition->with, 0);
-    if (rootWord && strcmp(with_f, "y") == 0 && vowel_e_changes_to_i_during_y_suffixation(root) && (strcmp(with_first->s, "H") != 0 || strcmp(root->name, "ye") == 0)) {
+    if (rootWord && strcmp(with_f, "y") == 0 && vowel_e_changes_to_i_during_y_suffixation(root) && (strcmp(with_first->s, "H") != 0 || strcmp(root->word.name, "ye") == 0)) {
         free_string_ptr(formation);
         formation = create_string3(except_last, "i");
         formation_to_check = formation;
@@ -504,7 +504,7 @@ char *make_transition2(Transition_ptr transition, Txt_word_ptr root, const char 
     Array_list_ptr withChars = all_characters(transition->with);
     String_ptr st0 = array_list_get(withChars, 0);
     if (is_consonant_drop(with_f) && !is_vowel(last) && (is_numeral(root) || is_real(root) ||
-            is_fraction(root) || is_time2(root) || is_date(root) || is_percent(root) || is_range(root)) && (ends_with(root->name, "1") || ends_with(root->name, "3") || ends_with(root->name, "4") || ends_with(root->name, "5") || ends_with(root->name, "8") || ends_with(root->name, "9") || ends_with(root->name, "10") || ends_with(root->name, "30") || ends_with(root->name, "40") || ends_with(root->name, "60") || ends_with(root->name, "70") || ends_with(root->name, "80") || ends_with(root->name, "90") || ends_with(root->name, "00"))) {
+            is_fraction(root) || is_time2(root) || is_date(root) || is_percent(root) || is_range(root)) && (ends_with(root->word.name, "1") || ends_with(root->word.name, "3") || ends_with(root->word.name, "4") || ends_with(root->word.name, "5") || ends_with(root->word.name, "8") || ends_with(root->word.name, "9") || ends_with(root->word.name, "10") || ends_with(root->word.name, "30") || ends_with(root->word.name, "40") || ends_with(root->word.name, "60") || ends_with(root->word.name, "70") || ends_with(root->word.name, "80") || ends_with(root->word.name, "90") || ends_with(root->word.name, "00"))) {
         if (string_equals2(st0, "'")) {
             string_append(formation, "'");
             i = 2;

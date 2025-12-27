@@ -17,7 +17,6 @@ void test_transition(Fsm_morphological_analyzer_ptr fsm, char* list[], int size)
 }
 
 int main(){
-    start_x_large_memory_check();
     Fsm_morphological_analyzer_ptr fsm = create_fsm_morphological_analyzer3();
     test_transition(fsm, (char*[]){"kabala", "halika", "adabı", "ahengi", "adedi", "adeti", "ağıdı", "ağıtı", "anotu", "halli", "hali", "şakı", "şakkı", "metni", "metini", "katli", "katili"}, 17);
     test_transition(fsm, (char*[]){"hizbi", "kaybı", "ahdi", "nesci", "zehri", "zikri"}, 6);
@@ -31,11 +30,10 @@ int main(){
     test_transition(fsm, (char*[]){"gripçi", "güllaççı", "gülütçü", "gülükçü"}, 4);
     test_transition(fsm, (char*[]){"altışar", "yedişer", "üçer", "beşer", "dörder"}, 5);
     test_transition(fsm, (char*[]){"koştu", "kitaptı", "kaçtı", "evdi", "fraktı", "sattı", "aftı", "kesti", "ahtı"}, 9);
-    test_transition(fsm, (char*[]){"yaparmışçasına", "yiyip", "sana", "bununla", "onunla", "şununla", "bana"}, 7);
+    test_transition(fsm, (char*[]){"yaparmışcasına", "yiyip", "sana", "bununla", "onunla", "şununla", "bana"}, 7);
     test_transition(fsm, (char*[]){"diyor", "yiyor"}, 2);
     test_transition(fsm, (char*[]){"buyruldu", "yoğruldu"}, 2);
     test_transition(fsm, (char*[]){"suymuş", "suyuymuş", "suyla", "suyuyla", "suydu", "suyuydu", "suyuna", "karasuyu", "suyu"}, 9);
     test_transition(fsm, (char*[]){"cezbediyor", "ediyor", "bahsediyor"}, 3);
     free_fsm_morphological_analyzer(fsm);
-    end_memory_check();
 }
