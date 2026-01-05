@@ -176,16 +176,8 @@ void add_fsm_transition(Finite_state_machine_ptr finite_state_machine,
                         Fsm_State_ptr to_state,
                         char *with,
                         char *with_name) {
-    Array_list_ptr transition_list;
     Transition_ptr new_transition = create_transition(to_state, with, with_name);
-    if (hash_map_contains(finite_state_machine->transitions, from_state)){
-        transition_list = hash_map_get(finite_state_machine->transitions, from_state);
-        array_list_add(transition_list, new_transition);
-    } else {
-        transition_list = create_array_list();
-        array_list_add(transition_list, new_transition);
-        hash_map_insert(finite_state_machine->transitions, from_state, transition_list);
-    }
+    add_to_hash_map_of_array_list(finite_state_machine->transitions, from_state, new_transition);
 }
 
 /**
@@ -205,16 +197,8 @@ void add_fsm_transition2(Finite_state_machine_ptr finite_state_machine,
                          char *with,
                          char *with_name,
                          char *to_pos) {
-    Array_list_ptr transition_list;
     Transition_ptr new_transition = create_transition2(to_state, with, with_name, to_pos);
-    if (hash_map_contains(finite_state_machine->transitions, from_state)){
-        transition_list = hash_map_get(finite_state_machine->transitions, from_state);
-        array_list_add(transition_list, new_transition);
-    } else {
-        transition_list = create_array_list();
-        array_list_add(transition_list, new_transition);
-        hash_map_insert(finite_state_machine->transitions, from_state, transition_list);
-    }
+    add_to_hash_map_of_array_list(finite_state_machine->transitions, from_state, new_transition);
 }
 
 /**
