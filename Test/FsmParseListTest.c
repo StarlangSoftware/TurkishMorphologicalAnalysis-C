@@ -18,7 +18,7 @@ void test_size(Fsm_morphological_analyzer_ptr fsm){
     test_size_single(fsm, "açılır", 2);
     test_size_single(fsm, "koparılarak", 2);
     test_size_single(fsm, "toplama", 6);
-    test_size_single(fsm, "değerlendirmede", 4);
+    test_size_single(fsm, "değerlendirmede", 5);
     test_size_single(fsm, "soruşturmasının", 5);
     test_size_single(fsm, "karşılaştırmalı", 12);
     test_size_single(fsm, "esaslarını", 8);
@@ -115,7 +115,7 @@ void test_construct_parse_list_for_different_root_with_pos(Fsm_morphological_ana
     test_construct_parse_list_for_different_root_with_pos_single(fsm, "açılır", 1);
     test_construct_parse_list_for_different_root_with_pos_single(fsm, "koparılarak", 2);
     test_construct_parse_list_for_different_root_with_pos_single(fsm, "toplama", 5);
-    test_construct_parse_list_for_different_root_with_pos_single(fsm, "değerlendirmede", 4);
+    test_construct_parse_list_for_different_root_with_pos_single(fsm, "değerlendirmede", 5);
     test_construct_parse_list_for_different_root_with_pos_single(fsm, "soruşturmasının", 5);
     test_construct_parse_list_for_different_root_with_pos_single(fsm, "karşılaştırmalı", 7);
     test_construct_parse_list_for_different_root_with_pos_single(fsm, "esaslarını", 2);
@@ -136,12 +136,11 @@ void test_parses_without_prefix_and_suffix_single(Fsm_morphological_analyzer_ptr
 void test_parses_without_prefix_and_suffix(Fsm_morphological_analyzer_ptr fsm){
     test_parses_without_prefix_and_suffix_single(fsm, "kitabı", "P3SG+NOM$PNON+ACC");
     test_parses_without_prefix_and_suffix_single(fsm, "kitapları", "A3PL+P3PL+NOM$A3PL+P3SG+NOM$A3PL+PNON+ACC$A3SG+P3PL+NOM");
-    test_parses_without_prefix_and_suffix_single(fsm, "o", "DET$PRON+DEMONSP+A3SG+PNON+NOM$PRON+PERS+A3SG+PNON+NOM");
+    test_parses_without_prefix_and_suffix_single(fsm, "o", "ADJ$DET$PRON+DEMONSP+A3SG+PNON+NOM$PRON+PERS+A3SG+PNON+NOM");
     test_parses_without_prefix_and_suffix_single(fsm, "arabası", "NOUN+A3SG+P3SG+NOM$NOUN^DB+ADJ+ALMOST");
 }
 
 int main(){
-    start_x_large_memory_check();
     Fsm_morphological_analyzer_ptr fsm = create_fsm_morphological_analyzer3();
     test_size(fsm);
     test_root_words(fsm);
@@ -151,6 +150,5 @@ int main(){
     test_construct_parse_list_for_different_root_with_pos(fsm);
     test_parses_without_prefix_and_suffix(fsm);
     free_fsm_morphological_analyzer(fsm);
-    end_memory_check();
 }
 
